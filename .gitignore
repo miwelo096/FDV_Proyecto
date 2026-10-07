@@ -1,4 +1,4 @@
-# --- Archivos específicos de Unity ---
+# Archivos de unity
 [Library]
 [library]
 Library/
@@ -12,7 +12,7 @@ MemoryCaptures/
 Recording/
 /[A|a]sset[M|m]anaged[M|m]odules/
 
-# --- Archivos de compilación y ensamblado de C# ---
+# Archivos de C#
 *.csproj
 *.unityproj
 *.sln
@@ -27,7 +27,7 @@ Recording/
 *.opendb
 *.VC.db
 
-# Archivos generados por crash reports
+# Errores
 sysinfo.txt
 
 # Visual Studio Code
