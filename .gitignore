@@ -1,0 +1,53 @@
+# --- Archivos específicos de Unity ---
+[Library]
+[library]
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+UserSettings/
+MemoryCaptures/
+Recording/
+/[A|a]sset[M|m]anaged[M|m]odules/
+
+# --- Archivos de compilación y ensamblado de C# ---
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# Archivos generados por crash reports
+sysinfo.txt
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.lnk
+
