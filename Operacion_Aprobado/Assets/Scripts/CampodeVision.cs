@@ -1,38 +1,35 @@
-// using UnityEngine;
+using UnityEngine;
 
-// public class CampodeVision : MonoBehaviour
-// {   
-//     // distancia de vision
-//     float distancia = 10f;
+public class CampodeVision : MonoBehaviour
+{
+    public float distancia = 8f;
+    public float angulo = 90f;
+    public LayerMask obstaculos;
+    public string tagObjetivo = "Player";
 
+    // true si el objetivo está en rango, dentro del ángulo y sin obstáculos de por medio
+    // el enemigo puede leer este campo para saber si debe cambiar de estado
+    public bool Viendo;
+    public Transform Objetivo;
 
-//     // Start is called once before the first execution of Update after the MonoBehaviour is created
-//     void Start()
-//     {   
-//         // inicializar posicion de raya y su distancia de vision
-//         Ray2D ray=new Ray2D( transform.position, Vector2.right );
-//         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, distancia);
+    private Transform objetivo;
 
-//     }
+    void Start()
+    {
+        GameObject p = GameObject.FindGameObjectWithTag(tagObjetivo);
+        if (p != null) objetivo = p.transform;
+    }
 
+    void Update()
+    {
+        if (objetivo == null) return;
 
-//     // Update is called once per frame
-//     void Update()
-//     {  
-//         if(info.collider!=null)
-//         {
-//             GameObject obj = info.collider.gameObject;
-        
-//             if(obj.CompareTag("Player"))
-//                 Debug.Log(obj.name);
-//             // comprobar estado
-//             if()
-//             // funcion de cambiar estado
-//         }
-//     }
+        Vector2 dir = objetivo.position - transform.position;
 
+        Viendo = dir.magnitude <= distancia
+            && Vector2.Angle(transform.right, dir) <= angulo / 2f
+            && Physics2D.Raycast(transform.position, dir.normalized, dir.magnitude, obstaculos).collider == null;
 
-    
-
-
-// }
+        Objetivo = Viendo ? objetivo : null;
+    }
+}
