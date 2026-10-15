@@ -78,7 +78,7 @@ public class CampodeVision : MonoBehaviour
                     dir.magnitude,
                     obstaculos
                 ).collider == null
-                && !player.escondido;
+                && !player.getEscondido();
             
             Objetivo = Viendo ? objetivo : null;
         }

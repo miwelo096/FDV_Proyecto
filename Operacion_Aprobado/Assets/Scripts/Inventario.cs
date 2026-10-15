@@ -23,11 +23,17 @@ public class Inventario : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        var ObjetoCaido = collision.GetComponent<ObjetoCaido>();
-        if (ObjetoCaido.recogido)
+        if (!collision.CompareTag("Item"))
         {
             return;
         }
+
+        var ObjetoCaido = collision.GetComponent<ObjetoCaido>();
+        if (ObjetoCaido == null || ObjetoCaido.recogido)
+        {
+            return;
+        }
+
         ObjetoCaido.recogido = true;
         AddObjeto(ObjetoCaido.objeto);
         Destroy(collision.gameObject);
