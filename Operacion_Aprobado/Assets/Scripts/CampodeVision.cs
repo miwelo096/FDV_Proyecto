@@ -17,11 +17,16 @@ public class CampodeVision : MonoBehaviour
 
     private LineRenderer lineaDerecha;
     private LineRenderer lineaIzquierda;
+    private Player player;
 
     void Start()
     {
         GameObject p = GameObject.FindGameObjectWithTag(tagObjetivo);
-        if (p != null) objetivo = p.transform;
+        if (p != null)
+        {
+            objetivo = p.transform;
+            player = p.GetComponent<Player>();
+        } 
 
         lineaDerecha = CrearLinea("VisionDer");
         lineaIzquierda = CrearLinea("VisionIzq");
@@ -50,7 +55,8 @@ public class CampodeVision : MonoBehaviour
 
         Viendo = dir.magnitude <= distancia
             && Vector2.Angle(transform.right, dir) <= angulo / 2f
-            && Physics2D.Raycast(transform.position, dir.normalized, dir.magnitude, obstaculos).collider == null;
+            && Physics2D.Raycast(transform.position, dir.normalized, dir.magnitude, obstaculos).collider == null
+            && !player.escondido;
 
         Objetivo = Viendo ? objetivo : null;
 
