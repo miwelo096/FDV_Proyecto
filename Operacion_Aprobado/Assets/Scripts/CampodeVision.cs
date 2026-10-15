@@ -71,11 +71,19 @@ public class CampodeVision : MonoBehaviour
         lineaIzquierda.SetPosition(1, izq);
 
 
-        // debug log
+        // actualizar el feedback cuando cambia la dirección
         if (Viendo != viendoAntes)
         {
             viendoAntes = Viendo;
-            Debug.Log(Viendo ? "Te veo" : "Te perdí");
+
+            Color colorVision = Viendo ? Color.red : Color.yellow;
+
+            lineaDerecha.startColor = colorVision;
+            lineaDerecha.endColor = colorVision;
+            lineaIzquierda.startColor = colorVision;
+            lineaIzquierda.endColor = colorVision;
+            
+            Debug.Log($"{name}: {(Viendo ? "Te veo" : "Te perdí")}", this);
         }
     }
 }
