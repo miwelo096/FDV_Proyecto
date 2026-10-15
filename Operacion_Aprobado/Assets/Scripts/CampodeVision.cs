@@ -18,7 +18,7 @@ public class CampodeVision : MonoBehaviour
     private LineRenderer lineaDerecha;
     private LineRenderer lineaIzquierda;
     private Player player;
-
+    private bool avisoReferenciaAusente = false;
     void Start()
     {
         GameObject p = GameObject.FindGameObjectWithTag(tagObjetivo);
@@ -49,16 +49,39 @@ public class CampodeVision : MonoBehaviour
 
     void Update()
     {
-        if (objetivo == null) return;
+        Viendo = false;
+        Objetivo = null;
 
-        Vector2 dir = objetivo.position - transform.position;
+        if (objetivo == null || player == null)
+        {
+            if (!avisoReferenciaAusente)
+            {
+                string motivo = objetivo == null
+                    ? $"No hay objetivo con el tag '{tagObjetivo}' o ha desaparecido."
+                    : "El objetivo no tiene un componente Player válido.";
+                
+                Debug.LogWarning($"{name}: {motivo}", this);
+                avisoReferenciaAusente = true;
+            }
+        }
+        else
+        {
+            avisoReferenciaAusente = false;
+            
+            Vector2 dir = objetivo.position - transform.position;
 
-        Viendo = dir.magnitude <= distancia
-            && Vector2.Angle(transform.right, dir) <= angulo / 2f
-            && Physics2D.Raycast(transform.position, dir.normalized, dir.magnitude, obstaculos).collider == null
-            && !player.escondido;
-
-        Objetivo = Viendo ? objetivo : null;
+            Viendo = dir.magnitude <= distancia
+                && Vector2.Angle(transform.right, dir) <= angulo / 2f
+                && Physics2D.Raycast(
+                    transform.position,
+                    dir.normalized,
+                    dir.magnitude,
+                    obstaculos
+                ).collider == null
+                && !player.escondido;
+            
+            Objetivo = Viendo ? objetivo : null;
+        }
 
         Vector3 forward = transform.right * distancia;
         Vector3 der = transform.position + Quaternion.Euler(0, 0, -angulo / 2f) * forward;
@@ -82,7 +105,7 @@ public class CampodeVision : MonoBehaviour
             lineaDerecha.endColor = colorVision;
             lineaIzquierda.startColor = colorVision;
             lineaIzquierda.endColor = colorVision;
-            
+
             Debug.Log($"{name}: {(Viendo ? "Te veo" : "Te perdí")}", this);
         }
     }
