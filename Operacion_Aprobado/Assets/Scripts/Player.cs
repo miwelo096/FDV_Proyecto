@@ -26,6 +26,11 @@ public class Player : MonoBehaviour
     SpriteRenderer sr;
 
 
+    public GameObject prefabObjetoLanzable; // Arrastra aquí el prefab del objeto
+    public Transform puntoDeLanzamiento;     // Un objeto vacío delante del jugador desde donde sale
+    public float fuerzaLanzamiento = 8f;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -70,12 +75,39 @@ public class Player : MonoBehaviour
             }
         }
 
+        // Pulsamos 'Q' para lanzar el objeto de prueba
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            LanzarObjeto();
+        }
+
         setEscondido(debajoDeMesa);
 
         float inputVertical = Input.GetAxisRaw("Vertical");
         float inputHorizontal = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(inputHorizontal, inputVertical);
         rb.linearVelocity = input.normalized * getVelocidad();
+    }
+
+    void LanzarObjeto()
+    {
+        if (prefabObjetoLanzable != null && puntoDeLanzamiento != null)
+        {
+            GameObject objetoInstanciado = Instantiate(prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
+            
+            Rigidbody2D rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
+            if (rbObjeto != null)
+            {
+                // 1. Obtener la posición del ratón en el mundo 2D
+                Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                
+                // 2. Calcular la dirección normalizada desde el punto de lanzamiento hasta el ratón
+                Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
+
+                // 3. Aplicar la velocidad en esa dirección
+                rbObjeto.linearVelocity = direccion * fuerzaLanzamiento;
+            }
+        }
     }
 
 
