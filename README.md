@@ -1,6 +1,6 @@
 Controles para la primera iteración:  
 WASD para moverse   
-Shift Izquierdo para pasar a modo sigilo  
+Shift Izquierdo para pasar a modo agachado  
 Espacio para pasar a modo carrera  
 Q para lanzar objetos lanzables hacia donde apunte el ratón  
 Si te agachas debajo de una mesa (rectángulo blanco grande), los enemigos no te detectan  
