@@ -6,8 +6,11 @@ using JetBrains.Annotations;
 [RequireComponent(typeof(Button))]
 public class InterfazObjeto : MonoBehaviour
 {   
-    public Sprite sprite;
-    public Button boton;
+    [Header("Atributos")]
+    [SerializeField]
+    Sprite sprite;
+    [SerializeField]
+    Button boton;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Initialize(string idInventario, Objeto objeto, Action<String> removeObjetoAction)
     {

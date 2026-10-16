@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class ObjetoCaido : MonoBehaviour
 {   
-    
-    public bool autoStart;
-    public float delay = 3.0f;
+    [Header("Ajustes")]
+    [SerializeField]
+    bool autoStart;
+    [SerializeField]
+    float delay = 3.0f;
+    [Header("Atributos")]
     public Objeto objeto;
     public bool recogido = false;
 
