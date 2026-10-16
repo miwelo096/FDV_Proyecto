@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using UnityEngine.Rendering;
 public class InterfazInventario : MonoBehaviour
 {
-    [Header("Prefabs")]
-    [SerializeField]
-    GameObject prefabInterfazObjeto;
-    [Header("Atributos")]
-    [SerializeField]
-    Inventario inventario;
-    [SerializeField]
-    Transform padre;
-    [SerializeField]
-    SerializedDictionary<string, GameObject> interfazInventatio = new();
+
+    public GameObject prefabInterfazObjeto;
+    public Inventario inventario;
+    public Transform padre;
+    public SerializedDictionary<string, GameObject> interfazInventatio = new();
     public void AddObjetoInterfaz(string id, Objeto objeto)
     {
         var interfazObjeto = Instantiate(prefabInterfazObjeto, padre, false).GetComponent<InterfazObjeto>();
