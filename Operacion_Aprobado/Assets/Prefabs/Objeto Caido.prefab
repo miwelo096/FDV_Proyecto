@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4653806962004492707}
   - component: {fileID: 527964199246183887}
   - component: {fileID: 4318688552715355932}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Objeto Caido
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

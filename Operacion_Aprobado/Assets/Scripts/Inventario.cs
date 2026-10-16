@@ -9,17 +9,14 @@ using JetBrains.Annotations;
 public class Inventario : MonoBehaviour
 {
 
-    [Header("Referencias")]
-    [SerializeField]
-    InterfazInventario interfaz;
 
-    [Header("Prefabs")]
-    [SerializeField]
-    GameObject prefabObjetoCaido;
+    public InterfazInventario interfaz;
 
-    [Header("Atributos")]
-    [SerializeField]
-    SerializedDictionary<string, Objeto> inventario = new();
+
+    public GameObject prefabObjetoCaido;
+
+
+    public SerializedDictionary<string, Objeto> inventario = new();
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
