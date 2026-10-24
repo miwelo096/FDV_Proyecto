@@ -5,90 +5,111 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // Constantes de velocidad de movimiento
-    const float VELOCIDADAGACHADO = 2f;
+    const float VELOCIDADAGACHADO = 3f;             // Velocidad escondido = velocidad agachado
     const float VELOCIDADANDANDO = 5f;
     const float VELOCIDADCORRIENDO = 8f;
 
+    // Constante de fuerza de lanzamiento
+    const float FUERZALANZAMIENTO = 8f;
+
+    // Estados posibles del jugador
     public enum Estados
     {
         Agachado,   // 0
         Andando,    // 1
-        Corriendo   // 2
+        Corriendo,  // 2
+        Escondido   // 3
     }
 
     // Valor de velocidad de movimiento
     private float velocidad;
+
     // Estado del jugador
     private Estados estado;
-    private bool escondido;
-    // Rigidbody para colisiones
-    private Rigidbody2D rb;
-    SpriteRenderer sr;
+
+    // Rigidbody del jugador (Para colisiones)
+    private Rigidbody2D playerRB;
+    // Sprite del jugador
+    private SpriteRenderer playerSprite;
+
+    // Sprite del escondite
+    private SpriteRenderer esconditeSprite;
 
 
-    public GameObject prefabObjetoLanzable; // Arrastra aquí el prefab del objeto
-    public Transform puntoDeLanzamiento;     // Un objeto vacío delante del jugador desde donde sale
-    public float fuerzaLanzamiento = 8f;
+    // Prefab objeto lanzable
+    public GameObject prefabObjetoLanzable;
+    // Posición desde la que se lanza un objeto
+    public Transform puntoDeLanzamiento;
 
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        this.playerRB = GetComponent<Rigidbody2D>();
+        this.playerSprite = GetComponent<SpriteRenderer>();
+        
+        GameAsserts.IsValidReference(getPlayerRB(), "playerRB (Player)");
+        GameAsserts.IsValidReference(getPlayerSprite(), "playerSprite (Player)");
+        GameAsserts.IsValidReference(this.prefabObjetoLanzable, "prefabObjetoLanzable (Player)");
+        GameAsserts.IsValidReference(this.puntoDeLanzamiento, "puntoDeLanzamiento (Player)");
         setEstado(Estados.Andando);
     }
 
     void Update()
     {
-        bool debajoDeMesa = Physics2D.OverlapBox(transform.position, GetComponent<BoxCollider2D>().bounds.size, 0f, LayerMask.GetMask("Mesa")) != null;
+        escondido();
 
         /**
          * Si se pulsa el shift izquierdo, el jugador se agacha.
          * Si se pulsa el espacio, el jugador corre.
-         * El jugador vuelve a andar pulsando de nuevo la misma tecla y
-         * no se puede pasar de agacharse a correr ni vice versa.
+         * El jugador vuelve a andar pulsando de nuevo la misma tecla.
          **/
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (getEstado() != Estados.Escondido)
         {
-            if (!getEscondido())
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                if (getEstado() == Estados.Andando)
-                {
-                    setEstado(Estados.Agachado);
-                }
-                else if (getEstado() == Estados.Agachado)
+                if (getEstado() == Estados.Agachado)
                 {
                     setEstado(Estados.Andando);
                 }
-                Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"), getEstado() == Estados.Agachado);
+                else
+                {
+                    setEstado(Estados.Agachado);
+                }
             }
-        }
-        else if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (getEstado() == Estados.Andando)
+            else if (Input.GetKeyDown(KeyCode.Space))
             {
-                setEstado(Estados.Corriendo);
-            }
-            else if (getEstado() == Estados.Corriendo)
-            {
-                setEstado(Estados.Andando);
+                if (getEstado() == Estados.Corriendo)
+                {
+                    setEstado(Estados.Andando);
+                }
+                else
+                {
+                    setEstado(Estados.Corriendo);
+                }
             }
         }
 
-        // Pulsamos 'Q' para lanzar el objeto de prueba
+        // Si el estado es AGACHADO, ignora las colisiones de la mascara "Mesa"
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"),
+                                        getEstado() == Estados.Agachado || getEstado() == Estados.Escondido);
+
+        // Se pulsa 'Q' para lanzar el objeto
         if (Input.GetKeyDown(KeyCode.Q))
         {
             LanzarObjeto();
         }
 
-        setEscondido(debajoDeMesa);
-
         float inputVertical = Input.GetAxisRaw("Vertical");
         float inputHorizontal = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(inputHorizontal, inputVertical);
-        rb.linearVelocity = input.normalized * getVelocidad();
+        getPlayerRB().linearVelocity = input.normalized * getVelocidad();
     }
 
+    /// <summary>
+    /// Busca la posición del ratón para lanzar un objeto
+    /// </summary>
+    /// 
+    /// TODO: Coger objeto del inventario comprobando que sea un objeto lanzable
     void LanzarObjeto()
     {
         if (prefabObjetoLanzable != null && puntoDeLanzamiento != null)
@@ -98,15 +119,39 @@ public class Player : MonoBehaviour
             Rigidbody2D rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
             if (rbObjeto != null)
             {
-                // 1. Obtener la posición del ratón en el mundo 2D
+                // Obtener la posición del ratón
                 Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 
-                // 2. Calcular la dirección normalizada desde el punto de lanzamiento hasta el ratón
+                // Calcular la dirección normalizada desde el punto de lanzamiento hasta el ratón
                 Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
 
-                // 3. Aplicar la velocidad en esa dirección
-                rbObjeto.linearVelocity = direccion * fuerzaLanzamiento;
+                // Aplicar la velocidad en esa dirección
+                rbObjeto.linearVelocity = direccion * FUERZALANZAMIENTO;
             }
+        }
+    }
+
+    /// <summary>
+    /// Comprueba si está escondido o si ha dejado de esconderse
+    /// </summary>
+    void escondido()
+    {
+        // Se comprueba que el jugador esté debajo de algo con el layer "Mesa" (Tiene que estar hasta la mitad del collider)
+        Collider2D colliderEscondite = Physics2D.OverlapBox(transform.position, Vector2.zero,
+                                                0f, LayerMask.GetMask("Mesa"));
+        
+        bool debajoMesa = colliderEscondite != null;
+
+        if (debajoMesa)
+        {
+            setEstado(Estados.Escondido);
+            setSpriteEscondite(colliderEscondite.GetComponent<SpriteRenderer>());
+            setTransparencia(0.3f, false);
+        }
+        else if (getEstado() == Estados.Escondido && !debajoMesa)
+        {
+            setEstado(Estados.Agachado);
+            setTransparencia(1f, true);
         }
     }
 
@@ -114,48 +159,122 @@ public class Player : MonoBehaviour
     /*******************
      * GETTERS/SETTERS *
      *******************/
+    
+
+
+    /// <summary>
+    /// Cambia el estado del Player
+    /// </summary>
+    /// 
+    /// <param name="estado">Estado a cambiar</param>
     public void setEstado(Estados estado)
     {
         this.estado = estado;
-        if (estado == Estados.Agachado)
+        if (estado == Estados.Agachado || estado == Estados.Escondido)
         {
-            sr.color = Color.yellow;
+            getPlayerSprite().color = Color.yellow;
             setVelocidad(VELOCIDADAGACHADO);
         }
         else if (estado == Estados.Corriendo)
         {
-            sr.color = Color.green;
+            getPlayerSprite().color = Color.green;
             setVelocidad(VELOCIDADCORRIENDO);
         }
         else
         {
-            sr.color = Color.red;
+            getPlayerSprite().color = Color.red;
             setVelocidad(VELOCIDADANDANDO);
         }
     }
     
+    /// <summary>
+    /// Obtiene el estado del Player
+    /// </summary>
+    /// 
+    /// <returns>Estado del Player</returns>
     public Estados getEstado()
     {
         return this.estado;
     }
 
+    /// <summary>
+    /// Cambia la velocidad del movimiento del Player
+    /// </summary>
+    /// 
+    /// <param name="velocidad">Velocidad a cambiar</param>
     public void setVelocidad(float velocidad)
     {
         this.velocidad = velocidad;
     }
 
+    /// <summary>
+    /// Obtiene la velocidad del movimiento del Player
+    /// </summary>
+    /// 
+    /// <returns>Velocidad del movimiento del Player</returns>
     public float getVelocidad()
     {
         return this.velocidad;
     }
 
-    public void setEscondido(bool debajoMesa)
+    /// <summary>
+    /// Cambia el valor de la transparencia. Puede poner a null a la variable "esconditeSprite"
+    /// </summary>
+    /// 
+    /// <param name="valor">Valor a cambiar</param>
+    /// <param name="eliminiar">True pone a null a la variable "esconditeSprite"</param>
+    public void setTransparencia(float valor, bool eliminiar)
     {
-        this.escondido = getEstado() == Estados.Agachado && debajoMesa;
+        GameAsserts.IsValidReference(getSpriteEscondite(), "esconditeSprite (Player.setTransparencia)");
+        GameAsserts.ValueBetweenIncluded(valor, 1f, 0f, "valor (Player.setTransparencia)");
+
+        Color color = getSpriteEscondite().material.color;
+        color.a = valor;
+        getSpriteEscondite().material.color = color;
+
+        if (eliminiar)
+        {
+            setSpriteEscondite(null);
+        }
     }
 
-    public bool getEscondido()
+    /// <summary>
+    /// Cambia el SpriteRenderer por el de "sprite"
+    /// </summary>
+    /// 
+    /// <param name="sprite">SpriteRenderer a cambiar</param>
+    public void setSpriteEscondite(SpriteRenderer sprite)
     {
-        return this.escondido;
+        this.esconditeSprite = sprite;
+    }
+
+    /// <summary>
+    /// Obtiene el SpriteRenderer de donde está escondido el Player
+    /// </summary>
+    /// 
+    /// <returns>SpriteRenderer de donde se está escondido</returns>
+    public SpriteRenderer getSpriteEscondite()
+    {
+        return this.esconditeSprite;
+    }
+
+    /// <summary>
+    /// Obtiene el SpriteRenderer de Player
+    /// </summary>
+    /// 
+    /// <returns>SpriteRenderer de Player</returns>
+    public SpriteRenderer getPlayerSprite()
+    {
+        return this.playerSprite;
+    }
+
+    /// <summary>
+    /// Obtiene el RigidBody de Player
+    /// </summary>
+    /// 
+    /// <returns>RigidBody de Player</returns>
+    public Rigidbody2D getPlayerRB()
+    {
+        return this.playerRB;
     }
 }

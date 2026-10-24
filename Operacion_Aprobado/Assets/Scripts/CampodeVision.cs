@@ -19,6 +19,8 @@ public class CampodeVision : MonoBehaviour
     private LineRenderer lineaIzquierda;
     private Player player;
     private bool avisoReferenciaAusente = false;
+
+    
     void Start()
     {
         GameObject p = GameObject.FindGameObjectWithTag(tagObjetivo);
@@ -78,7 +80,7 @@ public class CampodeVision : MonoBehaviour
                     dir.magnitude,
                     obstaculos
                 ).collider == null
-                && !player.getEscondido();
+                && player.getEstado() != Player.Estados.Escondido;
             
             Objetivo = Viendo ? objetivo : null;
         }
