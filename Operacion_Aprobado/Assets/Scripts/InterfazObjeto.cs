@@ -11,13 +11,21 @@ public class InterfazObjeto : MonoBehaviour
     public Sprite sprite;
 
     public Button boton;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Initialize(string idInventario, Objeto objeto, Action<String> removeObjetoAction)
+
+    /// <summary>
+    /// Inicializa el objeto
+    /// </summary>
+    /// 
+    /// <param name="indiceInventario">Indice en el inventario del objeto</param>
+    /// <param name="objeto">Objeto a inicializar</param>
+    /// <param name="action">Acción a realizar al hacer click en el objeto en la interfaz del inventario</param>
+    public void Initialize(int indiceInventario, Objeto objeto, Action<int, bool> action)
     {
         sprite = objeto.icono;
         GetComponent<Image>().sprite = objeto.icono;
         transform.localScale = Vector2.one;
-        boton.onClick.AddListener(()=>removeObjetoAction.Invoke(idInventario));
+        Debug.Log("InterfazObjeto: " + indiceInventario);
+        boton.onClick.AddListener(()=>action.Invoke(indiceInventario, false));
     }
 
     void OnDestroy()

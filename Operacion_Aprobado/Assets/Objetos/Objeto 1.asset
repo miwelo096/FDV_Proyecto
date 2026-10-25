@@ -15,4 +15,6 @@ MonoBehaviour:
   id: Objeto
   descripcion: Objeto
   icono: {fileID: 7482667652216324306, guid: 33f53bf14d2914e079c6971320c3a245, type: 3}
-  prefab: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  prefabLanzar: {fileID: 6751699478786842299, guid: b1fb206d10d293b49802574b84a4f483, type: 3}
+  lanzable: 1

@@ -93,11 +93,6 @@ public class Player : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"),
                                         getEstado() == Estados.Agachado || getEstado() == Estados.Escondido);
 
-        // Se pulsa 'Q' para lanzar el objeto
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            LanzarObjeto();
-        }
 
         float inputVertical = Input.GetAxisRaw("Vertical");
         float inputHorizontal = Input.GetAxisRaw("Horizontal");
@@ -105,31 +100,6 @@ public class Player : MonoBehaviour
         getPlayerRB().linearVelocity = input.normalized * getVelocidad();
     }
 
-    /// <summary>
-    /// Busca la posición del ratón para lanzar un objeto
-    /// </summary>
-    /// 
-    /// TODO: Coger objeto del inventario comprobando que sea un objeto lanzable
-    void LanzarObjeto()
-    {
-        if (prefabObjetoLanzable != null && puntoDeLanzamiento != null)
-        {
-            GameObject objetoInstanciado = Instantiate(prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
-            
-            Rigidbody2D rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
-            if (rbObjeto != null)
-            {
-                // Obtener la posición del ratón
-                Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                
-                // Calcular la dirección normalizada desde el punto de lanzamiento hasta el ratón
-                Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
-
-                // Aplicar la velocidad en esa dirección
-                rbObjeto.linearVelocity = direccion * FUERZALANZAMIENTO;
-            }
-        }
-    }
 
     /// <summary>
     /// Comprueba si está escondido o si ha dejado de esconderse
@@ -154,6 +124,7 @@ public class Player : MonoBehaviour
             setTransparencia(1f, true);
         }
     }
+
 
 
     /*******************
