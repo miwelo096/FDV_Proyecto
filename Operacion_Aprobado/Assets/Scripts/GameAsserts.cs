@@ -22,7 +22,7 @@ public static class GameAsserts
     /// <param name="varName">Nombre de la variable</param>
     public static void IsGreaterThanZero(float valor, string varName)
     {
-        Assert.IsTrue(valor > 0f, $"{varName}: Valor menor que 0");
+        Assert.IsTrue(valor > 0f, $"{varName}: Valor menor o igual que 0");
     }
 
     /// <summary>
