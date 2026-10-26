@@ -24,6 +24,9 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(true);
         Time.timeScale = 0f;  
         isPaused = true;
+        FindFirstObjectByType<Player>().enabled = false; // desactivar update de usuario
+        FindFirstObjectByType<LanzarObjeto>().enabled = false;
+
     }
 
     public void Resume()
@@ -31,6 +34,9 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;      
         isPaused = false;
+        FindFirstObjectByType<Player>().enabled = true; // activar update de usuario
+        FindFirstObjectByType<LanzarObjeto>().enabled = true;
+
     }
 
     // hay que modificar para que pueda restart en el level correspondiente.    

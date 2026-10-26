@@ -16,7 +16,7 @@ public class LanzarObjeto : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
         // Se pulsa 'Q' para lanzar el objeto
         if (Input.GetKeyDown(KeyCode.Q))
         {
