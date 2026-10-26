@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -22,11 +23,12 @@ public class PauseMenu : MonoBehaviour
     public void Pause()
     {
         pausePanel.SetActive(true);
-        Time.timeScale = 0f;  
+        Time.timeScale = 0f;
         isPaused = true;
-        FindFirstObjectByType<Player>().enabled = false; // desactivar update de usuario
-        FindFirstObjectByType<LanzarObjeto>().enabled = false;
+        FindAnyObjectByType<Player>().enabled = false; // desactivar update de usuario
+        FindAnyObjectByType<LanzarObjeto>().enabled = false;
 
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void Resume()
@@ -34,8 +36,8 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;      
         isPaused = false;
-        FindFirstObjectByType<Player>().enabled = true; // activar update de usuario
-        FindFirstObjectByType<LanzarObjeto>().enabled = true;
+        FindAnyObjectByType<Player>().enabled = true; // activar update de usuario
+        FindAnyObjectByType<LanzarObjeto>().enabled = true;
 
     }
 
