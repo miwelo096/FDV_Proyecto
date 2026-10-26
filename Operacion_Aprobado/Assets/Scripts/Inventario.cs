@@ -1,10 +1,6 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
-using Unity.VisualScripting;
-using Unity.Hierarchy.Editor;
-using JetBrains.Annotations;
+
 [RequireComponent(typeof(Collider2D))]
 public class Inventario : MonoBehaviour
 {
