@@ -1,43 +1,73 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[DefaultExecutionOrder(-100)]
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pausePanel;
-    public static bool isPaused = false;
+    [SerializeField] private GameObject pausePanel;
 
-    void Update()
-    {   
-        //if (GameOverMenu.isGameOver) return; // if game over block pause
+    public static bool IsPaused { get; private set; }
 
+    [RuntimeInitializeOnLoadMethod(
+        RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ReiniciarEstado()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+    }
+
+    private void Awake()
+    {
+        if (pausePanel == null)
+        {
+            Debug.LogError(
+                "PauseMenu: falta asignar el panel de pausa.", this);
+            enabled = false;
+            return;
+        }
+
+        pausePanel.SetActive(false);
+    }
+
+    private void Update()
+    {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused) 
+            if (IsPaused)
                 Resume();
-            else 
+            else
                 Pause();
         }
     }
 
     public void Pause()
     {
-        pausePanel.SetActive(true);
-        Time.timeScale = 0f;
-        isPaused = true;
-        FindAnyObjectByType<Player>().enabled = false; // desactivar update de usuario
-        FindAnyObjectByType<LanzarObjeto>().enabled = false;
+        if (IsPaused || !isActiveAndEnabled || pausePanel == null)
+            return;
 
-        EventSystem.current.SetSelectedGameObject(null);
+        IsPaused = true;
+        Time.timeScale = 0f;
+        pausePanel.SetActive(true);
+
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void Resume()
     {
-        pausePanel.SetActive(false);
-        Time.timeScale = 1f;      
-        isPaused = false;
-        FindAnyObjectByType<Player>().enabled = true; // activar update de usuario
-        FindAnyObjectByType<LanzarObjeto>().enabled = true;
+        if (!IsPaused)
+            return;
 
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        Resume();
     }
 
     // hay que modificar para que pueda restart en el level correspondiente.    

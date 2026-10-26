@@ -18,6 +18,9 @@ public class Inventario : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
+        if (PauseMenu.IsPaused)
+            return;
+
         if (!collision.CompareTag("Item"))
         {
             return;
@@ -59,6 +62,9 @@ public class Inventario : MonoBehaviour
     /// <param name="lanzado">True elimina el objeto para siempre. False deja el objeto en el suelo</param>
     public void RemoveObjeto(int indice, bool lanzado)
     {
+        if (PauseMenu.IsPaused)
+            return;
+            
         if (indice >= 0 && indice < inventarioCount())
         {
             Debug.Log("Inventario: " + indice);

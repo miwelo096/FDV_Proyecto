@@ -54,6 +54,14 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenu.IsPaused)
+        {
+            if (playerRB != null)
+                playerRB.linearVelocity = Vector2.zero;
+
+            return;
+        }
+        
         escondido();
 
         /**

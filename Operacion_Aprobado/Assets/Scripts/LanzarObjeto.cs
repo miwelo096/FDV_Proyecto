@@ -29,6 +29,9 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     public void lanzar()
     {
+        if (PauseMenu.IsPaused)
+            return;
+            
         GameAsserts.IsValidReference(inventarioScript, "inventarioScript (LanzarObjeto)");
         GameAsserts.IsValidReference(puntoDeLanzamiento, "puntoDeLanzamiento (LanzarObjeto)");
 
