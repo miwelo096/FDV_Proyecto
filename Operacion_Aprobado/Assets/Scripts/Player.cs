@@ -64,37 +64,6 @@ public class Player : MonoBehaviour
         
         escondido();
 
-        /**
-         * Si se pulsa el shift izquierdo, el jugador se agacha.
-         * Si se pulsa el espacio, el jugador corre.
-         * El jugador vuelve a andar pulsando de nuevo la misma tecla.
-         **/
-        if (getEstado() != Estados.Escondido)
-        {
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                if (getEstado() == Estados.Agachado)
-                {
-                    setEstado(Estados.Andando);
-                }
-                else
-                {
-                    setEstado(Estados.Agachado);
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (getEstado() == Estados.Corriendo)
-                {
-                    setEstado(Estados.Andando);
-                }
-                else
-                {
-                    setEstado(Estados.Corriendo);
-                }
-            }
-        }
-
         // Si el estado es AGACHADO, ignora las colisiones de la mascara "Mesa"
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"),
                                         getEstado() == Estados.Agachado || getEstado() == Estados.Escondido);
@@ -104,6 +73,60 @@ public class Player : MonoBehaviour
         float inputHorizontal = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(inputHorizontal, inputVertical);
         getPlayerRB().linearVelocity = input.normalized * getVelocidad();
+    }
+
+    /// <summary>
+    /// Suscribe los metodos a los eventos de entrada
+    /// </summary>
+    private void OnEnable()
+    {
+        InputManager.OnLShiftPressed += AlternarAgachado;
+        InputManager.OnSpacePressed += AlternarCorrer;
+    }
+
+    /// <summary>
+    /// Desuscribe los metodos de los eventos de entrada
+    /// </summary>
+    private void OnDisable()
+    {
+        InputManager.OnLShiftPressed -= AlternarAgachado;
+        InputManager.OnSpacePressed -= AlternarCorrer;
+    }
+
+    /// <summary>
+    /// Alterna entre los estados Andando y Agachado
+    /// </summary>
+    void AlternarAgachado()
+    {
+        if (getEstado() != Estados.Escondido)
+        {
+            if (getEstado() == Estados.Agachado)
+            {
+                setEstado(Estados.Andando);
+            }
+            else
+            {
+                setEstado(Estados.Agachado);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Alterna entre los estados Andando y Corriendo
+    /// </summary>
+    void AlternarCorrer()
+    {
+        if (getEstado() != Estados.Escondido)
+        {
+            if (getEstado() == Estados.Corriendo)
+            {
+                setEstado(Estados.Andando);
+            }
+            else
+            {
+                setEstado(Estados.Corriendo);
+            }
+        }
     }
 
 

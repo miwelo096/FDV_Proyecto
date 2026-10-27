@@ -16,11 +16,23 @@ public class LanzarObjeto : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        // Se pulsa 'Q' para lanzar el objeto
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            lanzar();
-        }
+        
+    }
+
+    /// <summary>
+    /// Suscribe el metodo al evento de entrada
+    /// </summary>
+    void OnEnable()
+    {
+        InputManager.OnQPressed += lanzar;
+    }
+
+    /// <summary>
+    /// Desuscribe el metodo del evento de entrada
+    /// </summary>
+    void OnDisable()
+    {
+        InputManager.OnQPressed -= lanzar;
     }
 
 
