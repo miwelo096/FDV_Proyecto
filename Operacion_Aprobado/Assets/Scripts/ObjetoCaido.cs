@@ -6,10 +6,18 @@ public class ObjetoCaido : MonoBehaviour
 
     public bool autoStart;
 
-    public float delay = 3.0f;
+    const float DELAYRECOGIDA = 1.5f;
 
     public Objeto objeto;
     public bool recogido = false;
+
+    private Collider2D colliderObjeto;
+
+
+    void Awake()
+    {
+        colliderObjeto = GetComponent<Collider2D>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,20 +29,29 @@ public class ObjetoCaido : MonoBehaviour
     }
 
     /// <summary>
-    /// Inicializa el objeto
+    /// Inicializa el objeto y desactiva el collider hasta pasado un periodo de tiempo
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a inicializar</param>
     public void Initialize(Objeto objeto)
     {
         this.objeto = objeto;
-        var objetoCaido = Instantiate(objeto.prefabSuelo, transform);
-        objetoCaido.transform.SetLocalPositionAndRotation(Vector2.zero, Quaternion.identity);
-        StartCoroutine(PermitirRecogida(delay));
+        if (this.objeto != null && this.objeto.prefabSuelo)
+        {
+            var objetoCaido = Instantiate(objeto.prefabSuelo, transform);
+            objetoCaido.transform.SetLocalPositionAndRotation(Vector2.zero, Quaternion.identity);
+        }
+        
+        if (colliderObjeto != null)
+        {
+            colliderObjeto.enabled = false;
+        }
+
+        StartCoroutine(PermitirRecogida(DELAYRECOGIDA));
     }
 
     /// <summary>
-    /// Permite la recogida del objeto tras un periodo de tiempo
+    /// Permite la recogida del objeto activando el collider tras un periodo de tiempo
     /// </summary>
     /// 
     /// <param name="delay">Periodo de tiempo para volver a recoger</param>
@@ -42,6 +59,10 @@ public class ObjetoCaido : MonoBehaviour
     IEnumerator PermitirRecogida(float delay)
     {
         yield return new WaitForSeconds(delay);
-        GetComponent<Collider2D>().enabled = true;
+
+        if (colliderObjeto != null)
+        {
+            colliderObjeto.enabled = true;
+        }
     }
 }

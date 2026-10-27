@@ -31,7 +31,7 @@ public class InterfazInventario : MonoBehaviour
         {
             var objeto = inventario.ObtenerObjeto(i);
             var interfazObjeto = Instantiate(prefabInterfazObjeto, padre, false).GetComponent<InterfazObjeto>();
-            interfazObjeto.Initialize(i, objeto, inventario.RemoveObjeto);
+            interfazObjeto.Initialize(i, objeto, inventario.SoltarObjeto);
             interfazInventario.Add(interfazObjeto.gameObject);
         }
     }

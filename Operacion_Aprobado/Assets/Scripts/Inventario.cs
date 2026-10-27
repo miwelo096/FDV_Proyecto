@@ -27,14 +27,17 @@ public class Inventario : MonoBehaviour
         }
 
         var ObjetoCaido = collision.GetComponent<ObjetoCaido>();
-        if (ObjetoCaido == null || ObjetoCaido.recogido)
+        if (ObjetoCaido == null || ObjetoCaido.recogido || !collision.enabled)
         {
             return;
         }
 
-        ObjetoCaido.recogido = true;
-        AddObjeto(ObjetoCaido.objeto);
-        Destroy(collision.gameObject);
+        
+        if (AddObjeto(ObjetoCaido.objeto))
+        {
+            ObjetoCaido.recogido = true;
+            Destroy(collision.gameObject);
+        }
     }
 
     /// <summary>
@@ -42,25 +45,27 @@ public class Inventario : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a añadir</param>
-    void AddObjeto(Objeto objeto)
+    /// <returns>True si se ha guardado en el inventario</returns>
+    bool AddObjeto(Objeto objeto)
     {
         GameAsserts.IsValidReference(objeto, "objeto (Inventario.addObjeto())");
-        if (inventarioCount() <= OBJETOSMAXIMOS)
+        if (inventarioCount() < OBJETOSMAXIMOS)
         {
             inventarioList.Add(objeto);
             int indice = inventarioCount() - 1;
             interfaz.ActualizarInterfaz();
             GameAsserts.IsGreaterThanZero(inventarioCount(), "inventarioCount (Inventario)");
+            return true;
         }
+        return false;
     }
 
     /// <summary>
-    /// Elimina el objeto en la posición indice del inventario. Lo deja en el suelo si lanzado = false
+    /// Elimina el objeto en la posición indice del inventario.
     /// </summary>
     /// 
     /// <param name="indice">Indice del objeto a eliminar</param>
-    /// <param name="lanzado">True elimina el objeto para siempre. False deja el objeto en el suelo</param>
-    public void RemoveObjeto(int indice, bool lanzado)
+    public void SoltarObjeto(int indice)
     {
         if (PauseMenu.IsPaused)
             return;
@@ -68,13 +73,37 @@ public class Inventario : MonoBehaviour
         if (indice >= 0 && indice < inventarioCount())
         {
             Debug.Log("Inventario: " + indice);
+            
             var objeto = inventarioList[indice];
-            if (!lanzado)
-            {
-                var objetoCaido = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity).GetComponent<ObjetoCaido>();
-                objetoCaido.Initialize(objeto);
-            }
+                
+            var objetoCaido = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity).GetComponent<ObjetoCaido>();
+            objetoCaido.Initialize(objeto);
 
+            EliminarObjeto(indice);
+        }
+    }
+
+    /// <summary>
+    /// Se consume el objeto y se elimina para siempre
+    /// </summary>
+    /// 
+    /// <param name="indice">Indice del objeto</param>
+    public void ConsumirObjeto(int indice)
+    {
+        if (PauseMenu.IsPaused) return;
+        
+        EliminarObjeto(indice);
+    }
+
+    /// <summary>
+    /// Elimina el objeto dado su indice.
+    /// </summary>
+    /// 
+    /// <param name="indice">Indice del objeto. 0 <= indice < inventarioCount</param>
+    public void EliminarObjeto(int indice)
+    {
+        if (indice >= 0 && indice < inventarioCount())
+        {
             inventarioList.RemoveAt(indice);
             interfaz.ActualizarInterfaz();
         }

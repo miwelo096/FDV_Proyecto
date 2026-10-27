@@ -45,7 +45,7 @@ public class LanzarObjeto : MonoBehaviour
             {
                 posicionRatonYLanzar(item);
 
-                inventarioScript.RemoveObjeto(indice, true);
+                inventarioScript.ConsumirObjeto(indice);
             }
             else
             {
