@@ -2717,7 +2717,7 @@ PrefabInstance:
     - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: objeto
       value: 
-      objectReference: {fileID: 11400000, guid: 5e92353921f2b5a4c94ab49e3d58a8b1, type: 2}
+      objectReference: {fileID: 11400000, guid: 41e7cf4796ea49247bec17d1ff78ab3c, type: 2}
     - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: autoStart
       value: 1

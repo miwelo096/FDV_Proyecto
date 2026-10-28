@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 83c757e92aaed514db925a6959d9d85c, type: 3}
   m_Name: Clave
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoClave
-  id: Objeto clave
-  descripcion: Este es un objeto clave para abrir puertas u otras cosas
-  icono: {fileID: 7482667652216324306, guid: 33f53bf14d2914e079c6971320c3a245, type: 3}
-  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  id: 
+  descripcion: 
+  icono: {fileID: 0}
+  prefabSuelo: {fileID: 0}
   prefabInventario: {fileID: 0}
   prefabObjetoClave: {fileID: 0}

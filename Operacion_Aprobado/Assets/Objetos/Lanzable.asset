@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: ac58e29916d2d52418ed2e33c728905f, type: 3}
   m_Name: Lanzable
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoLanzable
-  id: Lanzable 1
-  descripcion: "Este objeto es un lanzable y hace ruido (no da\xF1o)"
+  id: Tiza
+  descripcion: Esta tiza produce ruido al chocar contra algo
   icono: {fileID: -2413806693520163455, guid: 9788dd8503d8b264e9c9261659588673, type: 3}
   prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
   prefabInventario: {fileID: 0}

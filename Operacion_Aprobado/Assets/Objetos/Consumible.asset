@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acc41fbec25819d4990a47a9fdd98444, type: 3}
+  m_Script: {fileID: 11500000, guid: ba395e453695ba44ba5f782f1a033227, type: 3}
   m_Name: Consumible
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoConsumible
-  id: Consumible 1
-  descripcion: Este objeto es consumible que deberia curar una vida
+  id: Pocion
+  descripcion: Recupera vida
   icono: {fileID: 7482667652216324306, guid: 33f53bf14d2914e079c6971320c3a245, type: 3}
-  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  prefabSuelo: {fileID: 7350093368411976363, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
   prefabInventario: {fileID: 0}
   prefabObjetoConsumible: {fileID: 0}
