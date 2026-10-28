@@ -52,76 +52,49 @@ public class Inventario : MonoBehaviour
         if (inventarioCount() < OBJETOSMAXIMOS)
         {
             inventarioList.Add(objeto);
-            int indice = inventarioCount() - 1;
             interfaz.ActualizarInterfaz();
-            GameAsserts.IsGreaterThanZero(inventarioCount(), "inventarioCount (Inventario)");
+            GameAsserts.ValueBetweenIncluded(inventarioCount(), 10, 0, "inventarioCount (Inventario)");
             return true;
         }
         return false;
     }
 
     /// <summary>
-    /// Elimina el objeto en la posición indice del inventario.
+    /// Suelta el objeto del inventario.
     /// </summary>
     /// 
-    /// <param name="indice">Indice del objeto a eliminar</param>
-    public void SoltarObjeto(int indice)
+    /// <param name="objeto">Objeto a soltar del inventario</param>
+    public void SoltarObjeto(Objeto objeto)
     {
-        if (PauseMenu.IsPaused)
-            return;
-            
-        if (indice >= 0 && indice < inventarioCount())
-        {
-            Debug.Log("Inventario: " + indice);
-            
-            var objeto = inventarioList[indice];
-                
-            var objetoCaido = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity).GetComponent<ObjetoCaido>();
-            objetoCaido.Initialize(objeto);
+        if (PauseMenu.IsPaused) return;
 
-            EliminarObjeto(indice);
-        }
+        var objetoCaido = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity).GetComponent<ObjetoCaido>();
+        objetoCaido.Initialize(objeto);
+
+        EliminarObjeto(objeto);
     }
 
     /// <summary>
     /// Se consume el objeto y se elimina para siempre
     /// </summary>
     /// 
-    /// <param name="indice">Indice del objeto</param>
-    public void ConsumirObjeto(int indice)
+    /// <param name="objeto">Objeto a consumir</param>
+    public void ConsumirObjeto(Objeto objeto)
     {
         if (PauseMenu.IsPaused) return;
         
-        EliminarObjeto(indice);
+        EliminarObjeto(objeto);
     }
 
     /// <summary>
-    /// Elimina el objeto dado su indice.
+    /// Elimina el objeto del inventario y actualiza la interfaz de inventario.
     /// </summary>
     /// 
-    /// <param name="indice">Indice del objeto. 0 <= indice < inventarioCount</param>
-    public void EliminarObjeto(int indice)
+    /// <param name="objeto">Objeto a eliminar</param>
+    public void EliminarObjeto(Objeto objeto)
     {
-        if (indice >= 0 && indice < inventarioCount())
-        {
-            inventarioList.RemoveAt(indice);
-            interfaz.ActualizarInterfaz();
-        }
-    }
-
-    /// <summary>
-    /// Obtiene el objeto dado su indice
-    /// </summary>
-    /// 
-    /// <param name="indice">Indice del objeto. 0 <= indice < inventarioCount</param>
-    /// <returns>Objeto a obtener</returns>
-    public Objeto ObtenerObjeto(int indice)
-    {
-        if (indice >= 0 && indice < inventarioCount())
-        {
-            return inventarioList[indice];
-        }
-        return null;
+        inventarioList.Remove(objeto);
+        interfaz.ActualizarInterfaz();
     }
 
     /// <summary>
@@ -142,5 +115,13 @@ public class Inventario : MonoBehaviour
     public bool isNotEmpty()
     {
         return inventarioCount() > 0;
+    }
+
+    /// <summary>
+    /// get: Devuelve la lista del inventario
+    /// </summary>
+    public List<Objeto> listaInventario
+    {
+        get { return inventarioList; }
     }
 }

@@ -27,11 +27,10 @@ public class InterfazInventario : MonoBehaviour
         interfazInventario.Clear();
 
         // Volvemos a crearlos ordenadamente desde el índice 0 en adelante
-        for (int i = 0; i < inventario.inventarioCount(); i++)
+        foreach (Objeto objeto in inventario.listaInventario)
         {
-            var objeto = inventario.ObtenerObjeto(i);
             var interfazObjeto = Instantiate(prefabInterfazObjeto, padre, false).GetComponent<InterfazObjeto>();
-            interfazObjeto.Initialize(i, objeto, inventario.SoltarObjeto);
+            interfazObjeto.Initialize(objeto, inventario.SoltarObjeto);
             interfazInventario.Add(interfazObjeto.gameObject);
         }
     }

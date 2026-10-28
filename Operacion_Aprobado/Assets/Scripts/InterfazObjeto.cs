@@ -15,16 +15,14 @@ public class InterfazObjeto : MonoBehaviour
     /// Inicializa el objeto
     /// </summary>
     /// 
-    /// <param name="indiceInventario">Indice en el inventario del objeto</param>
     /// <param name="objeto">Objeto a inicializar</param>
     /// <param name="action">Acción a realizar al hacer click en el objeto en la interfaz del inventario</param>
-    public void Initialize(int indiceInventario, Objeto objeto, Action<int> action)
+    public void Initialize(Objeto objeto, Action<Objeto> action)
     {
         sprite = objeto.icono;
         GetComponent<Image>().sprite = objeto.icono;
         transform.localScale = Vector2.one;
-        Debug.Log("InterfazObjeto: " + indiceInventario);
-        boton.onClick.AddListener(()=>action.Invoke(indiceInventario));
+        boton.onClick.AddListener(()=>action.Invoke(objeto));
     }
 
     void OnDestroy()

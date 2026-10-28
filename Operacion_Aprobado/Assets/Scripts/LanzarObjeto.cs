@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class LanzarObjeto : MonoBehaviour
@@ -49,15 +50,13 @@ public class LanzarObjeto : MonoBehaviour
 
         if (inventarioScript != null && inventarioScript.isNotEmpty())
         {
-            int indice = obtenerIndicePrimerLanzable();
-            Objeto item = inventarioScript.ObtenerObjeto(indice);
+            ObjetoLanzable lanzable = obtenerPrimerLanzable();
 
-
-            if (item != null && item.prefabLanzar != null && puntoDeLanzamiento != null)
+            if (lanzable != null && lanzable.prefabObjetoLanzable != null && puntoDeLanzamiento != null)
             {
-                posicionRatonYLanzar(item);
+                posicionRatonYLanzar(lanzable);
 
-                inventarioScript.ConsumirObjeto(indice);
+                inventarioScript.ConsumirObjeto(lanzable);
             }
             else
             {
@@ -71,31 +70,30 @@ public class LanzarObjeto : MonoBehaviour
     }
 
     /// <summary>
-    /// Obtiene el indice del primer objeto lanzable en el inventario
+    /// Obtiene el primer objeto lanzable del inventario
     /// </summary>
     /// 
-    /// <returns>Indice primer objeto lanzable</returns>
-    int obtenerIndicePrimerLanzable()
+    /// <returns>Primer objeto lanzable del inventario</returns>
+    ObjetoLanzable obtenerPrimerLanzable()
     {
-        for (int i = 0; i<inventarioScript.inventarioCount(); i++)
+        foreach(Objeto item in inventarioScript.listaInventario)
         {
-            Objeto ob = inventarioScript.ObtenerObjeto(i);
-            if (ob != null && ob.prefabLanzar != null && ob.lanzable)
+            if (item is ObjetoLanzable lanzable)
             {
-                return i;
+                return lanzable;
             }
         }
-        return -1;
+        return null;
     }
 
     /// <summary>
-    /// Busca la posición del ratón aplica fuerza al objeto hacia esa dirección
+    /// Busca la posición del ratón y aplica fuerza al objeto hacia esa dirección
     /// </summary>
     /// 
     /// <param name="item">Objeto a lanzar</param>
-    void posicionRatonYLanzar(Objeto item)
+    void posicionRatonYLanzar(ObjetoLanzable item)
     {
-        GameObject objetoInstanciado = Instantiate(item.prefabLanzar, puntoDeLanzamiento.position, Quaternion.identity);
+        GameObject objetoInstanciado = Instantiate(item.prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
                 
         var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
 

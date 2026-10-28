@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Lanzable
+  m_EditorClassIdentifier: Assembly-CSharp::ObjetoLanzable
+  id: Lanzable 1
+  descripcion: "Este objeto es un lanzable y hace ruido (no da\xF1o)"
+  icono: {fileID: -2413806693520163455, guid: 9788dd8503d8b264e9c9261659588673, type: 3}
+  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  prefabInventario: {fileID: 0}
+  prefabObjetoLanzable: {fileID: 6751699478786842299, guid: b1fb206d10d293b49802574b84a4f483, type: 3}
