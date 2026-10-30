@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour
     public static event Action OnLShiftPressed;
     public static event Action OnSpacePressed;
     public static event Action OnQPressed;
+    public static event Action OnEPressed;
 
 
 
@@ -41,6 +42,12 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             OnQPressed?.Invoke();
+        }
+
+        // Se pulsa 'E' para interactuar con objetos/puertas...
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            OnEPressed?.Invoke();
         }
     }
 }

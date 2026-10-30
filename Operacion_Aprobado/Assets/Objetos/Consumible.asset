@@ -15,6 +15,6 @@ MonoBehaviour:
   id: Pocion
   descripcion: Recupera vida
   icono: {fileID: 7482667652216324306, guid: 33f53bf14d2914e079c6971320c3a245, type: 3}
-  prefabSuelo: {fileID: 7350093368411976363, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
   prefabInventario: {fileID: 0}
   prefabObjetoConsumible: {fileID: 0}

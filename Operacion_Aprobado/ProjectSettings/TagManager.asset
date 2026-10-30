@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Item
+  - Interactivo
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - UI
   - Player
   - Pared
-  - obstaculos
+  - Interactivos
   - sonidos
   - item
   - enemy
@@ -42,6 +43,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 161511741
     locked: 0
   m_RenderingLayers:
   - Default

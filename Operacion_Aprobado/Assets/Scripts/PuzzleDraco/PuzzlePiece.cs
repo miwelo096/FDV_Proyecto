@@ -20,7 +20,7 @@ public class PuzzlePiece : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity detecta cuando se hace clic izquierdo sobre el Collider de este objeto e intenta mover la pieza
+    /// Unity detecta cuando se hace click izquierdo sobre el Collider de este objeto e intenta mover la pieza
     /// </summary>
     void OnMouseDown()
     {
