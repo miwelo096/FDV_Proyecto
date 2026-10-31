@@ -51,3 +51,9 @@ ehthumbs.db
 ehthumbs_vista.db
 *.lnk
 
+
+# Linux
+*~
+.directory
+.Trash-*
+.fuse_hidden*
