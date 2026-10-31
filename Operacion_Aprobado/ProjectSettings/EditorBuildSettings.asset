@@ -11,5 +11,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PuzzleDracoScene.unity
     guid: 0ed96d6422d3c594e82f286a8868504f
+  - enabled: 1
+    path: Assets/Scenes/VPNScene.unity
+    guid: 4fdca447aa97de546b7a211063cbe937
+  - enabled: 1
+    path: Assets/Scenes/EduroamScene.unity
+    guid: 3b60ca8dcee9b004eb7b0fd20facf05a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
