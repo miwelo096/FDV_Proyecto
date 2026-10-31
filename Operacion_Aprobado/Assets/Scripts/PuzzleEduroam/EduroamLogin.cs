@@ -25,7 +25,7 @@ public class EduroamLogin : MonoBehaviour
         if (usuarioInput == usuarioCorrecto && contrasenaInput == contrasenaCorrecta)
         {
             Debug.Log("Login correcto. Cargando siguiente escena...");
-            // Si es correcto, cargamos la siguiente escena (la imagen 2)
+            // Si es correcto, cargamos la siguiente escena
             SceneManager.LoadScene(siguienteEscena);
         }
         else
@@ -45,7 +45,6 @@ public class EduroamLogin : MonoBehaviour
     public void PulsarCancelar()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        // Cambia "EscenaPrincipal" por el nombre real de tu escena de menú
         SceneManager.LoadScene("SampleScene"); 
     }
 }
