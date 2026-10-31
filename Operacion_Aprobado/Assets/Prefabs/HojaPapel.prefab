@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8679245, g: 0.8124795, b: 0.43805626, a: 1}
+  m_Color: {r: 0.8584906, g: 0.80387825, b: 0.43329477, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -143,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc05a0b5a6d35347bc4f3bfbb890dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DatosHoja
-  nombreEscenaMinijuego: PuzzleDracoScene
+  nombreEscenaMinijuego: 
   canvasInteraccion: {fileID: 4191768214765752163}
 --- !u!1 &4191768214765752163
 GameObject:
