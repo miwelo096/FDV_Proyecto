@@ -5,14 +5,14 @@ using UnityEngine.SceneManagement; // Cambiar de escena
 public class EduroamLogin : MonoBehaviour
 {
     [Header("Referencias de UI")]
-    public TMP_InputField campoUsuario; 
+    public TMP_InputField campoUsuario;
     public TMP_InputField campoContrasena;
     public TextMeshProUGUI textoError; // Un texto para mostrar si fallan los datos
 
     [Header("Configuración")]
     public string usuarioCorrecto = "XXX.X@alumnos.upm.es"; // Cambia XXX.X 
     public string contrasenaCorrecta = "YYYYYYYY"; // Cambia YYYYYYYY 
-    public string siguienteEscena = "SampleScene"; 
+    public string siguienteEscena = "SampleScene";
 
     // Función que se ejecutará al pulsar el botón "Conectar"
     public void PulsarConectar()
@@ -45,6 +45,6 @@ public class EduroamLogin : MonoBehaviour
     public void PulsarCancelar()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        SceneManager.LoadScene("SampleScene"); 
+        SceneManager.LoadScene("SampleScene");
     }
 }
