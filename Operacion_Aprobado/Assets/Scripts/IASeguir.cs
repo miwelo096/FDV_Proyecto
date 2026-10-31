@@ -7,6 +7,7 @@ public class IASeguir : MonoBehaviour
     public float disMin;
     private CampodeVision campodeVision;
     private GameObject playerObj;
+    private Rigidbody2D rb;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,6 +20,7 @@ public class IASeguir : MonoBehaviour
         {
             player = playerObj.transform;
         }
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -30,20 +32,27 @@ public class IASeguir : MonoBehaviour
         }
     }
 
-    private void Atacar(){
+    private void Atacar()
+    {
         Debug.Log("Atacar");
     }
 
-    private void Seguir(){
-        if(Vector2.Distance(transform.position, player.position) > disMin){
-            transform.position= Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+    private void Seguir()
+    {
+        if(Vector2.Distance(rb.position, player.position) > disMin)
+        {
+            
+            Vector2 nuevaPos = Vector2.MoveTowards(rb.position, player.position, speed * Time.fixedDeltaTime);
+            rb.MovePosition(nuevaPos);
         }
-        else{
+        else
+        {
             Atacar();
         }
     }
 
-    private void RotarHacia(Vector2 destino) {
+    private void RotarHacia(Vector2 destino)
+    {
         // Calculamos la dirección vectorial desde nuestra posición hasta el destino
         Vector2 direccion = (destino - (Vector2)transform.position).normalized;
 
@@ -52,5 +61,5 @@ public class IASeguir : MonoBehaviour
 
         // Aplicamos la rotación en el eje Z (funciona para arriba, abajo, izq y der)
         transform.rotation = Quaternion.Euler(0f, 0f, angulo);
-}
+    }
 }
