@@ -25,9 +25,13 @@ public class EduroamLogin : MonoBehaviour
         if (usuarioInput == usuarioCorrecto && contrasenaInput == contrasenaCorrecta)
         {
             Debug.Log("Login correcto. Cargando siguiente escena...");
+            textoError.text = "Datos correctos.";
+            textoError.color = Color.green;
             // Si es correcto, cargamos la siguiente escena
-            GameManager.SalirPuzzle(); 
-            SceneManager.UnloadSceneAsync("EduroamScene");
+            SceneManager.LoadScene(siguienteEscena);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
+            // ***** 
+            // GameManager.SalirPuzzle(); 
+            // SceneManager.UnloadSceneAsync("EduroamScene");
         }
         else
         {
@@ -46,7 +50,9 @@ public class EduroamLogin : MonoBehaviour
     public void PulsarCancelar()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        GameManager.SalirPuzzle(); 
-        SceneManager.UnloadSceneAsync("EduroamScene");
+        SceneManager.LoadScene(siguienteEscena);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
+        // ***** 
+        // GameManager.SalirPuzzle(); 
+        // SceneManager.UnloadSceneAsync("EduroamScene");
     }
 }
