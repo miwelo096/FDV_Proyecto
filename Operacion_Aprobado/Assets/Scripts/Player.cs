@@ -7,6 +7,10 @@ public class Player : MonoBehaviour
     const float VELOCIDADANDANDO = 5f;
     const float VELOCIDADCORRIENDO = 8f;
 
+    const float VELOCIDADDESLIZAMIENTO = 12f;
+    const float DURACIONDESLIZAMIENTO = 0.35f;
+
+
     // Constante de fuerza de lanzamiento
     const float FUERZALANZAMIENTO = 8f;
 
@@ -25,6 +29,10 @@ public class Player : MonoBehaviour
     // Estado del jugador
     private Estados estado;
 
+    private bool deslizando = false;
+
+    private float tiempoDeslizamiento = 0f;
+    private Vector2 direccionDeslizamiento;
     // Rigidbody del jugador (Para colisiones)
     private Rigidbody2D playerRB;
     // Sprite del jugador
@@ -44,7 +52,7 @@ public class Player : MonoBehaviour
     {
         this.playerRB = GetComponent<Rigidbody2D>();
         this.playerSprite = GetComponent<SpriteRenderer>();
-        
+
         GameAsserts.IsValidReference(getPlayerRB(), "playerRB (Player)");
         GameAsserts.IsValidReference(getPlayerSprite(), "playerSprite (Player)");
         GameAsserts.IsValidReference(this.prefabObjetoLanzable, "prefabObjetoLanzable (Player)");
@@ -61,14 +69,34 @@ public class Player : MonoBehaviour
 
             return;
         }
-        
+
         escondido();
 
         // Si el estado es AGACHADO, ignora las colisiones de la mascara "Mesa"
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"),
                                         getEstado() == Estados.Agachado || getEstado() == Estados.Escondido);
 
+        // Si cambia de estado durante el deslizamiento (p. ej. pulsa Espacio), se cancela
+        if (deslizando && getEstado() != Estados.Agachado && getEstado() != Estados.Escondido)
+        {
+            deslizando = false;
+        }
 
+        if (deslizando)
+        {
+            tiempoDeslizamiento -= Time.deltaTime;
+
+            float t = 1f - (tiempoDeslizamiento / DURACIONDESLIZAMIENTO);
+            float velocidadActual = Mathf.Lerp(VELOCIDADDESLIZAMIENTO, VELOCIDADAGACHADO, t);
+
+            getPlayerRB().linearVelocity = direccionDeslizamiento * velocidadActual;
+
+            if (tiempoDeslizamiento <= 0f)
+            {
+                deslizando = false;
+            }
+            return;
+        }
         float inputVertical = Input.GetAxisRaw("Vertical");
         float inputHorizontal = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(inputHorizontal, inputVertical);
@@ -98,16 +126,26 @@ public class Player : MonoBehaviour
     /// </summary>
     void AlternarAgachado()
     {
-        if (getEstado() != Estados.Escondido)
+        if (getEstado() == Estados.Escondido) return;
+
+        if (getEstado() == Estados.Agachado)
         {
-            if (getEstado() == Estados.Agachado)
+            deslizando = false;              // Si se levanta a mitad del deslizamiento, se corta
+            setEstado(Estados.Andando);
+        }
+        else
+        {
+            // Solo se desliza si está corriendo Y moviéndose de verdad
+            bool enMovimiento = getPlayerRB().linearVelocity.sqrMagnitude > 0.01f;
+
+            if (getEstado() == Estados.Corriendo && enMovimiento)
             {
-                setEstado(Estados.Andando);
+                deslizando = true;
+                tiempoDeslizamiento = DURACIONDESLIZAMIENTO;
+                direccionDeslizamiento = getPlayerRB().linearVelocity.normalized;
             }
-            else
-            {
-                setEstado(Estados.Agachado);
-            }
+
+            setEstado(Estados.Agachado);
         }
     }
 
@@ -138,7 +176,7 @@ public class Player : MonoBehaviour
         // Se comprueba que el jugador esté debajo de algo con el layer "Mesa" (Tiene que estar hasta la mitad del collider)
         Collider2D colliderEscondite = Physics2D.OverlapBox(transform.position, Vector2.zero,
                                                 0f, LayerMask.GetMask("Mesa"));
-        
+
         bool debajoMesa = colliderEscondite != null;
 
         if (debajoMesa)
@@ -159,7 +197,7 @@ public class Player : MonoBehaviour
     /*******************
      * GETTERS/SETTERS *
      *******************/
-    
+
 
 
     /// <summary>
@@ -186,7 +224,7 @@ public class Player : MonoBehaviour
             setVelocidad(VELOCIDADANDANDO);
         }
     }
-    
+
     /// <summary>
     /// Obtiene el estado del Player
     /// </summary>
