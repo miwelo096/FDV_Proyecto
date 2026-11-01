@@ -26,7 +26,8 @@ public class EduroamLogin : MonoBehaviour
         {
             Debug.Log("Login correcto. Cargando siguiente escena...");
             // Si es correcto, cargamos la siguiente escena
-            SceneManager.LoadScene(siguienteEscena);
+            GameManager.SalirPuzzle(); 
+            SceneManager.UnloadSceneAsync("EduroamScene");
         }
         else
         {
@@ -45,6 +46,7 @@ public class EduroamLogin : MonoBehaviour
     public void PulsarCancelar()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        SceneManager.LoadScene("SampleScene");
+        GameManager.SalirPuzzle(); 
+        SceneManager.UnloadSceneAsync("EduroamScene");
     }
 }

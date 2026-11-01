@@ -203,6 +203,7 @@ public class PuzzleBoardManager : MonoBehaviour
         if (EstaOrdenado())
         {
             yield return new WaitForSeconds(1f);
+            GameManager.SalirPuzzle(); 
             SceneManager.UnloadSceneAsync("PuzzleDracoScene");
         }
     }

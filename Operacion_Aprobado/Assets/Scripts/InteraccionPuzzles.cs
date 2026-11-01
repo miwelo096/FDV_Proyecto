@@ -84,7 +84,8 @@ public class DetectorInteracciones : MonoBehaviour
     void CargarMinijuego(string nombreEscena)
     {
         if (!string.IsNullOrEmpty(nombreEscena))
-        {
+        {   
+            GameManager.EntrarPuzzle(); 
             SceneManager.LoadScene(nombreEscena, LoadSceneMode.Additive);
         }
         else
