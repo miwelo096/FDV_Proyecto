@@ -4,12 +4,9 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
 public class InterfazObjeto : MonoBehaviour
-{   
-
-
-    public Sprite sprite;
-
+{
     public Button boton;
+    
 
     /// <summary>
     /// Inicializa el objeto
@@ -19,8 +16,7 @@ public class InterfazObjeto : MonoBehaviour
     /// <param name="action">Acción a realizar al hacer click en el objeto en la interfaz del inventario</param>
     public void Initialize(Objeto objeto, Action<Objeto> action)
     {
-        sprite = objeto.icono;
-        GetComponent<Image>().sprite = objeto.icono;
+        GetComponent<Image>().sprite = objeto.spriteInventario;
         transform.localScale = Vector2.one;
         boton.onClick.AddListener(()=>action.Invoke(objeto));
     }

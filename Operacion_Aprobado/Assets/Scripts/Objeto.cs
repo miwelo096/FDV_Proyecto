@@ -5,7 +5,6 @@ public class Objeto : ScriptableObject
 {
     public string id;
     public string descripcion;
-    public Sprite icono;
     public GameObject prefabSuelo;
-    public GameObject prefabInventario;
+    public Sprite spriteInventario;
 }

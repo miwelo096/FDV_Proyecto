@@ -1470,7 +1470,7 @@ Tilemap:
   m_TileColorArray:
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {r: 0.94999886, g: 0, b: 1, a: 1}
+    m_Data: {r: 1, g: 0.98480475, b: 0, a: 1}
   - serializedVersion: 2
     m_RefCount: 107
     m_Data: {r: 0.9463475, g: 0, b: 1, a: 1}
@@ -1603,7 +1603,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventario
   interfaz: {fileID: 1156922703}
   prefabObjetoCaido: {fileID: 7350093368411976363, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
-  inventarioList: []
 --- !u!114 &105033143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1630,8 +1629,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03790cdc25261458ebbf6228a1656bba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  prefabObjetoLanzable: {fileID: 6751699478786842299, guid: b1fb206d10d293b49802574b84a4f483, type: 3}
-  puntoDeLanzamiento: {fileID: 658768030}
 --- !u!61 &105033145
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1796,7 +1793,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanzarObjeto
   puntoDeLanzamiento: {fileID: 658768030}
-  inventarioScript: {fileID: 105033142}
 --- !u!114 &105033151
 MonoBehaviour:
   m_ObjectHideFlags: 0

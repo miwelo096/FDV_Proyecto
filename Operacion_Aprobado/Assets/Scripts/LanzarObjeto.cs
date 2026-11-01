@@ -1,23 +1,37 @@
-using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LanzarObjeto : MonoBehaviour
 {
     // Constante de fuerza de lanzamiento
-    const float FUERZALANZAMIENTO = 8f;
+    const float FUERZALANZAMIENTO = 9f;
 
 
+    [SerializeField]
     // Posición desde la que se lanza un objeto
-    public Transform puntoDeLanzamiento;
+    private Transform puntoDeLanzamiento;
     // Inventario del jugador
-    public Inventario inventarioScript;
+    private Inventario inventarioScript;
+
+    private ObjetoLanzable objeto;
+    private bool paraLanzar;
 
 
 
-    // Update is called once per frame
-    void Update()
-    {   
-        
+    void Start()
+    {
+        if (puntoDeLanzamiento == null)
+        {
+            Debug.LogError("Punto de lanzamiento no asignado a Player (LanzarObjeto)");
+        }
+
+        inventarioScript = GetComponent<Inventario>();
+        if (inventarioScript == null)
+        {
+            Debug.LogError("Script del inventario no asignado a Player");
+        }
+
+        paraLanzar = false;
     }
 
     /// <summary>
@@ -25,7 +39,7 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        InputManager.OnQPressed += lanzar;
+        InputManager.OnQPressed += PrepararLanzamiento;
     }
 
     /// <summary>
@@ -33,30 +47,50 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     void OnDisable()
     {
-        InputManager.OnQPressed -= lanzar;
+        InputManager.OnQPressed -= PrepararLanzamiento;
     }
 
 
-    /// <summary>
-    /// Lanza un objeto del inventario
-    /// </summary>
-    public void lanzar()
+    void Update()
     {
-        if (PauseMenu.IsPaused)
-            return;
-            
-        GameAsserts.IsValidReference(inventarioScript, "inventarioScript (LanzarObjeto)");
-        GameAsserts.IsValidReference(puntoDeLanzamiento, "puntoDeLanzamiento (LanzarObjeto)");
+        if (PauseMenu.IsPaused) return;
 
-        if (inventarioScript != null && inventarioScript.isNotEmpty())
+        if (paraLanzar)
         {
-            ObjetoLanzable lanzable = obtenerPrimerLanzable();
-
-            if (lanzable != null && lanzable.prefabObjetoLanzable != null && puntoDeLanzamiento != null)
+            if (Input.GetMouseButtonDown(0))
             {
-                posicionRatonYLanzar(lanzable);
+                EjecutarLanzamiento();
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                CancelarLanzamiento();
+            }
+        }
+    }
 
-                inventarioScript.ConsumirObjeto(lanzable);
+    /// <summary>
+    /// Prepara el lanzamiento asignando el primer objeto lanzable del inventario si lo hay.
+    /// </summary>
+    void PrepararLanzamiento()
+    {
+        if (PauseMenu.IsPaused) return;
+        if (paraLanzar) return;
+
+        // No se comprueba inventarioScript != null ya que hubiese saltado en Start()
+        if (inventarioScript.isNotEmpty())
+        {
+            objeto = obtenerPrimerLanzable();
+
+            if (objeto != null)
+            {
+                if (objeto.prefabObjetoLanzable != null)
+                {
+                    paraLanzar = true;
+                }
+                else
+                {
+                    Debug.LogError("Prefab de objeto lanzable no asignado (LanzarObjeto.PreparaLanzamiento)");
+                }
             }
             else
             {
@@ -69,8 +103,51 @@ public class LanzarObjeto : MonoBehaviour
         }
     }
 
+
     /// <summary>
-    /// Obtiene el primer objeto lanzable del inventario
+    /// Ejecuta el lanzamiento del objeto asignado y lo elimina del inventario.
+    /// </summary>
+    void EjecutarLanzamiento()
+    {
+        GameObject objetoInstanciado = Instantiate(objeto.prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
+                
+        var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
+
+        // No se comprueba puntoDeLanzamiento != null ya que hubiese saltado en Start()
+        if (rbObjeto != null)
+        {
+            // Obtener la posición del ratón
+            Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
+            rbObjeto.linearVelocity = direccion * FUERZALANZAMIENTO;
+            
+            inventarioScript.ConsumirObjeto(objeto);
+
+            Debug.Log("Lanzamiento completado");
+        }
+        else
+        {
+            Debug.LogError("No hay Rigidbody2D en el objeto instanciado (LanzarObjeto.lanzar())");
+        }
+
+        ResetearEstado();
+    }
+
+    /// <summary>
+    /// Cancela el lanzamiento del objeto y quita la asignación del objeto.
+    /// </summary>
+    void CancelarLanzamiento()
+    {
+        Debug.Log("Lanzamiento cancelado");
+
+        ResetearEstado();
+    }
+
+
+
+    /// <summary>
+    /// Obtiene el primer objeto lanzable del inventario.
     /// </summary>
     /// 
     /// <returns>Primer objeto lanzable del inventario</returns>
@@ -87,28 +164,11 @@ public class LanzarObjeto : MonoBehaviour
     }
 
     /// <summary>
-    /// Busca la posición del ratón y aplica fuerza al objeto hacia esa dirección
+    /// Resetea los estados de objeto y paraLanzar.
     /// </summary>
-    /// 
-    /// <param name="item">Objeto a lanzar</param>
-    void posicionRatonYLanzar(ObjetoLanzable item)
+    void ResetearEstado()
     {
-        GameObject objetoInstanciado = Instantiate(item.prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
-                
-        var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
-
-        GameAsserts.IsValidReference(rbObjeto, "rbObjeto (LanzarObjeto.lanzar())");
-
-        if (rbObjeto != null)
-        {
-            // Obtener la posición del ratón
-            Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            
-            // Calcular la dirección normalizada desde el punto de lanzamiento hasta el ratón
-            Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
-
-            // Aplicar la velocidad en esa dirección
-            rbObjeto.linearVelocity = direccion * FUERZALANZAMIENTO;
-        }
+        objeto = null;
+        paraLanzar = false;
     }
 }

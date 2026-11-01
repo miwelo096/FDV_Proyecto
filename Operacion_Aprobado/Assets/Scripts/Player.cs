@@ -11,9 +11,6 @@ public class Player : MonoBehaviour
     const float DURACIONDESLIZAMIENTO = 0.35f;
 
 
-    // Constante de fuerza de lanzamiento
-    const float FUERZALANZAMIENTO = 8f;
-
     // Estados posibles del jugador
     public enum Estados
     {
@@ -42,11 +39,6 @@ public class Player : MonoBehaviour
     private SpriteRenderer esconditeSprite;
 
 
-    // Prefab objeto lanzable
-    public GameObject prefabObjetoLanzable;
-    // Posición desde la que se lanza un objeto
-    public Transform puntoDeLanzamiento;
-
 
     void Start()
     {
@@ -55,8 +47,7 @@ public class Player : MonoBehaviour
 
         GameAsserts.IsValidReference(getPlayerRB(), "playerRB (Player)");
         GameAsserts.IsValidReference(getPlayerSprite(), "playerSprite (Player)");
-        GameAsserts.IsValidReference(this.prefabObjetoLanzable, "prefabObjetoLanzable (Player)");
-        GameAsserts.IsValidReference(this.puntoDeLanzamiento, "puntoDeLanzamiento (Player)");
+        
         setEstado(Estados.Andando);
     }
 

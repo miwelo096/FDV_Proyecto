@@ -14,7 +14,7 @@ public class Inventario : MonoBehaviour
     public GameObject prefabObjetoCaido;
 
 
-    public List<Objeto> inventarioList = new();
+    private List<Objeto> inventarioList = new();
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
