@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4892731440477762333}
   - component: {fileID: 116733119111931690}
   - component: {fileID: 3669425269368156300}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HojaPapel
   m_TagString: Interactivo
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ GameObject:
   - component: {fileID: 449182306021252766}
   - component: {fileID: 929752004013206232}
   - component: {fileID: 5768617993593579121}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 4346720672103362430}
   - component: {fileID: 4551548234945191369}
   - component: {fileID: 15285839433640836}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Texto
   m_TagString: Untagged
   m_Icon: {fileID: 0}

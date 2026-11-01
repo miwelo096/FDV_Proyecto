@@ -2,19 +2,20 @@ using UnityEngine;
 
 public class PlayerNoiseMaker : MonoBehaviour
 {
-    public Collider2D colliderSonido;
+    private Collider2D colliderSonido;
     public GameObject burbujaSonido;
     public Player playerScript;
 
     void Start()
     {
-        if (colliderSonido != null)
-        {
-            colliderSonido.enabled = false; // Desactivado por defecto
-        }
         if (burbujaSonido != null)
         {
             burbujaSonido.SetActive(false);
+            colliderSonido = burbujaSonido.GetComponent<Collider2D>();
+            if (colliderSonido == null)
+            {
+                Debug.LogError("No se ha obtenido el collider de burbujaSonido");
+            }
         }
     }
 
@@ -22,10 +23,6 @@ public class PlayerNoiseMaker : MonoBehaviour
     {
         bool corriendo = playerScript != null && playerScript.getEstado() == Player.Estados.Corriendo;
 
-        if (colliderSonido != null)
-        {
-            colliderSonido.enabled = corriendo;
-        }
         if (burbujaSonido != null)
         {
             burbujaSonido.SetActive(corriendo);
