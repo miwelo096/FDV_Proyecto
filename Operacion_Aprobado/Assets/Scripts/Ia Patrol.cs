@@ -36,17 +36,21 @@ void Start()
             
             Transform objetivoWaypoint = waypoints[waypointactual];
 
-            if(Vector2.Distance(rb.position, objetivoWaypoint.position) > 0.01f)
+            if(Vector2.Distance(rb.position, objetivoWaypoint.position) > 0.1f)
             {
-                Vector2 nuevaPosi = Vector2.MoveTowards(rb.position, objetivoWaypoint.position, speed * Time.fixedDeltaTime);
+                Vector2 direccion = ((Vector2)objetivoWaypoint.position - rb.position).normalized;
                 
-                rb.MovePosition(nuevaPosi);
+                rb.linearVelocity = direccion * speed;
 
                 RotarHacia(objetivoWaypoint.position);
             }
-            else if(!isWaiting)
+            else
             {
-                StartCoroutine(Wait());
+                rb.linearVelocity = Vector2.zero;
+                if (!isWaiting)
+                {
+                    StartCoroutine(Wait());
+                }
             }
         }
         /*if(transform.position != waypoints[waypointactual].position){
@@ -72,13 +76,13 @@ void Start()
 
     private void RotarHacia(Vector2 destino) {
             // Calculamos la dirección vectorial desde nuestra posición hasta el destino
-            Vector2 direccion = (destino - (Vector2)transform.position).normalized;
+            Vector2 direccion = (destino - rb.position).normalized;
 
             // Calculamos el ángulo en grados usando Atan2
             float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
             // Aplicamos la rotación en el eje Z (funciona para arriba, abajo, izq y der)
-            transform.rotation = Quaternion.Euler(0f, 0f, angulo);
+            rb.MoveRotation(angulo);
     }
 
     private void Flip()
@@ -86,11 +90,11 @@ void Start()
         // Si la posición actual es mayor que la del waypoint, va hacia la izquierda
         if (rb.position.x > waypoints[waypointactual].position.x)
         {
-            transform.rotation = Quaternion.Euler(0f, 180f, 0f); // Mira a la izquierda
+            rb.MoveRotation(180f); // Mira a la izquierda
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0f, 0f, 0f);   // Mira a la derecha
+            rb.MoveRotation(0f);   // Mira a la derecha
         }
     }
 }

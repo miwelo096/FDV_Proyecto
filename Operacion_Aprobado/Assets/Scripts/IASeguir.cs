@@ -41,12 +41,12 @@ public class IASeguir : MonoBehaviour
     {
         if(Vector2.Distance(rb.position, player.position) > disMin)
         {
-            
-            Vector2 nuevaPos = Vector2.MoveTowards(rb.position, player.position, speed * Time.fixedDeltaTime);
-            rb.MovePosition(nuevaPos);
+            Vector2 direccion = (player.position - transform.position).normalized;
+            rb.linearVelocity = direccion * speed;
         }
         else
         {
+            rb.linearVelocity = Vector2.zero;
             Atacar();
         }
     }
@@ -54,12 +54,12 @@ public class IASeguir : MonoBehaviour
     private void RotarHacia(Vector2 destino)
     {
         // Calculamos la dirección vectorial desde nuestra posición hasta el destino
-        Vector2 direccion = (destino - (Vector2)transform.position).normalized;
+        Vector2 direccion = (destino - rb.position).normalized;
 
         // Calculamos el ángulo en grados usando Atan2
         float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
         // Aplicamos la rotación en el eje Z (funciona para arriba, abajo, izq y der)
-        transform.rotation = Quaternion.Euler(0f, 0f, angulo);
+       rb.MoveRotation(angulo);
     }
 }
