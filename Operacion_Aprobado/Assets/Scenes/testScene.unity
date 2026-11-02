@@ -1577,10 +1577,10 @@ GameObject:
   - component: {fileID: 105033147}
   - component: {fileID: 105033145}
   - component: {fileID: 105033144}
+  - component: {fileID: 105033151}
   - component: {fileID: 105033142}
   - component: {fileID: 105033143}
   - component: {fileID: 105033150}
-  - component: {fileID: 105033151}
   - component: {fileID: 105033152}
   m_Layer: 6
   m_Name: Player
@@ -1616,7 +1616,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerNoiseMaker
   burbujaSonido: {fileID: 269087800}
-  playerScript: {fileID: 105033144}
 --- !u!114 &105033144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4101,7 +4100,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 507632736567130888, guid: b83efe2fa1ea9364e999635cec1fcbf6, type: 3}
       propertyPath: m_Name
-      value: HojaPapel
+      value: HojaPapel (VPN)
       objectReference: {fileID: 0}
     - target: {fileID: 2059218237337080524, guid: b83efe2fa1ea9364e999635cec1fcbf6, type: 3}
       propertyPath: m_LocalPosition.x

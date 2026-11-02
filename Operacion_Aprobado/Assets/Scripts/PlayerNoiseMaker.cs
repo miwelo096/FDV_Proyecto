@@ -3,8 +3,11 @@ using UnityEngine;
 public class PlayerNoiseMaker : MonoBehaviour
 {
     private Collider2D colliderSonido;
-    public GameObject burbujaSonido;
-    public Player playerScript;
+    private Player playerScript;
+
+    [SerializeField]
+    private GameObject burbujaSonido;
+
 
     void Start()
     {
@@ -14,26 +17,34 @@ public class PlayerNoiseMaker : MonoBehaviour
             colliderSonido = burbujaSonido.GetComponent<Collider2D>();
             if (colliderSonido == null)
             {
-                Debug.LogError("No se ha obtenido el collider de burbujaSonido");
+                Debug.LogError($"No se ha obtenido el collider de burbujaSonido ({name})");
             }
+        }
+        else
+        {
+            Debug.LogError($"No se ha asignado GameObject a burbujaSonido ({name})");
+        }
+
+        playerScript = GetComponent<Player>();
+        if (playerScript == null)
+        {
+            Debug.LogError($"No se ha obtenido script de Player ({name})");
         }
     }
 
     void Update()
     {
-        bool corriendo = playerScript != null && playerScript.getEstado() == Player.Estados.Corriendo;
-
-        if (burbujaSonido != null)
-        {
-            burbujaSonido.SetActive(corriendo);
-        }
+        bool corriendo = playerScript.getEstado() == Player.Estados.Corriendo &&
+                        playerScript.getPlayerRB().linearVelocity.sqrMagnitude > 0.01f;
+        
+        burbujaSonido.SetActive(corriendo);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
-            Debug.Log("¡El enemigo oyó al jugador correr!");
+            Debug.Log("El enemigo oyó al jugador correr");
             // TODO: cambiar estado del enemigo que lo ha oido a SOSPECHA
         }
     }
