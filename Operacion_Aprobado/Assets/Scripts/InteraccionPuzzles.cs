@@ -4,17 +4,72 @@ using UnityEngine.SceneManagement;
 public class DetectorInteracciones : MonoBehaviour
 {
     // Guardamos la referencia de la hoja/mesa con la que podemos interactuar en este momento
-    private DatosHoja objetoActualEnRango = null;
+    private DatosHoja objetoActualEnRango;
+    private Player playerScript;
+
+
+    void Start()
+    {
+        objetoActualEnRango = null;
+
+        playerScript = GetComponent<Player>();
+        if (playerScript == null)
+        {
+            Debug.LogError($"No se ha obtenido script de Player ({name})");
+        }
+    }
+
 
 
     /// <summary>
-    /// Obtiene el componente DatosHoja del collider que ha traspasado y activa su canvas
+    /// Llama a ActivarCanvas con collision si el estado del Player no es escondido.
     /// </summary>
     /// 
-    /// <param name="other">Collider2D que ha traspasado</param>
-    void OnTriggerEnter2D(Collider2D other)
+    /// <param name="collision">Collider2D que ha traspasado</param>
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        DatosHoja hoja = other.GetComponent<DatosHoja>();
+        if (playerScript.getEstado() != Player.Estados.Escondido)
+        {
+            ActivarCanvas(collision);
+        }
+    }
+
+    /// <summary>
+    /// Llama a ActivarCanvas con collision si el estado del Player no es escondido.
+    /// Llama a DesactivarCanvas con collision si el estado del Player es escondido.
+    /// </summary>
+    /// 
+    /// <param name="collision">Collider2D que está traspasando</param>
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        if (playerScript.getEstado() != Player.Estados.Escondido)
+        {
+            ActivarCanvas(collision);
+        }
+        else
+        {
+            DesactivarCanvas(collision);
+        }
+    }
+
+    /// <summary>
+    /// Llama a DesactivarCanvas con collision.
+    /// </summary>
+    /// 
+    /// <param name="collision">Collider2D que ha dejado de traspasar</param>
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        DesactivarCanvas(collision);
+    }
+
+    /// <summary>
+    /// Activa el canvas del objeto de collision.
+    /// </summary>
+    /// 
+    /// <param name="collision">Collider2D a activar el canvas de su objeto</param>
+    void ActivarCanvas(Collider2D collision)
+    {
+        DatosHoja hoja = collision.GetComponent<DatosHoja>();
 
         if (hoja != null)
         {
@@ -28,22 +83,25 @@ public class DetectorInteracciones : MonoBehaviour
     }
 
     /// <summary>
-    /// Obtiene el componente DatosHoja del collider que ha dejado de traspasar y desactiva su canvas
+    /// Desactiva el canvas del objeto de collision.
     /// </summary>
     /// 
-    /// <param name="other">Collider2D que ha dejado de traspasar</param>
-    void OnTriggerExit2D(Collider2D other)
+    /// <param name="collision">Collider2D a desactivar el canvas de su objeto</param>
+    void DesactivarCanvas(Collider2D collision)
     {
-        DatosHoja hoja = other.GetComponent<DatosHoja>();
+        DatosHoja hoja = collision.GetComponent<DatosHoja>();
 
-        if (hoja != null && hoja == objetoActualEnRango)
+        if (hoja != null)
         {
             if (hoja.canvasInteraccion != null)
             {
                 hoja.canvasInteraccion.SetActive(false);
             }
 
-            objetoActualEnRango = null;
+            if (hoja == objetoActualEnRango)
+            {
+                objetoActualEnRango = null;
+            }
         }
     }
 
