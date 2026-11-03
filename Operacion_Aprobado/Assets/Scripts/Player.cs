@@ -10,6 +10,9 @@ public class Player : MonoBehaviour
     const float VELOCIDADDESLIZAMIENTO = 12f;
     const float DURACIONDESLIZAMIENTO = 0.35f;
 
+    const int VIDASINICIALES = 3;
+    const float TIEMPOINVULNERABLE = 1f;      // Segundos sin poder recibir daño tras un golpe
+
 
     // Estados posibles del jugador
     public enum Estados
@@ -30,6 +33,10 @@ public class Player : MonoBehaviour
 
     private float tiempoDeslizamiento = 0f;
     private Vector2 direccionDeslizamiento;
+
+    // Vidas del jugador
+    private int vidas;
+    private float tiempoInvulnerable = 0f;
     // Rigidbody del jugador (Para colisiones)
     private Rigidbody2D playerRB;
     // Sprite del jugador
@@ -47,8 +54,9 @@ public class Player : MonoBehaviour
 
         GameAsserts.IsValidReference(getPlayerRB(), "playerRB (Player)");
         GameAsserts.IsValidReference(getPlayerSprite(), "playerSprite (Player)");
-        
+
         setEstado(Estados.Andando);
+        vidas = VIDASINICIALES;
     }
 
     void Update()
@@ -61,6 +69,10 @@ public class Player : MonoBehaviour
             return;
         }
 
+        if (tiempoInvulnerable > 0f)
+        {
+            tiempoInvulnerable -= Time.deltaTime;
+        }
         escondido();
 
         // Si el estado es AGACHADO, ignora las colisiones de la mascara "Mesa"
@@ -160,6 +172,31 @@ public class Player : MonoBehaviour
 
 
     /// <summary>
+    /// Detecta colisiones con enemigos
+    /// </summary>
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            PerderVida();
+        }
+    }
+
+    /// <summary>
+    /// Resta una vida (mínimo 0) si no está en periodo de invulnerabilidad
+    /// </summary>
+    void PerderVida()
+    {
+        if (tiempoInvulnerable > 0f || vidas <= 0) return;
+
+        vidas = Mathf.Max(vidas - 1, 0);
+        tiempoInvulnerable = TIEMPOINVULNERABLE;
+
+        Debug.Log($"Vidas restantes: {vidas}");
+        // TODO: game over cuando vidas == 0
+    }
+
+    /// <summary>
     /// Comprueba si está escondido o si ha dejado de esconderse
     /// </summary>
     void escondido()
@@ -230,6 +267,11 @@ public class Player : MonoBehaviour
     /// Cambia la velocidad del movimiento del Player
     /// </summary>
     /// 
+    /// <returns>Vidas restantes</returns>
+    public int getVidas()
+    {
+        return this.vidas;
+    }
     /// <param name="velocidad">Velocidad a cambiar</param>
     public void setVelocidad(float velocidad)
     {
