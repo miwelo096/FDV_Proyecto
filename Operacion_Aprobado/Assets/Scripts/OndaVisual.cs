@@ -2,11 +2,8 @@ using UnityEngine;
 
 public class OndaVisual : MonoBehaviour
 {
-    // Constante de tiempo de vida
-    const float TIEMPODEVIDA = 0.5f;
-    
     // SpriteRenderer del prefab
-    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteOnda;
     
     // Tiempo transcurrido
     private float tiempoTranscurrido = 0f;
@@ -14,54 +11,31 @@ public class OndaVisual : MonoBehaviour
 
     private void Start()
     {
-        this.spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteOnda = GetComponent<SpriteRenderer>();
+        
+        if (spriteOnda == null)
+        {
+            Debug.LogError($"No se ha encontrado el componente SpriteRenderer ({name})");
+        }
+
+        Destroy(gameObject, Constantes.TIEMPODEVIDA);
     }
 
     void Update()
     {
-        if (getSpriteOnda() != null) 
+        if (spriteOnda != null) 
         {
-            setTiempoTranscurrido(Time.deltaTime);
-            float alfa = Mathf.Clamp01(1f - (getTiempoTranscurrido() / TIEMPODEVIDA));
+            tiempoTranscurrido += Time.deltaTime;
+            float alfa = Mathf.Clamp01(1f - (tiempoTranscurrido / Constantes.TIEMPODEVIDA));
 
-            Color colorActual = getSpriteOnda().color;
+            Color colorActual = spriteOnda.color;
             colorActual.a = alfa;
-            getSpriteOnda().color = colorActual;
+            spriteOnda.color = colorActual;
         }
         else
         {
-            GameAsserts.IsValidReference(getSpriteOnda(), "spriteRenderer (OndaVisual)");
+            GameAsserts.IsValidReference(spriteOnda, $"spriteRenderer ({name})");
             Debug.Log("No tiene SpriteRenderer");
         }
-    }
-
-    /// <summary>
-    /// Obtiene el SpriteRenderer
-    /// </summary>
-    /// 
-    /// <returns>SpriteRenderer</returns>
-    public SpriteRenderer getSpriteOnda()
-    {
-        return this.spriteRenderer;
-    }
-
-    /// <summary>
-    /// Añade tiempo al tiempo transcurrido
-    /// </summary>
-    /// 
-    /// <param name="time">Tiempo a añadir</param>
-    public void setTiempoTranscurrido(float time)
-    {
-        this.tiempoTranscurrido += time;
-    }
-
-    /// <summary>
-    /// Obtiene el tiempo transcurrido
-    /// </summary>
-    /// 
-    /// <returns>Tiempo transcurrido</returns>
-    public float getTiempoTranscurrido()
-    {
-        return this.tiempoTranscurrido;
     }
 }

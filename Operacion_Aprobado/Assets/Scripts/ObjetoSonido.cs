@@ -2,25 +2,26 @@ using UnityEngine;
 
 public class ObjetoSonido : MonoBehaviour
 {
-    // Constante del diametro del sonido
-    const float SONIDODIAM = 6f;
+    [SerializeField] // Prefab de la onda sonora
+    private GameObject ondaSonoraPrefab;
 
-    // Mascara del enemigo
-    public LayerMask enemyLayer;
+    private bool yaEmitido = false;
 
-    // Prefab de la onda sonora
-    public GameObject ondaSonoraPrefab;
 
     private void Start()
     {
+        if (ondaSonoraPrefab == null)
+        {
+            Debug.LogError($"No se ha asignado el prefab de la onda sonora ({name})");
+        }
+
         // Destruye el objeto automáticamente a los 2 segundos
         Invoke("expirarPorTiempo", 2f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        rangoSonido();
-        Destroy(gameObject);
+        EmitirSonidoUnico();
     }
 
     /// <summary>
@@ -28,39 +29,30 @@ public class ObjetoSonido : MonoBehaviour
     /// </summary>
     void expirarPorTiempo()
     {
-        rangoSonido();
-        Destroy(gameObject);
+        EmitirSonidoUnico();
     }
 
-    /// <summary>
-    /// Dibuja el rango de sonido y obtiene los enemigos que estén dentro del rango de sonido
-    /// </summary>
-    void rangoSonido()
+    void EmitirSonidoUnico()
     {
-        if (getOndaSonoraPrefab() != null)
-        {
-            GameObject onda = Instantiate(getOndaSonoraPrefab(), transform.position, Quaternion.identity);
+        if (yaEmitido) return;
+        yaEmitido = true;
 
-            onda.transform.localScale = new Vector3(SONIDODIAM, SONIDODIAM, 1f);
-            Destroy(onda, 0.5f);
+        if (ondaSonoraPrefab != null)
+        {
+            GameObject onda = Instantiate(ondaSonoraPrefab, transform.position, Quaternion.identity);
+
+            onda.transform.localScale = new Vector2(Constantes.SONIDORAD, Constantes.SONIDORAD);
         }
+
         // Crea la burbuja de sonido en la posición exacta del impacto
-        Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(transform.position, SONIDODIAM, enemyLayer);
+        Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(transform.position, Constantes.SONIDORAD/2, LayerMask.GetMask(Constantes.ENEMYLAYER));
 
         foreach (Collider2D enemy in enemiesInRange)
         {
-            Debug.Log("Se ha escuchado un objeto romperse");
+            Debug.Log("Se ha escuchado un objeto romperse" + enemy);
             // TODO: cambiar estado del enemigo que lo ha oido a SOSPECHA
         }
-    }
 
-    /// <summary>
-    /// Obtiene el GameObject del prefab de onda sonora
-    /// </summary>
-    /// 
-    /// <returns>GameObject del prefab de onda sonora</returns>
-    public GameObject getOndaSonoraPrefab()
-    {
-        return this.ondaSonoraPrefab;
+        Destroy(gameObject);
     }
 }
