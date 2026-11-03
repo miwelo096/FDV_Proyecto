@@ -6,25 +6,26 @@ using UnityEngine.VFX;
 
 public class PuzzleBoardManager : MonoBehaviour
 {
-    const int FILASCOLUMNAS = 3;
-
     [SerializeField] // Lista de Sprites de las piezas
-    private List<Sprite> originalSprites = new List<Sprite>(FILASCOLUMNAS*FILASCOLUMNAS);
+    private List<Sprite> originalSprites = new List<Sprite>(Constantes.FILASCOLUMNAS*Constantes.FILASCOLUMNAS);
 
     // Tablero con el numero de pieza
-    private int[] boardState = new int[FILASCOLUMNAS*FILASCOLUMNAS];
+    private int[] boardState;
     // Tablero con los GameObjects de las piezas
-    private GameObject[] piezasVisuales = new GameObject[FILASCOLUMNAS*FILASCOLUMNAS];
+    private GameObject[] piezasVisuales;
 
-    private float spacing = 2.1f;
     private bool estaMoviendo;
-    private float velocidadDeslizamiento = 15f;
-
+    private int totalPosiciones;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        totalPosiciones = Constantes.FILASCOLUMNAS*Constantes.FILASCOLUMNAS;
+        estaMoviendo = false;
+        boardState = new int[totalPosiciones];
+        piezasVisuales = new GameObject[totalPosiciones];
+
         if (originalSprites != null)
         {
             int i = 0;
@@ -57,14 +58,14 @@ public class PuzzleBoardManager : MonoBehaviour
     /// </summary>
     void TableroAleatorio()
     {
-        int ultimoIndice = (FILASCOLUMNAS*FILASCOLUMNAS)-1;
+        int ultimoIndice = totalPosiciones-1;
 
         //Movimiento a hacer para que se aleatorice el puzzle
         int movimientos = Random.Range(20, 40);
 
         for (int i = 0; i<movimientos; i++)
         {
-            int indice = System.Array.IndexOf(boardState, (FILASCOLUMNAS*FILASCOLUMNAS)-1);
+            int indice = System.Array.IndexOf(boardState, totalPosiciones-1);
 
             List<int> indicesVecinos = ComprobarPiezasVecinas(indice);
 
@@ -123,13 +124,13 @@ public class PuzzleBoardManager : MonoBehaviour
     {
         List<int> vecinos = new List<int>();
 
-        int row = indice/FILASCOLUMNAS;
-        int column = indice%FILASCOLUMNAS;
+        int row = indice/Constantes.FILASCOLUMNAS;
+        int column = indice%Constantes.FILASCOLUMNAS;
 
-        if (row > 0) vecinos.Add(indice - FILASCOLUMNAS);
-        if (row < FILASCOLUMNAS-1) vecinos.Add(indice + FILASCOLUMNAS);
+        if (row > 0) vecinos.Add(indice - Constantes.FILASCOLUMNAS);
+        if (row < Constantes.FILASCOLUMNAS-1) vecinos.Add(indice + Constantes.FILASCOLUMNAS);
         if (column > 0) vecinos.Add(indice - 1);
-        if (column < FILASCOLUMNAS-1) vecinos.Add(indice + 1);
+        if (column < Constantes.FILASCOLUMNAS-1) vecinos.Add(indice + 1);
 
         return vecinos;
     }
@@ -140,12 +141,12 @@ public class PuzzleBoardManager : MonoBehaviour
     /// 
     /// <param name="indice">Indice de la pieza</param>
     /// <returns>Vector3 con la posicion de la pieza</returns>
-    Vector3 Posicion(int indice)
+    Vector2 Posicion(int indice)
     {
-        int row = indice/FILASCOLUMNAS;
-        int column = indice%FILASCOLUMNAS;
-        float posX = (column-1) * spacing;
-        float posY = (1-row) * spacing;
+        int row = indice/Constantes.FILASCOLUMNAS;
+        int column = indice%Constantes.FILASCOLUMNAS;
+        float posX = (column-1) * Constantes.SPACING;
+        float posY = (1-row) * Constantes.SPACING;
 
         return new Vector3(posX, posY, 0f);
     }
@@ -160,14 +161,14 @@ public class PuzzleBoardManager : MonoBehaviour
         if (estaMoviendo) return;
 
         int indicePieza = System.Array.IndexOf(boardState, idPiezaAMover);
-        int indiceVacio = System.Array.IndexOf(boardState, (FILASCOLUMNAS*FILASCOLUMNAS)-1);
+        int indiceVacio = System.Array.IndexOf(boardState, totalPosiciones-1);
 
         List<int> listaPiezasVecinas = ComprobarPiezasVecinas(indiceVacio);
 
         if (listaPiezasVecinas.Contains(indicePieza))
         {
             boardState[indiceVacio] = idPiezaAMover;
-            boardState[indicePieza] = 8;
+            boardState[indicePieza] = totalPosiciones-1;
 
             StartCoroutine(DeslizarPieza(piezasVisuales[idPiezaAMover], indiceVacio));
         }
@@ -187,13 +188,13 @@ public class PuzzleBoardManager : MonoBehaviour
     IEnumerator DeslizarPieza(GameObject pieza, int nuevoIndice)
     {
         estaMoviendo = true;
-        Vector3 posicionObjetivo = Posicion(nuevoIndice);
+        Vector2 posicionObjetivo = Posicion(nuevoIndice);
 
         // Mientras que la distancia sea mayor a 0.01, la pieza se va a ir desplazando,
         // deteniendose hasta terminar el frame en yield y continuando con el bucle después.
-        while (Vector3.Distance(pieza.transform.position, posicionObjetivo) > 0.01f)
+        while (Vector2.Distance(pieza.transform.position, posicionObjetivo) > 0.01f)
         {
-            pieza.transform.position = Vector3.Lerp(pieza.transform.position, posicionObjetivo, velocidadDeslizamiento * Time.deltaTime);
+            pieza.transform.position = Vector2.Lerp(pieza.transform.position, posicionObjetivo, Constantes.VELOCIDADDESPLAZAMIENTO * Time.deltaTime);
             yield return null;
         }
 
@@ -204,7 +205,7 @@ public class PuzzleBoardManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1f);
             GameManager.SalirPuzzle(); 
-            SceneManager.UnloadSceneAsync("PuzzleDracoScene");
+            SceneManager.UnloadSceneAsync(Constantes.ESCENADRACO);
         }
     }
 
