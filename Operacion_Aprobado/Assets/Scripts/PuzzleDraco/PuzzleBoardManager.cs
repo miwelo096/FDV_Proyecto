@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.VFX;
 
 public class PuzzleBoardManager : MonoBehaviour
 {
@@ -15,6 +14,7 @@ public class PuzzleBoardManager : MonoBehaviour
     private GameObject[] piezasVisuales;
 
     private bool estaMoviendo;
+    private bool estaTerminado;
     private int totalPosiciones;
 
 
@@ -23,6 +23,7 @@ public class PuzzleBoardManager : MonoBehaviour
     {
         totalPosiciones = Constantes.FILASCOLUMNAS*Constantes.FILASCOLUMNAS;
         estaMoviendo = false;
+        estaTerminado = false;
         boardState = new int[totalPosiciones];
         piezasVisuales = new GameObject[totalPosiciones];
 
@@ -80,6 +81,12 @@ public class PuzzleBoardManager : MonoBehaviour
             boardState[indice] = boardState[indiceMovimiento];
             boardState[indiceMovimiento] = temp;
         }
+
+        // En caso de que el tablero esté ordenado, se reorganiza de nuevo aleatoriamente.
+        if (EstaOrdenado())
+        {
+            TableroAleatorio();
+        }
     }
 
     /// <summary>
@@ -91,7 +98,7 @@ public class PuzzleBoardManager : MonoBehaviour
         {
             int idPieza = boardState[i];
 
-            if (idPieza == 8) continue;
+            if (idPieza == totalPosiciones-1) continue;
 
             GameObject piezaGO = new GameObject("Pieza_" + idPieza);
             piezaGO.transform.parent = this.transform;
@@ -158,7 +165,7 @@ public class PuzzleBoardManager : MonoBehaviour
     /// <param name="idPiezaAMover">Indice de la pieza a mover</param>
     public void IntentarMoverPieza(int idPiezaAMover)
     {
-        if (estaMoviendo) return;
+        if (estaMoviendo || estaTerminado) return;
 
         int indicePieza = System.Array.IndexOf(boardState, idPiezaAMover);
         int indiceVacio = System.Array.IndexOf(boardState, totalPosiciones-1);
@@ -203,6 +210,7 @@ public class PuzzleBoardManager : MonoBehaviour
         
         if (EstaOrdenado())
         {
+            estaTerminado = true;
             yield return new WaitForSeconds(1f);
             GameManager.SalirPuzzle(); 
             SceneManager.UnloadSceneAsync(Constantes.ESCENADRACO);

@@ -15,10 +15,51 @@ public class conectarVPN : MonoBehaviour
     public GameObject imagenOff;
     public GameObject botonConnect;
     public GameObject botonDisconnect;
-    private bool vpnActivada = false; // Variable para saber si la VPN está encendida o apagada
+    private bool vpnActivada; // Variable para saber si la VPN está encendida o apagada
+
+
 
     void Start()
     {
+        vpnActivada = false;
+        
+        if (panelInicio == null)
+        {
+            Debug.LogError($"No asignado GameObject a panelInicio ({name})");
+        }
+        if (panelApps == null)
+        {
+            Debug.LogError($"No asignado GameObject a panelApps ({name})");
+        }
+        if (panelVPN == null)
+        {
+            Debug.LogError($"No asignado GameObject a panelVPN ({name})");
+        }
+        if (panelFin == null)
+        {
+            Debug.LogError($"No asignado GameObject a panelFin ({name})");
+        }
+        if (panelSorpresa == null)
+        {
+            Debug.LogError($"No asignado GameObject a panelSorpresa ({name})");
+        }
+        if (imagenOn == null)
+        {
+            Debug.LogError($"No asignado GameObject a imagenOn ({name})");
+        }
+        if (imagenOff == null)
+        {
+            Debug.LogError($"No asignado GameObject a imagenOff ({name})");
+        }
+        if (botonConnect == null)
+        {
+            Debug.LogError($"No asignado GameObject a botonConnect ({name})");
+        }
+        if (botonDisconnect == null)
+        {
+            Debug.LogError($"No asignado GameObject a botonDisconnect ({name})");
+        }
+
         // Al empezar, solo mostramos la pantalla de inicio
         panelInicio.SetActive(true);
         panelApps.SetActive(false);
@@ -113,10 +154,10 @@ public class conectarVPN : MonoBehaviour
     public void PulsarSalir()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        SceneManager.LoadScene("SampleScene");    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
+        // SceneManager.LoadScene("SampleScene");    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
         // ***** 
-        // GameManager.SalirPuzzle(); 
-        // SceneManager.UnloadSceneAsync("VPNScene");
+        GameManager.SalirPuzzle(); 
+        SceneManager.UnloadSceneAsync(Constantes.ESCENAVPN);
 
     }
 }

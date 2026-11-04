@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public static class Constantes
@@ -23,9 +24,16 @@ public static class Constantes
 
     // Escenas
     public const string ESCENAPRINCIPAL = "SampleScene";
+    public const string ESCENATEST = "testScene";
     public const string ESCENADRACO = "PuzzleDracoScene";
     public const string ESCENAEDUROAM = "EduroamScene";
     public const string ESCENAVPN = "VPNScene";
+
+
+
+    // Constantes de EduroamLogin
+    public const string USUARIOCORRECTO = "XXX.X@alumnos.upm.es";
+    public const string CONTRASEÑACORRECTA = "YYYYYYYY";
 
 
 

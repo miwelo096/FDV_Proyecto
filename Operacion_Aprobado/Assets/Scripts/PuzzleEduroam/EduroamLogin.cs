@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement; // Cambiar de escena
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class EduroamLogin : MonoBehaviour
 {
@@ -14,24 +15,47 @@ public class EduroamLogin : MonoBehaviour
     public string contrasenaCorrecta = "YYYYYYYY"; // Cambia YYYYYYYY 
     public string siguienteEscena = "SampleScene";
 
-    // Función que se ejecutará al pulsar el botón "Conectar"
+
+    void Start()
+    {
+        if (campoUsuario == null)
+        {
+            Debug.LogError($"No asignado input field a campoUsuario ({name})");
+        }
+        if (campoContrasena == null)
+        {
+            Debug.LogError($"No asignado input field a campoContrasena ({name})");
+        }
+        if (textoError == null)
+        {
+            Debug.LogError($"No asignado input field a textoError ({name})");
+        }
+    }
+
     public void PulsarConectar()
+    {
+        StartCoroutine(ComprobarConexion());
+    }
+
+    // Función que se ejecutará al pulsar el botón "Conectar"
+    IEnumerator ComprobarConexion()
     {
         // Obtenemos lo que ha escrito el jugador
         string usuarioInput = campoUsuario.text;
         string contrasenaInput = campoContrasena.text;
 
         // Verificamos si coinciden con lo que queremos
-        if (usuarioInput == usuarioCorrecto && contrasenaInput == contrasenaCorrecta)
+        if (usuarioInput == Constantes.USUARIOCORRECTO && contrasenaInput == Constantes.CONTRASEÑACORRECTA)
         {
             Debug.Log("Login correcto. Cargando siguiente escena...");
             textoError.text = "Datos correctos.";
             textoError.color = Color.green;
             // Si es correcto, cargamos la siguiente escena
-            SceneManager.LoadScene(siguienteEscena);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
+            yield return new WaitForSeconds(1.5f);
+            // SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
             // ***** 
-            // GameManager.SalirPuzzle(); 
-            // SceneManager.UnloadSceneAsync("EduroamScene");
+            GameManager.SalirPuzzle(); 
+            SceneManager.UnloadSceneAsync(Constantes.ESCENAEDUROAM);
         }
         else
         {
@@ -50,9 +74,9 @@ public class EduroamLogin : MonoBehaviour
     public void PulsarCancelar()
     {
         Debug.Log("Cancelando... Volviendo a la escena principal.");
-        SceneManager.LoadScene(siguienteEscena);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
+        // SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
         // ***** 
-        // GameManager.SalirPuzzle(); 
-        // SceneManager.UnloadSceneAsync("EduroamScene");
+        GameManager.SalirPuzzle(); 
+        SceneManager.UnloadSceneAsync(Constantes.ESCENAEDUROAM);
     }
 }

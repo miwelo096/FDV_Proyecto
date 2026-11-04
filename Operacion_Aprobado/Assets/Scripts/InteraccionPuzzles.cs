@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,17 +7,31 @@ public class DetectorInteracciones : MonoBehaviour
     // Guardamos la referencia de la hoja/mesa con la que podemos interactuar en este momento
     private DatosHoja objetoActualEnRango;
     private Player playerScript;
+    private List<DatosHoja> objetosInteractivosEnRango;
 
 
     void Start()
     {
         objetoActualEnRango = null;
-
         playerScript = GetComponent<Player>();
+        objetosInteractivosEnRango = new List<DatosHoja>();
+
         if (playerScript == null)
         {
             Debug.LogError($"No se ha obtenido script de Player ({name})");
         }
+    }
+
+    void Update()
+    {
+        if (playerScript != null && playerScript.getEstado() == Player.Estados.Escondido)
+        {
+            DesactivarTodosLosCanvas();
+            objetoActualEnRango = null;
+            return;
+        }
+
+        ActualizarObjetoMasCercano();
     }
 
 
@@ -28,27 +43,11 @@ public class DetectorInteracciones : MonoBehaviour
     /// <param name="collision">Collider2D que ha traspasado</param>
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (playerScript.getEstado() != Player.Estados.Escondido)
-        {
-            ActivarCanvas(collision);
-        }
-    }
+        DatosHoja objeto = collision.GetComponent<DatosHoja>();
 
-    /// <summary>
-    /// Llama a ActivarCanvas con collision si el estado del Player no es escondido.
-    /// Llama a DesactivarCanvas con collision si el estado del Player es escondido.
-    /// </summary>
-    /// 
-    /// <param name="collision">Collider2D que está traspasando</param>
-    void OnTriggerStay2D(Collider2D collision)
-    {
-        if (playerScript.getEstado() != Player.Estados.Escondido)
+        if (objeto != null && !objetosInteractivosEnRango.Contains(objeto))
         {
-            ActivarCanvas(collision);
-        }
-        else
-        {
-            DesactivarCanvas(collision);
+            objetosInteractivosEnRango.Add(objeto);
         }
     }
 
@@ -59,48 +58,67 @@ public class DetectorInteracciones : MonoBehaviour
     /// <param name="collision">Collider2D que ha dejado de traspasar</param>
     void OnTriggerExit2D(Collider2D collision)
     {
-        DesactivarCanvas(collision);
-    }
+        DatosHoja objeto = collision.GetComponent<DatosHoja>();
 
-    /// <summary>
-    /// Activa el canvas del objeto de collision.
-    /// </summary>
-    /// 
-    /// <param name="collision">Collider2D a activar el canvas de su objeto</param>
-    void ActivarCanvas(Collider2D collision)
-    {
-        DatosHoja hoja = collision.GetComponent<DatosHoja>();
-
-        if (hoja != null)
+        if (objeto != null)
         {
-            objetoActualEnRango = hoja;
-
-            if (hoja.canvasInteraccion != null)
+            if (objetosInteractivosEnRango.Contains(objeto))
             {
-                hoja.canvasInteraccion.SetActive(true);
+                objetosInteractivosEnRango.Remove(objeto);
+            }
+
+            if (objeto.canvasInteraccion != null)
+            {
+                objeto.canvasInteraccion.SetActive(false);
             }
         }
     }
 
-    /// <summary>
-    /// Desactiva el canvas del objeto de collision.
-    /// </summary>
-    /// 
-    /// <param name="collision">Collider2D a desactivar el canvas de su objeto</param>
-    void DesactivarCanvas(Collider2D collision)
-    {
-        DatosHoja hoja = collision.GetComponent<DatosHoja>();
 
-        if (hoja != null)
+    void ActualizarObjetoMasCercano()
+    {
+        // Eliminamos todos los que sean null
+        objetosInteractivosEnRango.RemoveAll(h => h == null);
+
+        if (objetosInteractivosEnRango.Count == 0)
+        {
+            objetoActualEnRango = null;
+            return;
+        }
+
+        DatosHoja masCercana = null;
+        float menorDistanciaSq = Mathf.Infinity;
+        Vector2 posicionJugador = transform.position;
+
+        foreach (var hoja in objetosInteractivosEnRango)
+        {
+            float distanciaSq = ((Vector2)hoja.transform.position - posicionJugador).sqrMagnitude;
+            if (distanciaSq < menorDistanciaSq)
+            {
+                menorDistanciaSq = distanciaSq;
+                masCercana = hoja;
+            }
+        }
+
+        objetoActualEnRango = masCercana;
+
+        foreach (var hoja in objetosInteractivosEnRango)
         {
             if (hoja.canvasInteraccion != null)
             {
-                hoja.canvasInteraccion.SetActive(false);
+                hoja.canvasInteraccion.SetActive(hoja == objetoActualEnRango);
             }
+        }
+    }
 
-            if (hoja == objetoActualEnRango)
+
+    void DesactivarTodosLosCanvas()
+    {
+        foreach(var objeto in objetosInteractivosEnRango)
+        {
+            if (objeto != null && objeto.canvasInteraccion != null)
             {
-                objetoActualEnRango = null;
+                objeto.canvasInteraccion.SetActive(false);
             }
         }
     }
@@ -128,6 +146,8 @@ public class DetectorInteracciones : MonoBehaviour
     /// </summary>
     void ComprobacionHoja()
     {
+        if (playerScript != null && playerScript.getEstado() == Player.Estados.Escondido) return;
+
         if (objetoActualEnRango != null)
         {
             CargarMinijuego(objetoActualEnRango.nombreEscenaMinijuego);
