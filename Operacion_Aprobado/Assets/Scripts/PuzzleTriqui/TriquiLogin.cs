@@ -12,7 +12,7 @@ public class TriquiLogin : MonoBehaviour
     [Header("Elementos del Terminal")]
     public TextMeshProUGUI textoTerminal; 
     public TMP_InputField inputTerminal;
-    public ScrollRect scrollRect; // Para que el texto baje automáticamente
+    public ScrollRect scrollRect; 
 
     [Header("Configuración")]
     public string SiguienteEscena = "SampleScene";
@@ -20,7 +20,8 @@ public class TriquiLogin : MonoBehaviour
     public string contrasenaCorrecta = "C1AB3";
 
     // Variables de estado del juego
-    private int estadoLogin = 0; // 0: Pidiendo usuario, 1: Pidiendo "yes", 2: Pidiendo contraseña, 3: Terminal normal
+    // 0: Pidiendo usuario, 1: Pidiendo "yes", 2: Pidiendo contraseña, 3: Terminal normal
+    private int estadoLogin = 0; 
     private bool enCarpetaSecreta = false;
 
     void Start()
