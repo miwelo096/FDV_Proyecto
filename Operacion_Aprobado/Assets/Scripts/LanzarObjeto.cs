@@ -1,17 +1,14 @@
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class LanzarObjeto : MonoBehaviour
 {
-    // Constante de fuerza de lanzamiento
-    const float FUERZALANZAMIENTO = 9f;
-
-
     [SerializeField]
     // Posición desde la que se lanza un objeto
     private Transform puntoDeLanzamiento;
     // Inventario del jugador
     private Inventario inventarioScript;
+    private Camera camara;
 
     private ObjetoLanzable objeto;
     private bool paraLanzar;
@@ -20,18 +17,13 @@ public class LanzarObjeto : MonoBehaviour
 
     void Start()
     {
-        if (puntoDeLanzamiento == null)
-        {
-            Debug.LogError("Punto de lanzamiento no asignado a Player (LanzarObjeto)");
-        }
-
-        inventarioScript = GetComponent<Inventario>();
-        if (inventarioScript == null)
-        {
-            Debug.LogError("Script del inventario no asignado a Player");
-        }
-
         paraLanzar = false;
+        camara = Camera.main;
+        inventarioScript = GetComponent<Inventario>();
+        
+        GameAsserts.IsValidReference(puntoDeLanzamiento, $"puntoDeLanzamiento ({name})");
+        GameAsserts.IsValidReference(inventarioScript, $"inventarioScript ({name})");
+        GameAsserts.IsValidReference(camara, $"camara ({name})");
     }
 
     /// <summary>
@@ -57,6 +49,19 @@ public class LanzarObjeto : MonoBehaviour
 
         if (paraLanzar)
         {
+            if (!VerificarDisponibilidadObjeto())
+            {
+                Debug.Log("El objeto preparado ya no está disponible en el inventario. Cancelando preparación.");
+                CancelarLanzamiento();
+                return;
+            }
+
+            // Ignorar clics si el puntero está sobre un elemento de la interfaz
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return; 
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 EjecutarLanzamiento();
@@ -74,10 +79,10 @@ public class LanzarObjeto : MonoBehaviour
     void PrepararLanzamiento()
     {
         if (PauseMenu.IsPaused) return;
-        if (paraLanzar) return;
+        if (paraLanzar) CancelarLanzamiento();
 
         // No se comprueba inventarioScript != null ya que hubiese saltado en Start()
-        if (inventarioScript.isNotEmpty())
+        if (inventarioScript != null && inventarioScript.isNotEmpty())
         {
             objeto = obtenerPrimerLanzable();
 
@@ -90,6 +95,7 @@ public class LanzarObjeto : MonoBehaviour
                 else
                 {
                     Debug.LogError("Prefab de objeto lanzable no asignado (LanzarObjeto.PreparaLanzamiento)");
+                    ResetearEstado();
                 }
             }
             else
@@ -103,12 +109,38 @@ public class LanzarObjeto : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Confirma que el objeto preparado sigue disponible para lanzarse
+    /// </summary>
+    /// 
+    /// <returns>True si sigue disponible</returns>
+    bool VerificarDisponibilidadObjeto()
+    {
+        if (inventarioScript == null || objeto == null) return false;
+
+        foreach (Objeto item in inventarioScript.listaInventario)
+        {
+            if (item == objeto)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /// <summary>
     /// Ejecuta el lanzamiento del objeto asignado y lo elimina del inventario.
     /// </summary>
     void EjecutarLanzamiento()
     {
+        if (puntoDeLanzamiento == null || objeto == null || objeto.prefabObjetoLanzable == null || camara == null)
+        {
+            Debug.LogError("Faltan referencias para ejecutar el lanzamiento.");
+            CancelarLanzamiento();
+            return;
+        }
+
         GameObject objetoInstanciado = Instantiate(objeto.prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
                 
         var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
@@ -117,10 +149,11 @@ public class LanzarObjeto : MonoBehaviour
         if (rbObjeto != null)
         {
             // Obtener la posición del ratón
-            Vector2 posicionRaton = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 posicionRaton = camara.ScreenToWorldPoint(Input.mousePosition);
 
             Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
-            rbObjeto.linearVelocity = direccion * FUERZALANZAMIENTO;
+            GameAsserts.IsGreaterThanZero(Constantes.FUERZALANZAMIENTO, $"Constantes.FUERZALANZAMIENTO ({name})");
+            rbObjeto.linearVelocity = direccion * Constantes.FUERZALANZAMIENTO;
             
             inventarioScript.ConsumirObjeto(objeto);
 
@@ -129,6 +162,7 @@ public class LanzarObjeto : MonoBehaviour
         else
         {
             Debug.LogError("No hay Rigidbody2D en el objeto instanciado (LanzarObjeto.lanzar())");
+            Destroy(objetoInstanciado);
         }
 
         ResetearEstado();
