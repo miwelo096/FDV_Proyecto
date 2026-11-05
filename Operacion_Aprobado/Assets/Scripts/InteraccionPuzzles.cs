@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class DetectorInteracciones : MonoBehaviour
 {
@@ -161,14 +160,6 @@ public class DetectorInteracciones : MonoBehaviour
     /// <param name="nombreEscena">Nombre de la escena a cargar</param>
     void CargarMinijuego(string nombreEscena)
     {
-        if (!string.IsNullOrEmpty(nombreEscena))
-        {   
-            GameManager.EntrarPuzzle(); 
-            SceneManager.LoadScene(nombreEscena, LoadSceneMode.Additive);
-        }
-        else
-        {
-            Debug.LogError("La hoja seleccionada no tiene un nombre de escena válido configurado.");
-        }
+        GameManager.EntrarPuzzle(nombreEscena);
     }
 }
