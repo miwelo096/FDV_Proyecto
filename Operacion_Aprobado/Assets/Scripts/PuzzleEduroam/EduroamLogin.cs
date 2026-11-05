@@ -40,32 +40,30 @@ public class EduroamLogin : MonoBehaviour
     // Función que se ejecutará al pulsar el botón "Conectar"
     IEnumerator ComprobarConexion()
     {
-        // Obtenemos lo que ha escrito el jugador
         string usuarioInput = campoUsuario.text;
         string contrasenaInput = campoContrasena.text;
 
-        // Verificamos si coinciden con lo que queremos
-        if (usuarioInput == Constantes.USUARIOCORRECTO && contrasenaInput == Constantes.CONTRASEÑACORRECTA)
+        if (usuarioInput == Constantes.USUARIOCORRECTO &&
+            contrasenaInput == Constantes.CONTRASEÑACORRECTA)
         {
-            Debug.Log("Login correcto. Cargando siguiente escena...");
+            Debug.Log("Login correcto. Volviendo al juego...");
             textoError.text = "Datos correctos.";
             textoError.color = Color.green;
-            // Si es correcto, cargamos la siguiente escena
+
             yield return new WaitForSeconds(1.5f);
-            // SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
-            // ***** 
-            GameManager.SalirPuzzle(); 
-            SceneManager.UnloadSceneAsync(Constantes.ESCENAEDUROAM);
+
+            PulsarCancelar();
         }
         else
         {
             Debug.Log("Usuario o contraseña incorrectos.");
+
             if (textoError != null)
             {
                 textoError.text = "Datos incorrectos. Inténtalo de nuevo.";
                 textoError.color = Color.red;
             }
-            // Borrar la contraseña para que lo intenten de nuevo
+
             campoContrasena.text = "";
         }
     }
@@ -73,10 +71,6 @@ public class EduroamLogin : MonoBehaviour
     // Función que se ejecutará al pulsar el botón "Cancelar"
     public void PulsarCancelar()
     {
-        Debug.Log("Cancelando... Volviendo a la escena principal.");
-        // SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
-        // ***** 
-        GameManager.SalirPuzzle(); 
-        SceneManager.UnloadSceneAsync(Constantes.ESCENAEDUROAM);
+        GameManager.SalirPuzzle(gameObject.scene);
     }
 }

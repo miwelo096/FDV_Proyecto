@@ -5,13 +5,16 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
     public static bool InPuzzle = false;
+    private static bool cerrandoPuzzle;
     public GameObject mainScene;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarEstado()
     {
         InPuzzle = false;
+        cerrandoPuzzle = false;
     }
+
 
     private void Awake()
     {
@@ -148,5 +151,74 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
         {
             gm.mainScene.SetActive(true); 
         }
+    }
+    public static void SalirPuzzle(Scene escenaPuzzle)
+    {
+        if (cerrandoPuzzle || PauseMenu.IsPaused)
+            return;
+
+        if (!escenaPuzzle.IsValid() || !escenaPuzzle.isLoaded)
+        {
+            Debug.LogError("GameManager: la escena del puzzle no está cargada.");
+            return;
+        }
+
+        GameManager gm = FindAnyObjectByType<GameManager>();
+
+        bool puzzleAislado =
+            gm == null && SceneManager.sceneCount == 1;
+
+        if (!puzzleAislado &&
+            (gm == null || !gm.isActiveAndEnabled || gm.mainScene == null ||
+            !InPuzzle || escenaPuzzle == gm.gameObject.scene))
+        {
+            Debug.LogError(
+                "GameManager: no hay un contexto válido para cerrar el puzzle.");
+            return;
+        }
+
+        if (puzzleAislado &&
+            !Application.CanStreamedLevelBeLoaded(Constantes.ESCENAPRINCIPAL))
+        {
+            Debug.LogError("GameManager: no se puede cargar la escena principal.");
+            return;
+        }
+
+        bool estadoAnterior = InPuzzle;
+        cerrandoPuzzle = true;
+        InPuzzle = true;
+
+        try
+        {
+            AsyncOperation salida = puzzleAislado
+                ? SceneManager.LoadSceneAsync(
+                    Constantes.ESCENAPRINCIPAL, LoadSceneMode.Single)
+                : SceneManager.UnloadSceneAsync(escenaPuzzle);
+
+            if (salida != null)
+            {
+                salida.completed += _ =>
+                {
+                    InPuzzle = false;
+                    cerrandoPuzzle = false;
+
+                    if (gm != null && gm.mainScene != null)
+                        gm.mainScene.SetActive(true);
+                };
+
+                return;
+            }
+
+            Debug.LogError(
+                "GameManager: no se pudo iniciar la salida del puzzle.", gm);
+        }
+        catch (System.Exception error)
+        {
+            Debug.LogError(
+                $"GameManager: error al salir del puzzle: {error.Message}", gm);
+        }
+
+        InPuzzle = estadoAnterior;
+        cerrandoPuzzle = false;
     }
 }
