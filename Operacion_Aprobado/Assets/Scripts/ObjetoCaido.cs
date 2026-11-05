@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class ObjetoCaido : MonoBehaviour
@@ -11,7 +10,7 @@ public class ObjetoCaido : MonoBehaviour
     private bool recogido;
 
     private Collider2D colliderObjeto;
-
+    private float tiempoRecogidaRestante;
 
     void Awake()
     {
@@ -38,35 +37,43 @@ public class ObjetoCaido : MonoBehaviour
     /// <param name="nuevoObjeto">Objeto a inicializar</param>
     public void Initialize(Objeto nuevoObjeto)
     {
-        GameAsserts.IsValidReference(nuevoObjeto, $"nuevoObjeto ({name}.Initializa())");
+        GameAsserts.IsValidReference(
+            nuevoObjeto, $"nuevoObjeto ({name}.Initialize())");
+
         objeto = nuevoObjeto;
 
         if (objeto != null && objeto.prefabSuelo)
         {
             var objetoCaido = Instantiate(objeto.prefabSuelo, transform);
-            objetoCaido.transform.SetLocalPositionAndRotation(Vector2.zero, Quaternion.identity);
+            objetoCaido.transform.SetLocalPositionAndRotation(
+                Vector2.zero, Quaternion.identity);
         }
 
-        StartCoroutine(PermitirRecogida(Constantes.DELAYRECOGIDA));
-    }
+        GameAsserts.IsGreaterThanZero(
+            Constantes.DELAYRECOGIDA,
+            $"Constantes.DELAYRECOGIDA ({name}.Initialize())");
 
-    /// <summary>
-    /// Permite la recogida del objeto activando el collider tras un periodo de tiempo
-    /// </summary>
-    /// 
-    /// <param name="delay">Periodo de tiempo para volver a recoger</param>
-    /// <returns></returns>
-    IEnumerator PermitirRecogida(float delay)
-    {
+        tiempoRecogidaRestante = Constantes.DELAYRECOGIDA;
+
         if (colliderObjeto != null)
         {
             colliderObjeto.enabled = false;
         }
-        
-        GameAsserts.IsGreaterThanZero(delay, $"delay ({name}.PermitirRecogida())");
-        yield return new WaitForSeconds(delay);
+    }
 
-        if (colliderObjeto != null)
+    private void Update()
+    {
+        if (PauseMenu.IsPaused ||
+            GameManager.InPuzzle ||
+            tiempoRecogidaRestante <= 0f)
+        {
+            return;
+        }
+
+        tiempoRecogidaRestante = Mathf.Max(
+            0f, tiempoRecogidaRestante - Time.deltaTime);
+
+        if (tiempoRecogidaRestante <= 0f && colliderObjeto != null)
         {
             colliderObjeto.enabled = true;
         }
