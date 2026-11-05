@@ -1,41 +1,31 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(Collider2D))]
 public class Inventario : MonoBehaviour
 {
+    [SerializeField]
+    private InterfazInventario interfaz;
 
-    const int OBJETOSMAXIMOS = 10;
-
-
-    public InterfazInventario interfaz;
-
-
-    public GameObject prefabObjetoCaido;
+    [SerializeField]
+    private GameObject prefabObjetoCaido;
 
 
     private List<Objeto> inventarioList = new();
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (PauseMenu.IsPaused)
-            return;
-
-        if (!collision.CompareTag("Item"))
-        {
-            return;
-        }
+        if (PauseMenu.IsPaused) return;
+        if (!collision.CompareTag("Item")) return;
 
         var ObjetoCaido = collision.GetComponent<ObjetoCaido>();
-        if (ObjetoCaido == null || ObjetoCaido.recogido || !collision.enabled)
-        {
-            return;
-        }
+        if (ObjetoCaido == null || ObjetoCaido.Recogido || !collision.enabled) return;
 
         
-        if (AddObjeto(ObjetoCaido.objeto))
+        if (AddObjeto(ObjetoCaido.Objeto))
         {
-            ObjetoCaido.recogido = true;
+            ObjetoCaido.Recogido = true;
             Destroy(collision.gameObject);
         }
     }
@@ -48,12 +38,12 @@ public class Inventario : MonoBehaviour
     /// <returns>True si se ha guardado en el inventario</returns>
     bool AddObjeto(Objeto objeto)
     {
-        GameAsserts.IsValidReference(objeto, "objeto (Inventario.addObjeto())");
-        if (inventarioCount() < OBJETOSMAXIMOS)
+        GameAsserts.IsValidReference(objeto, $"objeto ({name}.AddObjeto())");
+        if (objeto != null && inventarioList.Count < Constantes.OBJETOSMAXIMOS)
         {
             inventarioList.Add(objeto);
             interfaz.ActualizarInterfaz();
-            GameAsserts.ValueBetweenIncluded(inventarioCount(), 10, 0, "inventarioCount (Inventario)");
+            GameAsserts.ValueBetweenIncluded(inventarioList.Count, Constantes.OBJETOSMAXIMOS, 0, $"inventarioCount ({name})");
             return true;
         }
         return false;
@@ -67,11 +57,25 @@ public class Inventario : MonoBehaviour
     public void SoltarObjeto(Objeto objeto)
     {
         if (PauseMenu.IsPaused) return;
+        if (objeto == null || !inventarioList.Contains(objeto))
+        {
+            Debug.LogWarning($"Intento de soltar objeto null o que no se encuentra en el inventario ({name}.SoltarObjeto)");
+            return;
+        }
 
-        var objetoCaido = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity).GetComponent<ObjetoCaido>();
-        objetoCaido.Initialize(objeto);
-
-        EliminarObjeto(objeto);
+        var objetoInstanciado = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity);
+        var objetoCaido = objetoInstanciado.GetComponent<ObjetoCaido>();
+        
+        if (objetoCaido != null)
+        {
+            objetoCaido.Initialize(objeto);
+            EliminarObjeto(objeto);
+        }
+        else
+        {
+            Debug.LogError($"Varibale objetoCaido ({name}.SoltarObjeto()) es null");
+            Destroy(objetoInstanciado);
+        }
     }
 
     /// <summary>
@@ -82,6 +86,11 @@ public class Inventario : MonoBehaviour
     public void ConsumirObjeto(Objeto objeto)
     {
         if (PauseMenu.IsPaused) return;
+        if (objeto == null || !inventarioList.Contains(objeto))
+        {
+            Debug.LogWarning($"Intento de consumir objeto null o que no se encuentra en el inventario ({name}.ConsumirObjeto())");
+            return;
+        }
         
         EliminarObjeto(objeto);
     }
@@ -91,37 +100,33 @@ public class Inventario : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a eliminar</param>
-    public void EliminarObjeto(Objeto objeto)
+    void EliminarObjeto(Objeto objeto)
     {
         inventarioList.Remove(objeto);
-        interfaz.ActualizarInterfaz();
+        if (interfaz != null) interfaz.ActualizarInterfaz();
     }
 
     /// <summary>
-    /// Obtiene la cantidad de objetos en el inventario
+    /// get: Obtiene si el inventario está vacio
     /// </summary>
-    /// 
-    /// <returns>Cantidad de objetos en el inventario</returns>
-    public int inventarioCount()
+    public bool IsNotEmpty
     {
-        return inventarioList.Count;
+        get { return inventarioList.Count > 0; }
     }
 
     /// <summary>
-    /// Obtiene si el inventario está vacio
+    /// get: Obtiene la lista del inventario en modo solo lectura.
     /// </summary>
-    /// 
-    /// <returns>False si está vacio</returns>
-    public bool isNotEmpty()
+    public IReadOnlyList<Objeto> listaInventario
     {
-        return inventarioCount() > 0;
+        get { return inventarioList.AsReadOnly(); }
     }
 
     /// <summary>
-    /// get: Devuelve la lista del inventario
+    /// get: Obtiene el script de InterfazInventario.
     /// </summary>
-    public List<Objeto> listaInventario
+    public InterfazInventario Interfaz
     {
-        get { return inventarioList; }
+        get { return interfaz; }
     }
 }

@@ -82,7 +82,7 @@ public class LanzarObjeto : MonoBehaviour
         if (paraLanzar) CancelarLanzamiento();
 
         // No se comprueba inventarioScript != null ya que hubiese saltado en Start()
-        if (inventarioScript != null && inventarioScript.isNotEmpty())
+        if (inventarioScript != null && inventarioScript.IsNotEmpty)
         {
             objeto = obtenerPrimerLanzable();
 
@@ -91,9 +91,9 @@ public class LanzarObjeto : MonoBehaviour
                 if (objeto.prefabObjetoLanzable != null)
                 {
                     paraLanzar = true;
-                    if (inventarioScript.interfaz != null)
+                    if (inventarioScript.Interfaz != null)
                     {
-                        inventarioScript.interfaz.SeleccionarObjeto(objeto);
+                        inventarioScript.Interfaz.SeleccionarObjeto(objeto);
                     }
                 }
                 else
@@ -206,9 +206,9 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     void ResetearEstado()
     {
-        if (inventarioScript != null && inventarioScript.interfaz != null)
+        if (inventarioScript != null && inventarioScript.Interfaz != null)
         {
-            inventarioScript.interfaz.LimpiarSeleccion();
+            inventarioScript.Interfaz.LimpiarSeleccion();
         }
 
         objeto = null;
@@ -216,7 +216,7 @@ public class LanzarObjeto : MonoBehaviour
     }
 
     /// <summary>
-    /// Obtiene el objeto que está preparado para lanzar en caso de que haya alguno.
+    /// get: Obtiene el objeto que está preparado para lanzar en caso de que haya alguno.
     /// </summary>
     public ObjetoLanzable ObjetoPreparado
     {
