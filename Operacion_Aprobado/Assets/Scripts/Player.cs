@@ -122,6 +122,16 @@ public class Player : MonoBehaviour
     {
         InputManager.OnLShiftPressed -= AlternarAgachado;
         InputManager.OnSpacePressed -= AlternarCorrer;
+
+        deslizando = false;
+        tiempoDeslizamiento = 0f;
+        direccionDeslizamiento = Vector2.zero;
+
+        if (playerRB != null)
+        {
+            playerRB.linearVelocity = Vector2.zero;
+            playerRB.angularVelocity = 0f;
+        }
     }
 
     /// <summary>
