@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5616253235084971543}
   - component: {fileID: 252254859153811192}
   - component: {fileID: 8215794872607024585}
+  - component: {fileID: 3255916013824295829}
   m_Layer: 5
   m_Name: Interfaz Objeto
   m_TagString: Untagged
@@ -133,5 +134,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5bbc2a657e74fe593c7b9a64f14d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InterfazObjeto
-  sprite: {fileID: 7482667652216324306, guid: 472ba0f6d2b00ca43929138229620371, type: 3}
   boton: {fileID: 252254859153811192}
+  imagenObjeto: {fileID: 0}
+  bordeSeleccion: {fileID: 3255916013824295829}
+--- !u!114 &3255916013824295829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565493569169607503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 1, g: 1, b: 0, a: 1}
+  m_EffectDistance: {x: 5, y: -5}
+  m_UseGraphicAlpha: 1
