@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,43 @@ public class GameManager : MonoBehaviour
         }
 
         mainScene.SetActive(true);
+    }
+
+    private void OnEnable()
+{
+    SceneManager.sceneLoaded += PrepararInterfazPuzzle;
+}
+
+private void OnDisable()
+{
+    SceneManager.sceneLoaded -= PrepararInterfazPuzzle;
+}
+
+private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
+    {
+        if (!InPuzzle ||
+            modo != LoadSceneMode.Additive ||
+            escena == gameObject.scene)
+        {
+            return;
+        }
+
+        foreach (GameObject raiz in escena.GetRootGameObjects())
+        {
+            EventSystem[] sistemas =
+                raiz.GetComponentsInChildren<EventSystem>(true);
+
+            foreach (EventSystem sistema in sistemas)
+            {
+                sistema.gameObject.SetActive(false);
+            }
+        }
+
+        if (EventSystem.current == null)
+        {
+            Debug.LogError(
+                "GameManager: falta un EventSystem global activo.", this);
+        }
     }
 
     public static void EntrarPuzzle(string nombreEscena)
