@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class IaPatrol : MonoBehaviour
 {
@@ -9,70 +8,96 @@ public class IaPatrol : MonoBehaviour
     public float speed;
     public float waitTime;
     private bool isWaiting;
+    private float tiempoEsperaRestante;
     private CampodeVision campodeVision;
     private Rigidbody2D rb;
  
 
-
-
-void Start()
+private void Awake()
     {
         // Obtenemos el componente correctamente en Start
         campodeVision = GetComponent<CampodeVision>();
         rb = GetComponent<Rigidbody2D>();
-        if (rb == null)
+
+        if (rb == null || campodeVision == null)
         {
-            Debug.LogError("No configurado bien el rigidbody");
+            Debug.LogError(
+                "IaPatrol: se necesitan Rigidbody2D y CampodeVision.", this);
+
+            enabled = false;
         }
     }
-    // Update is called once per frame
-    void FixedUpdate()
+
+    private void OnDisable()
     {
-        if (campodeVision == null) { Debug.LogError("CampodeVision es null"); return; }
-
-        if(!campodeVision.Viendo)
+        if (rb != null)
         {
-            if (waypoints == null || waypoints.Length == 0) { Debug.LogError("No hay waypoints asignados"); return; }
-            
-            Transform objetivoWaypoint = waypoints[waypointactual];
-
-            if(Vector2.Distance(rb.position, objetivoWaypoint.position) > 0.1f)
-            {
-                Vector2 direccion = ((Vector2)objetivoWaypoint.position - rb.position).normalized;
-                
-                rb.linearVelocity = direccion * speed;
-
-                RotarHacia(objetivoWaypoint.position);
-            }
-            else
-            {
-                rb.linearVelocity = Vector2.zero;
-                if (!isWaiting)
-                {
-                    StartCoroutine(Wait());
-                }
-            }
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
         }
-        /*if(transform.position != waypoints[waypointactual].position){
-            transform.position=Vector2.MoveTowards(transform.position,waypoints[waypointactual].position, speed * Time.deltaTime);
-        }
-        else if(!isWaiting)
-        {
-            StartCoroutine(Wait());
-        }*/
     }
 
-    IEnumerator Wait(){
-        isWaiting=true;
-        yield return new WaitForSeconds(waitTime);
-        
-        waypointactual = (waypointactual+1)%waypoints.Length;
+    // Update is called once per frame
+    private void FixedUpdate()
+    {
+        if (rb == null)
+            return;
 
-        isWaiting=false;
-        Flip();
+        if (PauseMenu.IsPaused ||
+            GameManager.InPuzzle ||
+            campodeVision == null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        // Durante la persecución, IASeguir controla el movimiento.
+        if (campodeVision.Viendo)
+            return;
+
+        if (waypoints == null ||
+            waypoints.Length == 0 ||
+            waypointactual >= waypoints.Length ||
+            waypoints[waypointactual] == null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (isWaiting)
+        {
+            rb.linearVelocity = Vector2.zero;
+
+            tiempoEsperaRestante = Mathf.Max(
+                0f, tiempoEsperaRestante - Time.fixedDeltaTime);
+
+            if (tiempoEsperaRestante <= 0f)
+            {
+                waypointactual = (waypointactual + 1) % waypoints.Length;
+                isWaiting = false;
+                Flip();
+            }
+
+            return;
+        }
+
+        Transform objetivoWaypoint = waypoints[waypointactual];
+
+        if (Vector2.Distance(rb.position, objetivoWaypoint.position) > 0.1f)
+        {
+            Vector2 direccion =
+                ((Vector2)objetivoWaypoint.position - rb.position).normalized;
+
+            rb.linearVelocity = direccion * speed;
+            RotarHacia(objetivoWaypoint.position);
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+            isWaiting = true;
+            tiempoEsperaRestante = Mathf.Max(0f, waitTime);
+        }
     }
-
-
 
     private void RotarHacia(Vector2 destino) {
             // Calculamos la dirección vectorial desde nuestra posición hasta el destino
