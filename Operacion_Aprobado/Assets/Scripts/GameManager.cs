@@ -5,14 +5,29 @@ public class GameManager : MonoBehaviour
     public static bool InPuzzle = false;
     public GameObject mainScene;
 
-    void Start()
-    {   
-        InPuzzle = false; 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ReiniciarEstado()
+    {
+        InPuzzle = false;
+    }
 
-        if (mainScene != null)
+    private void Awake()
+    {
+        if (mainScene == null)
         {
-            mainScene.SetActive(!InPuzzle);
+            Debug.LogError(
+                "GameManager: falta asignar MainGameRoot en Main Scene.", this);
+            return;
         }
+
+        if (transform.IsChildOf(mainScene.transform))
+        {
+            Debug.LogError(
+                "GameManager: el gestor debe estar fuera de MainGameRoot.", this);
+            return;
+        }
+
+        mainScene.SetActive(true);
     }
 
     public static void EntrarPuzzle()
