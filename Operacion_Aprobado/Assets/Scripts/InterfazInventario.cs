@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class InterfazInventario : MonoBehaviour
 {
@@ -32,6 +33,40 @@ public class InterfazInventario : MonoBehaviour
             var interfazObjeto = Instantiate(prefabInterfazObjeto, padre, false).GetComponent<InterfazObjeto>();
             interfazObjeto.Initialize(objeto, inventario.SoltarObjeto);
             interfazInventario.Add(interfazObjeto.gameObject);
+        }
+
+        var lanzarScript = inventario.GetComponent<LanzarObjeto>();
+        if (lanzarScript != null && lanzarScript.ObjetoPreparado != null)
+        {
+            SeleccionarObjeto(lanzarScript.ObjetoPreparado);
+        }
+    }
+
+    public void SeleccionarObjeto(Objeto objetoSeleccionado)
+    {
+        for(int i = 0; i<inventario.listaInventario.Count; i++)
+        {
+            var interfazObjeto = interfazInventario[i].GetComponent<InterfazObjeto>();
+            if (interfazObjeto != null)
+            {
+                bool esEste = inventario.listaInventario[i] == objetoSeleccionado;
+                interfazObjeto.MarcarComoSeleccionado(esEste);
+            }
+        }
+    }
+
+    public void LimpiarSeleccion()
+    {
+        foreach (var objeto in interfazInventario)
+        {
+            if (objeto != null)
+            {
+                var interfazObjeto = objeto.GetComponent<InterfazObjeto>();
+                if (interfazObjeto != null)
+                {
+                    interfazObjeto.MarcarComoSeleccionado(false);
+                }
+            }
         }
     }
 }

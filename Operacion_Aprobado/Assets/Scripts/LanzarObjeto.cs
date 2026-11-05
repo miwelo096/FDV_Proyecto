@@ -91,6 +91,10 @@ public class LanzarObjeto : MonoBehaviour
                 if (objeto.prefabObjetoLanzable != null)
                 {
                     paraLanzar = true;
+                    if (inventarioScript.interfaz != null)
+                    {
+                        inventarioScript.interfaz.SeleccionarObjeto(objeto);
+                    }
                 }
                 else
                 {
@@ -202,7 +206,20 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     void ResetearEstado()
     {
+        if (inventarioScript != null && inventarioScript.interfaz != null)
+        {
+            inventarioScript.interfaz.LimpiarSeleccion();
+        }
+
         objeto = null;
         paraLanzar = false;
+    }
+
+    /// <summary>
+    /// Obtiene el objeto que está preparado para lanzar en caso de que haya alguno.
+    /// </summary>
+    public ObjetoLanzable ObjetoPreparado
+    {
+        get{ return paraLanzar ? objeto : null; }
     }
 }
