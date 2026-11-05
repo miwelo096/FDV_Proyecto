@@ -63,7 +63,11 @@ public class Inventario : MonoBehaviour
             return;
         }
 
-        var objetoInstanciado = Instantiate(prefabObjetoCaido, transform.position, Quaternion.identity);
+        var objetoInstanciado = Instantiate(
+            prefabObjetoCaido,
+            transform.position,
+            Quaternion.identity,
+            transform.parent);
         var objetoCaido = objetoInstanciado.GetComponent<ObjetoCaido>();
         
         if (objetoCaido != null)

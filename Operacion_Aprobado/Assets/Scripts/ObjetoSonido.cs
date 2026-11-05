@@ -7,9 +7,41 @@ public class ObjetoSonido : MonoBehaviour
 
     private bool yaEmitido = false;
     private float tiempoVidaRestante = 2f;
+    private Rigidbody2D cuerpo;
+    private Vector2 velocidadGuardada;
+    private float velocidadAngularGuardada;
+    private bool movimientoGuardado;
 
-    
-private void Start()
+    private void Awake()
+    {
+        cuerpo = GetComponent<Rigidbody2D>();
+
+        if (cuerpo == null)
+        {
+            Debug.LogError("ObjetoSonido: falta Rigidbody2D.", this);
+        }
+    }
+
+    public void GuardarMovimiento()
+    {
+        if (cuerpo == null || yaEmitido || movimientoGuardado)
+            return;
+
+        velocidadGuardada = cuerpo.linearVelocity;
+        velocidadAngularGuardada = cuerpo.angularVelocity;
+        movimientoGuardado = true;
+    }
+
+    public void RestaurarMovimiento()
+    {
+        if (cuerpo == null || yaEmitido || !movimientoGuardado)
+            return;
+
+        cuerpo.linearVelocity = velocidadGuardada;
+        cuerpo.angularVelocity = velocidadAngularGuardada;
+        movimientoGuardado = false;
+    }    
+    private void Start()
     {
         if (ondaSonoraPrefab == null)
         {
@@ -52,7 +84,11 @@ private void Start()
 
         if (ondaSonoraPrefab != null)
         {
-            GameObject onda = Instantiate(ondaSonoraPrefab, transform.position, Quaternion.identity);
+            GameObject onda = Instantiate(
+                ondaSonoraPrefab,
+                transform.position,
+                Quaternion.identity,
+                transform.parent);
 
             onda.transform.localScale = new Vector2(Constantes.SONIDORAD, Constantes.SONIDORAD);
         }

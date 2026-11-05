@@ -146,7 +146,11 @@ public class LanzarObjeto : MonoBehaviour
             return;
         }
 
-        GameObject objetoInstanciado = Instantiate(objeto.prefabObjetoLanzable, puntoDeLanzamiento.position, Quaternion.identity);
+        GameObject objetoInstanciado = Instantiate(
+            objeto.prefabObjetoLanzable,
+            puntoDeLanzamiento.position,
+            Quaternion.identity,
+            transform.parent);
                 
         var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
 

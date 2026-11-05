@@ -34,7 +34,28 @@ public class GameManager : MonoBehaviour
 
         mainScene.SetActive(true);
     }
+    private void CambiarActividadMundo(bool activo)
+    {
+        if (!activo)
+        {
+            foreach (ObjetoSonido proyectil in
+                    mainScene.GetComponentsInChildren<ObjetoSonido>())
+            {
+                proyectil.GuardarMovimiento();
+            }
+        }
 
+        mainScene.SetActive(activo);
+
+        if (activo)
+        {
+            foreach (ObjetoSonido proyectil in
+                    mainScene.GetComponentsInChildren<ObjetoSonido>())
+            {
+                proyectil.RestaurarMovimiento();
+            }
+        }
+    }
     private void OnEnable()
 {
     SceneManager.sceneLoaded += PrepararInterfazPuzzle;
@@ -118,7 +139,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
 
         try
         {
-            gm.mainScene.SetActive(false);
+            gm.CambiarActividadMundo(false);
 
             AsyncOperation carga = SceneManager.LoadSceneAsync(
                 nombreEscena, LoadSceneMode.Additive);
@@ -139,7 +160,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
 
         // Si no se pudo iniciar la carga, recuperamos el mundo.
         InPuzzle = false;
-        gm.mainScene.SetActive(true);
+        gm.CambiarActividadMundo(true);
     }
 
     public static void SalirPuzzle(Scene escenaPuzzle)
@@ -193,7 +214,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
                     cerrandoPuzzle = false;
 
                     if (gm != null && gm.mainScene != null)
-                        gm.mainScene.SetActive(true);
+                        gm.CambiarActividadMundo(true);
                 };
 
                 return;
