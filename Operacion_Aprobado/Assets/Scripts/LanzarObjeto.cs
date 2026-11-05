@@ -40,6 +40,7 @@ public class LanzarObjeto : MonoBehaviour
     void OnDisable()
     {
         InputManager.OnQPressed -= PrepararLanzamiento;
+        ResetearEstado();
     }
 
 
