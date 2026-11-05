@@ -14,25 +14,36 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Se pulsa Escape para pausar o continuar
+        // ESC se procesa antes que las acciones del mundo.
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseMenu pauseMenuScript = FindAnyObjectByType<PauseMenu>();
+
+            if (pauseMenuScript == null)
+            {
+                Debug.LogError(
+                    "InputManager: no hay un PauseMenu activo.", this);
+                return;
+            }
+
             if (PauseMenu.IsPaused)
                 pauseMenuScript.Resume();
             else
                 pauseMenuScript.Pause();
+
+            return;
         }
 
-        // Si el juego esta en pausa, ninguna tecla funciona salvo Escape
-        if (PauseMenu.IsPaused) return;
+        // Los eventos del mundo quedan bloqueados en ambos contextos.
+        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+            return;
 
         // Se pulsa Left Shift para agacharse o andar
-        // Se pulsa Space para correr o andar
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             OnLShiftPressed?.Invoke();
         }
+        // Se pulsa Space para correr o andar
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             OnSpacePressed?.Invoke();
