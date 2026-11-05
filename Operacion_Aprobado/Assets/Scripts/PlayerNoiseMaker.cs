@@ -37,6 +37,14 @@ public class PlayerNoiseMaker : MonoBehaviour
         
     }
 
+    private void OnDisable()
+    {
+        if (burbujaSonido != null)
+        {
+            burbujaSonido.SetActive(false);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag(Constantes.ENEMYTAG))
