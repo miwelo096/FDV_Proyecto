@@ -6,30 +6,43 @@ public class ObjetoSonido : MonoBehaviour
     private GameObject ondaSonoraPrefab;
 
     private bool yaEmitido = false;
+    private float tiempoVidaRestante = 2f;
 
-
-    private void Start()
+    
+private void Start()
     {
         if (ondaSonoraPrefab == null)
         {
-            Debug.LogError($"No se ha asignado el prefab de la onda sonora ({name})");
+            Debug.LogError(
+                $"No se ha asignado el prefab de la onda sonora ({name})",
+                this);
         }
-
-        // Destruye el objeto automáticamente a los 2 segundos
-        Invoke("expirarPorTiempo", 2f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
+        {
+            return;
+        }
+
         EmitirSonidoUnico();
     }
 
-    /// <summary>
-    /// Destruye el objeto lanzado tras obtener los enemigos dentro de su rango
-    /// </summary>
-    void expirarPorTiempo()
+    private void Update()
     {
-        EmitirSonidoUnico();
+        if (yaEmitido || PauseMenu.IsPaused || GameManager.InPuzzle)
+            return;
+
+        tiempoVidaRestante = Mathf.Max(
+            0f, tiempoVidaRestante - Time.deltaTime);
+
+        if (tiempoVidaRestante <= 0f)
+        {
+            EmitirSonidoUnico();
+        }
     }
 
     void EmitirSonidoUnico()
