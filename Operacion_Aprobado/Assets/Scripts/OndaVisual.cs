@@ -9,33 +9,37 @@ public class OndaVisual : MonoBehaviour
     private float tiempoTranscurrido = 0f;
 
 
-    private void Start()
+    private void Awake()
     {
         spriteOnda = GetComponent<SpriteRenderer>();
-        
+
         if (spriteOnda == null)
         {
-            Debug.LogError($"No se ha encontrado el componente SpriteRenderer ({name})");
-        }
+            Debug.LogError(
+                $"OndaVisual: falta SpriteRenderer en '{name}'.", this);
 
-        Destroy(gameObject, Constantes.TIEMPODEVIDA);
+            enabled = false;
+            Destroy(gameObject);
+        }
     }
 
-    void Update()
+    private void Update()
     {
-        if (spriteOnda != null) 
-        {
-            tiempoTranscurrido += Time.deltaTime;
-            float alfa = Mathf.Clamp01(1f - (tiempoTranscurrido / Constantes.TIEMPODEVIDA));
+        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+            return;
 
-            Color colorActual = spriteOnda.color;
-            colorActual.a = alfa;
-            spriteOnda.color = colorActual;
-        }
-        else
+        tiempoTranscurrido += Time.deltaTime;
+
+        float alfa = Mathf.Clamp01(
+            1f - tiempoTranscurrido / Constantes.TIEMPODEVIDA);
+
+        Color colorActual = spriteOnda.color;
+        colorActual.a = alfa;
+        spriteOnda.color = colorActual;
+
+        if (tiempoTranscurrido >= Constantes.TIEMPODEVIDA)
         {
-            GameAsserts.IsValidReference(spriteOnda, $"spriteRenderer ({name})");
-            Debug.Log("No tiene SpriteRenderer");
+            Destroy(gameObject);
         }
     }
 }
