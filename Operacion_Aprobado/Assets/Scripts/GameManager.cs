@@ -142,16 +142,6 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
         gm.mainScene.SetActive(true);
     }
 
-    public static void SalirPuzzle()
-    {
-        InPuzzle = false;
-        
-        GameManager gm = FindAnyObjectByType<GameManager>();
-        if (gm != null && gm.mainScene != null)
-        {
-            gm.mainScene.SetActive(true); 
-        }
-    }
     public static void SalirPuzzle(Scene escenaPuzzle)
     {
         if (cerrandoPuzzle || PauseMenu.IsPaused)

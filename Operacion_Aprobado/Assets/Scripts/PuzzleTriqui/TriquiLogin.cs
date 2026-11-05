@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class TriquiLogin : MonoBehaviour
 {
@@ -72,7 +71,7 @@ public class TriquiLogin : MonoBehaviour
 
     public void SalirEscena()
     {
-        SceneManager.LoadScene(SiguienteEscena);
+        GameManager.SalirPuzzle(gameObject.scene);
     }
 
     // LÓGICA DEL TERMINAL

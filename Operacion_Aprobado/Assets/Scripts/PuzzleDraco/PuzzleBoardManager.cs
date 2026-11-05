@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class PuzzleBoardManager : MonoBehaviour
 {
@@ -197,23 +196,28 @@ public class PuzzleBoardManager : MonoBehaviour
         estaMoviendo = true;
         Vector2 posicionObjetivo = Posicion(nuevoIndice);
 
-        // Mientras que la distancia sea mayor a 0.01, la pieza se va a ir desplazando,
-        // deteniendose hasta terminar el frame en yield y continuando con el bucle después.
-        while (Vector2.Distance(pieza.transform.position, posicionObjetivo) > 0.01f)
+        while (Vector2.Distance(
+            pieza.transform.position, posicionObjetivo) > 0.01f)
         {
-            pieza.transform.position = Vector2.Lerp(pieza.transform.position, posicionObjetivo, Constantes.VELOCIDADDESPLAZAMIENTO * Time.deltaTime);
+            pieza.transform.position = Vector2.Lerp(
+                pieza.transform.position,
+                posicionObjetivo,
+                Constantes.VELOCIDADDESPLAZAMIENTO * Time.deltaTime);
+
             yield return null;
         }
 
         pieza.transform.position = posicionObjetivo;
         estaMoviendo = false;
-        
+
         if (EstaOrdenado())
         {
             estaTerminado = true;
+
             yield return new WaitForSeconds(1f);
-            GameManager.SalirPuzzle(); 
-            SceneManager.UnloadSceneAsync(Constantes.ESCENADRACO);
+            yield return new WaitUntil(() => !PauseMenu.IsPaused);
+
+            GameManager.SalirPuzzle(gameObject.scene);
         }
     }
 

@@ -153,11 +153,6 @@ public class conectarVPN : MonoBehaviour
 
     public void PulsarSalir()
     {
-        Debug.Log("Cancelando... Volviendo a la escena principal.");
-        // SceneManager.LoadScene("SampleScene");    // NO ME BORRESSSS, ESTOY FASE DE PREUBASSSS
-        // ***** 
-        GameManager.SalirPuzzle(); 
-        SceneManager.UnloadSceneAsync(Constantes.ESCENAVPN);
-
+        GameManager.SalirPuzzle(gameObject.scene);
     }
 }
