@@ -1,28 +1,86 @@
-using UnityEngine;
 using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
+[DefaultExecutionOrder(-200)]
 public class InputManager : MonoBehaviour
 {
-
     public static event Action OnLShiftPressed;
     public static event Action OnSpacePressed;
     public static event Action OnQPressed;
     public static event Action OnEPressed;
 
+    private InputAction accionPausa;
+    private InputAction accionAgachado;
+    private InputAction accionCarrera;
+    private InputAction accionPrepararLanzamiento;
+    private InputAction accionInteractuar;
 
-
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        // ESC se procesa antes que las acciones del mundo.
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseMenu pauseMenuScript = FindAnyObjectByType<PauseMenu>();
+        InputActionAsset acciones = InputSystem.actions;
 
-            if (pauseMenuScript == null)
+        if (acciones == null)
+        {
+            Debug.LogError(
+                "InputManager: falta asignar el asset de acciones del proyecto.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        InputActionMap mapaJugador =
+            acciones.FindActionMap("Player", false);
+
+        if (mapaJugador == null)
+        {
+            Debug.LogError(
+                "InputManager: no se encuentra el mapa Player.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        accionPausa = mapaJugador.FindAction("Pause", false);
+        accionAgachado = mapaJugador.FindAction("Crouch", false);
+        accionCarrera = mapaJugador.FindAction("Sprint", false);
+        accionPrepararLanzamiento =
+            mapaJugador.FindAction("PrepareThrow", false);
+        accionInteractuar = mapaJugador.FindAction("Interact", false);
+
+        if (accionPausa == null ||
+            accionAgachado == null ||
+            accionCarrera == null ||
+            accionPrepararLanzamiento == null ||
+            accionInteractuar == null)
+        {
+            Debug.LogError(
+                "InputManager: el mapa Player necesita las acciones " +
+                "Pause, Crouch, Sprint, PrepareThrow e Interact.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        // Conservamos los controles actuales de teclado y ratón.
+        mapaJugador.bindingMask =
+            InputBinding.MaskByGroup("Keyboard&Mouse");
+    }
+
+    private void Update()
+    {
+        // ESC reserva este frame para pausar o reanudar.
+        if (accionPausa.WasPressedThisFrame())
+        {
+            PauseMenu pauseMenuScript =
+                FindAnyObjectByType<PauseMenu>();
+
+            if (pauseMenuScript == null ||
+                !pauseMenuScript.isActiveAndEnabled)
             {
                 Debug.LogError(
-                    "InputManager: no hay un PauseMenu activo.", this);
+                    "InputManager: no hay un PauseMenu activo.",
+                    this);
                 return;
             }
 
@@ -34,29 +92,25 @@ public class InputManager : MonoBehaviour
             return;
         }
 
-        // Los eventos del mundo quedan bloqueados en ambos contextos.
         if (PauseMenu.IsPaused || GameManager.InPuzzle)
             return;
 
-        // Se pulsa Left Shift para agacharse o andar
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        // Conservamos la prioridad de Shift sobre Espacio.
+        if (accionAgachado.WasPressedThisFrame())
         {
             OnLShiftPressed?.Invoke();
         }
-        // Se pulsa Space para correr o andar
-        else if (Input.GetKeyDown(KeyCode.Space))
+        else if (accionCarrera.WasPressedThisFrame())
         {
             OnSpacePressed?.Invoke();
         }
 
-        // Se pulsa 'Q' para lanzar el objeto
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (accionPrepararLanzamiento.WasPressedThisFrame())
         {
             OnQPressed?.Invoke();
         }
 
-        // Se pulsa 'E' para interactuar con objetos/puertas...
-        if (Input.GetKeyDown(KeyCode.E))
+        if (accionInteractuar.WasPressedThisFrame())
         {
             OnEPressed?.Invoke();
         }
