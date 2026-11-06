@@ -7,10 +7,9 @@ public class CampodeVision : MonoBehaviour
     public LayerMask obstaculos;
     public string tagObjetivo = "Player";
 
-    // true si el objetivo está en rango, dentro del ángulo y sin obstáculos de por medio
-    // el enemigo puede leer este campo para saber si debe cambiar de estado
-    public bool Viendo;
-    public Transform Objetivo;
+     // Resultados calculados aquí; otros componentes solo pueden leerlos.
+    public bool Viendo { get; private set; }
+    public Transform Objetivo { get; private set; }
 
     private Transform objetivo;
     private bool viendoAntes = false;
