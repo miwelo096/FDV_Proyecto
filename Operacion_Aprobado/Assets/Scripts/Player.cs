@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -203,7 +204,10 @@ public class Player : MonoBehaviour
         tiempoInvulnerable = TIEMPOINVULNERABLE;
 
         Debug.Log($"Vidas restantes: {vidas}");
-        // TODO: game over cuando vidas == 0
+        if (vidas == 0)
+        {
+            SceneManager.LoadScene(gameObject.scene.name);
+        }
     }
 
     /// <summary>
