@@ -34,6 +34,32 @@ public class CampodeVision : MonoBehaviour
         lineaIzquierda = CrearLinea("VisionIzq");
     }
 
+    private void OnEnable()
+    {
+        if (lineaDerecha != null)
+        {
+            lineaDerecha.enabled = true;
+        }
+
+        if (lineaIzquierda != null)
+        {
+            lineaIzquierda.enabled = true;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (lineaDerecha != null)
+        {
+            lineaDerecha.enabled = false;
+        }
+
+        if (lineaIzquierda != null)
+        {
+            lineaIzquierda.enabled = false;
+        }
+    }
+
     // visualizar campo de vision
     LineRenderer CrearLinea(string nombre)
     {
