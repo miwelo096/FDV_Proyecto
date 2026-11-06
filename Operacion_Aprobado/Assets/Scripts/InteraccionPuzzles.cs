@@ -132,11 +132,18 @@ public class DetectorInteracciones : MonoBehaviour
     }
 
     /// <summary>
-    /// Desuscribe el metodo del evento de entrada
+    /// Desuscribe la entrada y limpia el aviso de interacción.
     /// </summary>
-    void OnDisable()
+    private void OnDisable()
     {
         InputManager.OnEPressed -= ComprobacionHoja;
+
+        if (objetosInteractivosEnRango != null)
+        {
+            DesactivarTodosLosCanvas();
+        }
+
+        objetoActualEnRango = null;
     }
 
 
