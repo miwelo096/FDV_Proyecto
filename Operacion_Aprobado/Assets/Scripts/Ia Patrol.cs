@@ -11,18 +11,19 @@ public class IaPatrol : MonoBehaviour
     private float tiempoEsperaRestante;
     private CampodeVision campodeVision;
     private Rigidbody2D rb;
- 
+    private IASeguir seguimiento;
 
-private void Awake()
+    private void Awake()
     {
-        // Obtenemos el componente correctamente en Start
         campodeVision = GetComponent<CampodeVision>();
         rb = GetComponent<Rigidbody2D>();
+        seguimiento = GetComponent<IASeguir>();
 
-        if (rb == null || campodeVision == null)
+        if (rb == null || campodeVision == null || seguimiento == null)
         {
             Debug.LogError(
-                "IaPatrol: se necesitan Rigidbody2D y CampodeVision.", this);
+                "IaPatrol: se necesitan Rigidbody2D, CampodeVision e IASeguir.",
+                this);
 
             enabled = false;
         }
@@ -43,24 +44,54 @@ private void Awake()
         if (rb == null)
             return;
 
+        rb.angularVelocity = 0f;
+
         if (PauseMenu.IsPaused ||
             GameManager.InPuzzle ||
-            campodeVision == null)
+            campodeVision == null ||
+            !campodeVision.isActiveAndEnabled ||
+            seguimiento == null ||
+            !seguimiento.isActiveAndEnabled)
         {
             rb.linearVelocity = Vector2.zero;
             return;
         }
 
-        // Durante la persecución, IASeguir controla el movimiento.
-        if (campodeVision.Viendo)
-            return;
-
         if (waypoints == null ||
             waypoints.Length == 0 ||
+            waypointactual < 0 ||
             waypointactual >= waypoints.Length ||
             waypoints[waypointactual] == null)
         {
             rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (campodeVision.Viendo)
+        {
+            Transform objetivo = campodeVision.Objetivo;
+
+            if (objetivo == null || !objetivo.gameObject.activeInHierarchy)
+            {
+                rb.linearVelocity = Vector2.zero;
+                return;
+            }
+
+            // La persecución interrumpe la espera del waypoint.
+            isWaiting = false;
+            tiempoEsperaRestante = 0f;
+
+            Vector2 direccion = (Vector2)objetivo.position - rb.position;
+
+            rb.linearVelocity = direccion.magnitude > seguimiento.disMin
+                ? direccion.normalized * seguimiento.speed
+                : Vector2.zero;
+
+            if (direccion.sqrMagnitude > 0f)
+            {
+                RotarHacia(objetivo.position);
+            }
+
             return;
         }
 
@@ -75,7 +106,11 @@ private void Awake()
             {
                 waypointactual = (waypointactual + 1) % waypoints.Length;
                 isWaiting = false;
-                Flip();
+
+                if (waypoints[waypointactual] != null)
+                {
+                    Flip();
+                }
             }
 
             return;
@@ -98,6 +133,7 @@ private void Awake()
             tiempoEsperaRestante = Mathf.Max(0f, waitTime);
         }
     }
+
 
     private void RotarHacia(Vector2 destino) {
             // Calculamos la dirección vectorial desde nuestra posición hasta el destino
