@@ -164,22 +164,32 @@ public class PuzzleBoardManager : MonoBehaviour
     /// <param name="idPiezaAMover">Indice de la pieza a mover</param>
     public void IntentarMoverPieza(int idPiezaAMover)
     {
-        if (estaMoviendo || estaTerminado) return;
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            InputManager.PausaPulsadaEsteFrame ||
+            estaMoviendo ||
+            estaTerminado)
+        {
+            return;
+        }
 
-        int indicePieza = System.Array.IndexOf(boardState, idPiezaAMover);
-        int indiceVacio = System.Array.IndexOf(boardState, totalPosiciones-1);
+        int indicePieza =
+            System.Array.IndexOf(boardState, idPiezaAMover);
 
-        List<int> listaPiezasVecinas = ComprobarPiezasVecinas(indiceVacio);
+        int indiceVacio =
+            System.Array.IndexOf(boardState, totalPosiciones - 1);
+
+        List<int> listaPiezasVecinas =
+            ComprobarPiezasVecinas(indiceVacio);
 
         if (listaPiezasVecinas.Contains(indicePieza))
         {
             boardState[indiceVacio] = idPiezaAMover;
-            boardState[indicePieza] = totalPosiciones-1;
+            boardState[indicePieza] = totalPosiciones - 1;
 
-            StartCoroutine(DeslizarPieza(piezasVisuales[idPiezaAMover], indiceVacio));
+            StartCoroutine(
+                DeslizarPieza(piezasVisuales[idPiezaAMover], indiceVacio));
         }
-
-        
     }
 
     /// <summary>
