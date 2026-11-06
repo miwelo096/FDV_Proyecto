@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7451385435911173422}
   - component: {fileID: 1091061531642814447}
   - component: {fileID: 3198903896245402158}
-  - component: {fileID: 3901423688849123439}
   - component: {fileID: -506782703263992604}
   m_Layer: 11
   m_Name: Enemigo
@@ -188,23 +187,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   tagObjetivo: Player
-  Viendo: 0
-  Objetivo: {fileID: 0}
---- !u!114 &3901423688849123439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 546590884484981795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 488e75861b70bdddd89bba8874534bf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IASeguir
-  speed: 3
-  player: {fileID: 0}
-  disMin: 1
 --- !u!114 &-506782703263992604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,3 +202,5 @@ MonoBehaviour:
   waypoints: []
   speed: 1.25
   waitTime: 1.5
+  velocidadPersecucion: 3
+  distanciaMinimaPersecucion: 1

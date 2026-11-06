@@ -11,18 +11,18 @@ public class IaPatrol : MonoBehaviour
     private float tiempoEsperaRestante;
     private CampodeVision campodeVision;
     private Rigidbody2D rb;
-    private IASeguir seguimiento;
+    [SerializeField] private float velocidadPersecucion = 3f;
+    [SerializeField] private float distanciaMinimaPersecucion = 1f;
 
     private void Awake()
     {
         campodeVision = GetComponent<CampodeVision>();
         rb = GetComponent<Rigidbody2D>();
-        seguimiento = GetComponent<IASeguir>();
 
-        if (rb == null || campodeVision == null || seguimiento == null)
+        if (rb == null || campodeVision == null)
         {
             Debug.LogError(
-                "IaPatrol: se necesitan Rigidbody2D, CampodeVision e IASeguir.",
+                "IaPatrol: se necesitan Rigidbody2D y CampodeVision.",
                 this);
 
             enabled = false;
@@ -49,9 +49,7 @@ public class IaPatrol : MonoBehaviour
         if (PauseMenu.IsPaused ||
             GameManager.InPuzzle ||
             campodeVision == null ||
-            !campodeVision.isActiveAndEnabled ||
-            seguimiento == null ||
-            !seguimiento.isActiveAndEnabled)
+            !campodeVision.isActiveAndEnabled)
         {
             rb.linearVelocity = Vector2.zero;
             return;
@@ -83,8 +81,8 @@ public class IaPatrol : MonoBehaviour
 
             Vector2 direccion = (Vector2)objetivo.position - rb.position;
 
-            rb.linearVelocity = direccion.magnitude > seguimiento.disMin
-                ? direccion.normalized * seguimiento.speed
+            rb.linearVelocity = direccion.magnitude > distanciaMinimaPersecucion
+                ? direccion.normalized * velocidadPersecucion
                 : Vector2.zero;
 
             if (direccion.sqrMagnitude > 0f)
