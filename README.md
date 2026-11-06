@@ -1,5 +1,10 @@
-# Tutorial:
-## Teclado:
+# 🎮Quick start
+**[UnityPlay](https://play-prod.struckd.com/api/v1/games/game/560acaf0-e5c8-47e8-a133-384cfe3d9091/build/latest/frame)**
+
+---
+
+# 📖Tutorial:
+## ⌨️Teclado:
 - **WASD** para moverse.
 - **Shift Izquierdo** para pasar a modo agachado.
 - **Espacio** para pasar a modo carrera.
