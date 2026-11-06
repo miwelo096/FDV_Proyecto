@@ -44,34 +44,79 @@ public class LanzarObjeto : MonoBehaviour
     }
 
 
-    void Update()
+    void LateUpdate()
     {
-        if (PauseMenu.IsPaused) return;
-
-        if (paraLanzar)
+        // ESC reserva todo este frame para pausar o reanudar.
+        if (Input.GetKeyDown(KeyCode.Escape) || PauseMenu.IsPaused)
         {
-            if (!VerificarDisponibilidadObjeto())
-            {
-                Debug.Log("El objeto preparado ya no está disponible en el inventario. Cancelando preparación.");
-                CancelarLanzamiento();
-                return;
-            }
-
-            // Ignorar clics si el puntero está sobre un elemento de la interfaz
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                return; 
-            }
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                EjecutarLanzamiento();
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                CancelarLanzamiento();
-            }
+            return;
         }
+
+        if (!paraLanzar)
+        {
+            return;
+        }
+
+        if (GameManager.InPuzzle)
+        {
+            CancelarLanzamiento();
+            return;
+        }
+
+        if (!VerificarDisponibilidadObjeto())
+        {
+            Debug.Log(
+                "LanzarObjeto: el objeto preparado ya no está disponible.",
+                this);
+            CancelarLanzamiento();
+            return;
+        }
+
+        if (puntoDeLanzamiento == null ||
+            camara == null ||
+            !camara.isActiveAndEnabled ||
+            inventarioScript == null ||
+            !inventarioScript.isActiveAndEnabled ||
+            inventarioScript.Interfaz == null ||
+            objeto.prefabObjetoLanzable == null ||
+            !objeto.prefabObjetoLanzable.activeSelf)
+        {
+            Debug.LogWarning(
+                "LanzarObjeto: la preparación ha perdido referencias necesarias.",
+                this);
+            CancelarLanzamiento();
+            return;
+        }
+
+        // El clic derecho puede cancelar también sobre la interfaz.
+        if (Input.GetMouseButtonDown(1))
+        {
+            CancelarLanzamiento();
+            return;
+        }
+
+        if (!Input.GetMouseButtonDown(0))
+        {
+            return;
+        }
+
+        EventSystem sistemaEventos = EventSystem.current;
+
+        if (sistemaEventos == null)
+        {
+            Debug.LogError(
+                "LanzarObjeto: falta un EventSystem activo para comprobar el clic.",
+                this);
+            CancelarLanzamiento();
+            return;
+        }
+
+        if (sistemaEventos.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        EjecutarLanzamiento();
     }
 
     /// <summary>
