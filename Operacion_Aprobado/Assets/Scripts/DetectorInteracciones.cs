@@ -4,21 +4,18 @@ using UnityEngine;
 public class DetectorInteracciones : MonoBehaviour
 {
     // Guardamos la referencia de la hoja/mesa con la que podemos interactuar en este momento
-    private DatosHoja objetoActualEnRango;
+    private IInteractuable objetoActualEnRango;
     private Player playerScript;
-    private List<DatosHoja> objetosInteractivosEnRango;
+    private List<IInteractuable> objetosInteractivosEnRango;
 
 
     void Start()
     {
         objetoActualEnRango = null;
         playerScript = GetComponent<Player>();
-        objetosInteractivosEnRango = new List<DatosHoja>();
+        objetosInteractivosEnRango = new List<IInteractuable>();
 
-        if (playerScript == null)
-        {
-            Debug.LogError($"No se ha obtenido script de Player ({name})");
-        }
+        GameAsserts.IsValidReference(playerScript, $"playerScript ({name})");
     }
 
     void Update()
@@ -42,7 +39,7 @@ public class DetectorInteracciones : MonoBehaviour
     /// <param name="collision">Collider2D que ha traspasado</param>
     void OnTriggerEnter2D(Collider2D collision)
     {
-        DatosHoja objeto = collision.GetComponent<DatosHoja>();
+        IInteractuable objeto = collision.GetComponent<IInteractuable>();
 
         if (objeto != null && !objetosInteractivosEnRango.Contains(objeto))
         {
@@ -57,7 +54,7 @@ public class DetectorInteracciones : MonoBehaviour
     /// <param name="collision">Collider2D que ha dejado de traspasar</param>
     void OnTriggerExit2D(Collider2D collision)
     {
-        DatosHoja objeto = collision.GetComponent<DatosHoja>();
+        IInteractuable objeto = collision.GetComponent<IInteractuable>();
 
         if (objeto != null)
         {
@@ -77,7 +74,10 @@ public class DetectorInteracciones : MonoBehaviour
     void ActualizarObjetoMasCercano()
     {
         // Eliminamos todos los que sean null
-        objetosInteractivosEnRango.RemoveAll(h => h == null);
+        objetosInteractivosEnRango.RemoveAll(
+                h => h == null ||
+                (h is MonoBehaviour mh && mh == null)
+                );
 
         if (objetosInteractivosEnRango.Count == 0)
         {
@@ -85,27 +85,31 @@ public class DetectorInteracciones : MonoBehaviour
             return;
         }
 
-        DatosHoja masCercana = null;
+        IInteractuable masCercana = null;
         float menorDistanciaSq = Mathf.Infinity;
         Vector2 posicionJugador = transform.position;
 
-        foreach (var hoja in objetosInteractivosEnRango)
+        foreach (var interactuable in objetosInteractivosEnRango)
         {
-            float distanciaSq = ((Vector2)hoja.transform.position - posicionJugador).sqrMagnitude;
-            if (distanciaSq < menorDistanciaSq)
+            MonoBehaviour mh = interactuable as MonoBehaviour;
+            if (mh != null)
             {
-                menorDistanciaSq = distanciaSq;
-                masCercana = hoja;
+                float distanciaSq = ((Vector2)mh.transform.position - posicionJugador).sqrMagnitude;
+                if (distanciaSq < menorDistanciaSq)
+                {
+                    menorDistanciaSq = distanciaSq;
+                    masCercana = interactuable;
+                }
             }
         }
 
         objetoActualEnRango = masCercana;
 
-        foreach (var hoja in objetosInteractivosEnRango)
+        foreach (var interactuable in objetosInteractivosEnRango)
         {
-            if (hoja.canvasInteraccion != null)
+            if (interactuable.canvasInteraccion != null)
             {
-                hoja.canvasInteraccion.SetActive(hoja == objetoActualEnRango);
+                interactuable.canvasInteraccion.SetActive(interactuable == objetoActualEnRango);
             }
         }
     }
@@ -134,7 +138,7 @@ public class DetectorInteracciones : MonoBehaviour
     /// <summary>
     /// Desuscribe la entrada y limpia el aviso de interacción.
     /// </summary>
-    private void OnDisable()
+    void OnDisable()
     {
         InputManager.OnEPressed -= ComprobacionHoja;
 
@@ -156,17 +160,7 @@ public class DetectorInteracciones : MonoBehaviour
 
         if (objetoActualEnRango != null)
         {
-            CargarMinijuego(objetoActualEnRango.nombreEscenaMinijuego);
+            objetoActualEnRango.Interactuar();
         }
-    }
-
-    /// <summary>
-    /// Carga la escena del minijuego/puzzle dado el nombre
-    /// </summary>
-    /// 
-    /// <param name="nombreEscena">Nombre de la escena a cargar</param>
-    void CargarMinijuego(string nombreEscena)
-    {
-        GameManager.EntrarPuzzle(nombreEscena);
     }
 }

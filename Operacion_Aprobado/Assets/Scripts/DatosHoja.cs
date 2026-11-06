@@ -1,11 +1,26 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class DatosHoja : MonoBehaviour
+public class DatosHoja : MonoBehaviour, IInteractuable
 {
-    [Header("Configuración del Minijuego")]
-    [Tooltip("Nombre de la escena del minijuego/puzzle de esta hoja")]
+    [SerializeField, FormerlySerializedAs("canvasInteraccion")]
+    private GameObject _canvasInteraccion;
     public string nombreEscenaMinijuego;
-
-    [Tooltip("Referencia al Canvas de interacción ('Pulsa E') de esta hoja")]
-    public GameObject canvasInteraccion;
+    
+    
+    /// <summary>
+    /// Al interactuar con el objeto, entra en el puzzle que se encuentra en la escena nombreEscenaMinijuego.
+    /// </summary>
+    public void Interactuar()
+    {
+        GameManager.EntrarPuzzle(nombreEscenaMinijuego);
+    }
+    
+    /// <summary>
+    /// get: Obtiene el canvas que aparece para interactuar.
+    /// </summary>
+    public GameObject canvasInteraccion
+    {
+        get { return _canvasInteraccion; }
+    }
 }

@@ -11,6 +11,8 @@ UserSettings/
 MemoryCaptures/
 Recording/
 /[A|a]sset[M|m]anaged[M|m]odules/
+/Operacion_Aprobado/Assets/_Recovery/
+/Operacion_Aprobado/Assets/_Recovery.meta
 
 # Archivos de C#
 *.csproj

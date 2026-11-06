@@ -120,7 +120,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!58 &7421960743967254733
 CircleCollider2D:
@@ -170,7 +170,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379ed38348634164b917b88c6faa2b80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoSonido
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 2048
   ondaSonoraPrefab: {fileID: 4541929967776722699, guid: 1a4fcea01e82f934b85d23753ac9f3c6, type: 3}
