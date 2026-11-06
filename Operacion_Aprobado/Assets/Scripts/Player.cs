@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
 
     private float tiempoDeslizamiento = 0f;
     private Vector2 direccionDeslizamiento;
+    private Vector2 entradaMovimiento;
 
     // Vidas del jugador
     private int vidas;
@@ -62,49 +63,84 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (PauseMenu.IsPaused)
+        if (PauseMenu.IsPaused || GameManager.InPuzzle)
         {
+            entradaMovimiento = Vector2.zero;
+
+            // FixedUpdate no se ejecuta cuando timeScale es cero.
             if (playerRB != null)
                 playerRB.linearVelocity = Vector2.zero;
 
             return;
         }
 
+        float inputHorizontal = Input.GetAxisRaw("Horizontal");
+        float inputVertical = Input.GetAxisRaw("Vertical");
+
+        entradaMovimiento =
+            new Vector2(inputHorizontal, inputVertical).normalized;
+
         if (tiempoInvulnerable > 0f)
         {
             tiempoInvulnerable -= Time.deltaTime;
         }
+
         escondido();
 
-        // Si el estado es AGACHADO, ignora las colisiones de la mascara "Mesa"
-        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Mesa"),
-                                        getEstado() == Estados.Agachado || getEstado() == Estados.Escondido);
+        // Se conserva aquí hasta el fragmento de transiciones de postura.
+        Physics2D.IgnoreLayerCollision(
+            LayerMask.NameToLayer("Player"),
+            LayerMask.NameToLayer("Mesa"),
+            getEstado() == Estados.Agachado ||
+            getEstado() == Estados.Escondido);
+    }
 
-        // Si cambia de estado durante el deslizamiento (p. ej. pulsa Espacio), se cancela
-        if (deslizando && getEstado() != Estados.Agachado && getEstado() != Estados.Escondido)
+    void FixedUpdate()
+    {
+        if (playerRB == null)
+            return;
+
+        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+        {
+            playerRB.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        // Abandonar las posturas permitidas cancela el deslizamiento.
+        if (deslizando &&
+            getEstado() != Estados.Agachado &&
+            getEstado() != Estados.Escondido)
         {
             deslizando = false;
         }
 
         if (deslizando)
         {
-            tiempoDeslizamiento -= Time.deltaTime;
+            tiempoDeslizamiento = Mathf.Max(
+                0f,
+                tiempoDeslizamiento - Time.fixedDeltaTime);
 
-            float t = 1f - (tiempoDeslizamiento / DURACIONDESLIZAMIENTO);
-            float velocidadActual = Mathf.Lerp(VELOCIDADDESLIZAMIENTO, VELOCIDADAGACHADO, t);
+            float t =
+                1f - (tiempoDeslizamiento / DURACIONDESLIZAMIENTO);
 
-            getPlayerRB().linearVelocity = direccionDeslizamiento * velocidadActual;
+            float velocidadActual = Mathf.Lerp(
+                VELOCIDADDESLIZAMIENTO,
+                VELOCIDADAGACHADO,
+                t);
+
+            playerRB.linearVelocity =
+                direccionDeslizamiento * velocidadActual;
 
             if (tiempoDeslizamiento <= 0f)
             {
                 deslizando = false;
             }
+
             return;
         }
-        float inputVertical = Input.GetAxisRaw("Vertical");
-        float inputHorizontal = Input.GetAxisRaw("Horizontal");
-        Vector2 input = new Vector2(inputHorizontal, inputVertical);
-        getPlayerRB().linearVelocity = input.normalized * getVelocidad();
+
+        playerRB.linearVelocity =
+            entradaMovimiento * getVelocidad();
     }
 
     /// <summary>
@@ -124,6 +160,7 @@ public class Player : MonoBehaviour
         InputManager.OnLShiftPressed -= AlternarAgachado;
         InputManager.OnSpacePressed -= AlternarCorrer;
 
+        entradaMovimiento = Vector2.zero;
         deslizando = false;
         tiempoDeslizamiento = 0f;
         direccionDeslizamiento = Vector2.zero;
