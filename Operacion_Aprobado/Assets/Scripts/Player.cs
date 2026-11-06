@@ -86,14 +86,8 @@ public class Player : MonoBehaviour
         }
 
         escondido();
-
-        // Se conserva aquí hasta el fragmento de transiciones de postura.
-        Physics2D.IgnoreLayerCollision(
-            LayerMask.NameToLayer("Player"),
-            LayerMask.NameToLayer("Mesa"),
-            getEstado() == Estados.Agachado ||
-            getEstado() == Estados.Escondido);
     }
+
 
     void FixedUpdate()
     {
@@ -286,8 +280,28 @@ public class Player : MonoBehaviour
     /// <param name="estado">Estado a cambiar</param>
     public void setEstado(Estados estado)
     {
+        if (this.estado == estado)
+            return;
+
         this.estado = estado;
-        if (estado == Estados.Agachado || estado == Estados.Escondido)
+
+        bool posturaBaja =
+            estado == Estados.Agachado ||
+            estado == Estados.Escondido;
+
+        int capaJugador = LayerMask.NameToLayer("Player");
+        int capaMesa = LayerMask.NameToLayer("Mesa");
+
+        if (Physics2D.GetIgnoreLayerCollision(capaJugador, capaMesa)
+            != posturaBaja)
+        {
+            Physics2D.IgnoreLayerCollision(
+                capaJugador,
+                capaMesa,
+                posturaBaja);
+        }
+
+        if (posturaBaja)
         {
             getPlayerSprite().color = Color.yellow;
             setVelocidad(VELOCIDADAGACHADO);
@@ -303,7 +317,6 @@ public class Player : MonoBehaviour
             setVelocidad(VELOCIDADANDANDO);
         }
     }
-
     /// <summary>
     /// Obtiene el estado del Player
     /// </summary>
