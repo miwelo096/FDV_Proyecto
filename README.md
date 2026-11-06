@@ -1,4 +1,4 @@
-# Tutoría:
+# Tutorial:
 ## Teclado:
 - **WASD** para moverse.
 - **Shift Izquierdo** para pasar a modo agachado.
