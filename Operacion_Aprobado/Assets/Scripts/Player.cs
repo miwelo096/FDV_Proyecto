@@ -75,11 +75,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        float inputHorizontal = Input.GetAxisRaw("Horizontal");
-        float inputVertical = Input.GetAxisRaw("Vertical");
-
-        entradaMovimiento =
-            new Vector2(inputHorizontal, inputVertical).normalized;
+        entradaMovimiento = InputManager.Movimiento;
 
         if (tiempoInvulnerable > 0f)
         {
@@ -88,7 +84,6 @@ public class Player : MonoBehaviour
 
         escondido();
     }
-
 
     void FixedUpdate()
     {

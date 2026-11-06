@@ -10,11 +10,21 @@ public class InputManager : MonoBehaviour
     public static event Action OnQPressed;
     public static event Action OnEPressed;
 
+    public static Vector2 Movimiento { get; private set; }
+
+    private InputAction accionMovimiento;
     private InputAction accionPausa;
     private InputAction accionAgachado;
     private InputAction accionCarrera;
     private InputAction accionPrepararLanzamiento;
     private InputAction accionInteractuar;
+
+    [RuntimeInitializeOnLoadMethod(
+        RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ReiniciarEstado()
+    {
+        Movimiento = Vector2.zero;
+    }
 
     private void Awake()
     {
@@ -41,6 +51,7 @@ public class InputManager : MonoBehaviour
             return;
         }
 
+        accionMovimiento = mapaJugador.FindAction("Move", false);
         accionPausa = mapaJugador.FindAction("Pause", false);
         accionAgachado = mapaJugador.FindAction("Crouch", false);
         accionCarrera = mapaJugador.FindAction("Sprint", false);
@@ -48,7 +59,8 @@ public class InputManager : MonoBehaviour
             mapaJugador.FindAction("PrepareThrow", false);
         accionInteractuar = mapaJugador.FindAction("Interact", false);
 
-        if (accionPausa == null ||
+        if (accionMovimiento == null ||
+            accionPausa == null ||
             accionAgachado == null ||
             accionCarrera == null ||
             accionPrepararLanzamiento == null ||
@@ -56,7 +68,7 @@ public class InputManager : MonoBehaviour
         {
             Debug.LogError(
                 "InputManager: el mapa Player necesita las acciones " +
-                "Pause, Crouch, Sprint, PrepareThrow e Interact.",
+                "Move, Pause, Crouch, Sprint, PrepareThrow e Interact.",
                 this);
             enabled = false;
             return;
@@ -69,6 +81,9 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        // Cada frame comienza sin una dirección pendiente.
+        Movimiento = Vector2.zero;
+
         // ESC reserva este frame para pausar o reanudar.
         if (accionPausa.WasPressedThisFrame())
         {
@@ -95,6 +110,9 @@ public class InputManager : MonoBehaviour
         if (PauseMenu.IsPaused || GameManager.InPuzzle)
             return;
 
+        Movimiento =
+            accionMovimiento.ReadValue<Vector2>().normalized;
+
         // Conservamos la prioridad de Shift sobre Espacio.
         if (accionAgachado.WasPressedThisFrame())
         {
@@ -114,5 +132,10 @@ public class InputManager : MonoBehaviour
         {
             OnEPressed?.Invoke();
         }
+    }
+
+    private void OnDisable()
+    {
+        Movimiento = Vector2.zero;
     }
 }
