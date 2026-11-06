@@ -62,16 +62,6 @@ public class InterfazInventario : MonoBehaviour
 
     private void Start()
     {
-        if (inventario == null ||
-            padre == null ||
-            prefabInterfazObjeto == null)
-        {
-            Debug.LogError(
-                "InterfazInventario: asigna Inventario, Padre y Prefab Interfaz Objeto.",
-                this);
-            return;
-        }
-
         ActualizarInterfaz();
     }
 
@@ -80,25 +70,39 @@ public class InterfazInventario : MonoBehaviour
     /// </summary>
     public void ActualizarInterfaz()
     {
-        // Destruimos todos los objetos de la interfaz de inventario
-        foreach (var obj in interfazInventario)
+        if (!ValidarReferencias(inventario))
         {
-            if (obj != null)
+            return;
+        }
+
+        foreach (GameObject casillaAnterior in interfazInventario)
+        {
+            if (casillaAnterior != null)
             {
-                Destroy(obj);
+                casillaAnterior.SetActive(false);
+                Destroy(casillaAnterior);
             }
         }
+
         interfazInventario.Clear();
 
-        // Volvemos a crearlos ordenadamente desde el índice 0 en adelante
         foreach (Objeto objeto in inventario.listaInventario)
         {
-            var interfazObjeto = Instantiate(prefabInterfazObjeto, padre, false).GetComponent<InterfazObjeto>();
-            interfazObjeto.Initialize(objeto, inventario.SoltarObjeto);
+            InterfazObjeto interfazObjeto = Instantiate(
+                prefabInterfazObjeto,
+                padre,
+                false).GetComponent<InterfazObjeto>();
+
+            interfazObjeto.Initialize(objeto, item =>
+            {
+                inventario.SoltarObjeto(item);
+            });
+
             interfazInventario.Add(interfazObjeto.gameObject);
         }
 
-        var lanzarScript = inventario.GetComponent<LanzarObjeto>();
+        LanzarObjeto lanzarScript = inventario.GetComponent<LanzarObjeto>();
+
         if (lanzarScript != null && lanzarScript.ObjetoPreparado != null)
         {
             SeleccionarObjeto(lanzarScript.ObjetoPreparado);

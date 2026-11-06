@@ -16,16 +16,30 @@ public class Inventario : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (PauseMenu.IsPaused) return;
-        if (!collision.CompareTag("Item")) return;
-
-        var ObjetoCaido = collision.GetComponent<ObjetoCaido>();
-        if (ObjetoCaido == null || ObjetoCaido.Recogido || !collision.enabled) return;
-
-        
-        if (AddObjeto(ObjetoCaido.Objeto))
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
         {
-            ObjetoCaido.Recogido = true;
+            return;
+        }
+
+        if (!collision.CompareTag(Constantes.ITEMTAG))
+        {
+            return;
+        }
+
+        ObjetoCaido objetoCaido = collision.GetComponent<ObjetoCaido>();
+
+        if (objetoCaido == null ||
+            objetoCaido.Recogido ||
+            !collision.enabled)
+        {
+            return;
+        }
+
+        if (AddObjeto(objetoCaido.Objeto))
+        {
+            objetoCaido.Recogido = true;
             Destroy(collision.gameObject);
         }
     }
@@ -76,13 +90,13 @@ public class Inventario : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a soltar del inventario</param>
-    public void SoltarObjeto(Objeto objeto)
+    public bool SoltarObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
             PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
-            return;
+            return false;
         }
 
         if (objeto == null || !inventarioList.Contains(objeto))
@@ -90,7 +104,7 @@ public class Inventario : MonoBehaviour
             Debug.LogWarning(
                 "Inventario: no se puede soltar un objeto nulo o ausente.",
                 this);
-            return;
+            return false;
         }
 
         if (interfaz == null)
@@ -98,12 +112,12 @@ public class Inventario : MonoBehaviour
             Debug.LogError(
                 "Inventario: falta asignar la interfaz.",
                 this);
-            return;
+            return false;
         }
 
         if (!interfaz.ValidarReferencias(this))
         {
-            return;
+            return false;
         }
 
         if (prefabObjetoCaido == null ||
@@ -113,7 +127,7 @@ public class Inventario : MonoBehaviour
             Debug.LogError(
                 "Inventario: asigna un Prefab Objeto Caido con ObjetoCaido y Collider2D.",
                 this);
-            return;
+            return false;
         }
 
         GameObject objetoInstanciado = Instantiate(
@@ -128,10 +142,16 @@ public class Inventario : MonoBehaviour
         if (objetoCaido == null || !objetoCaido.Initialize(objeto))
         {
             Destroy(objetoInstanciado);
-            return;
+            return false;
         }
 
-        EliminarObjeto(objeto);
+        if (!EliminarObjeto(objeto))
+        {
+            Destroy(objetoInstanciado);
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
