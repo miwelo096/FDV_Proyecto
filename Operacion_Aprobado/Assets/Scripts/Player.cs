@@ -227,16 +227,25 @@ public class Player : MonoBehaviour
     /// </summary>
     void PerderVida()
     {
-        if (tiempoInvulnerable > 0f || vidas <= 0) return;
+        if (vidas == 0)
+        {
+            SceneManager.LoadScene(gameObject.scene.name);
+        }
+        else{
+            this.vidas--;
+            tiempoInvulnerable = TIEMPOINVULNERABLE;
+            Debug.Log($"Vidas restantes: {vidas}");
+        }
+        /*if (tiempoInvulnerable > 0f || vidas <= 0) return;
 
-        vidas = Mathf.Max(vidas - 1, 0);
+        this.vidas--;
         tiempoInvulnerable = TIEMPOINVULNERABLE;
 
         Debug.Log($"Vidas restantes: {vidas}");
         if (vidas == 0)
         {
             SceneManager.LoadScene(gameObject.scene.name);
-        }
+        }*/
     }
 
     /// <summary>
