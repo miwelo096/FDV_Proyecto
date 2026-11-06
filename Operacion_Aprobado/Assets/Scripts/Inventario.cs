@@ -78,30 +78,60 @@ public class Inventario : MonoBehaviour
     /// <param name="objeto">Objeto a soltar del inventario</param>
     public void SoltarObjeto(Objeto objeto)
     {
-        if (PauseMenu.IsPaused) return;
-        if (objeto == null || !inventarioList.Contains(objeto))
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
         {
-            Debug.LogWarning($"Intento de soltar objeto null o que no se encuentra en el inventario ({name}.SoltarObjeto)");
             return;
         }
 
-        var objetoInstanciado = Instantiate(
+        if (objeto == null || !inventarioList.Contains(objeto))
+        {
+            Debug.LogWarning(
+                "Inventario: no se puede soltar un objeto nulo o ausente.",
+                this);
+            return;
+        }
+
+        if (interfaz == null)
+        {
+            Debug.LogError(
+                "Inventario: falta asignar la interfaz.",
+                this);
+            return;
+        }
+
+        if (!interfaz.ValidarReferencias(this))
+        {
+            return;
+        }
+
+        if (prefabObjetoCaido == null ||
+            prefabObjetoCaido.GetComponent<ObjetoCaido>() == null ||
+            prefabObjetoCaido.GetComponent<Collider2D>() == null)
+        {
+            Debug.LogError(
+                "Inventario: asigna un Prefab Objeto Caido con ObjetoCaido y Collider2D.",
+                this);
+            return;
+        }
+
+        GameObject objetoInstanciado = Instantiate(
             prefabObjetoCaido,
             transform.position,
             Quaternion.identity,
             transform.parent);
-        var objetoCaido = objetoInstanciado.GetComponent<ObjetoCaido>();
-        
-        if (objetoCaido != null)
+
+        ObjetoCaido objetoCaido =
+            objetoInstanciado.GetComponent<ObjetoCaido>();
+
+        if (objetoCaido == null || !objetoCaido.Initialize(objeto))
         {
-            objetoCaido.Initialize(objeto);
-            EliminarObjeto(objeto);
-        }
-        else
-        {
-            Debug.LogError($"Varibale objetoCaido ({name}.SoltarObjeto()) es null");
             Destroy(objetoInstanciado);
+            return;
         }
+
+        EliminarObjeto(objeto);
     }
 
     /// <summary>

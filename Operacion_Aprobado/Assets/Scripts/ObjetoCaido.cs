@@ -11,6 +11,7 @@ public class ObjetoCaido : MonoBehaviour
 
     private Collider2D colliderObjeto;
     private float tiempoRecogidaRestante;
+    private bool inicializado;
 
     void Awake()
     {
@@ -21,10 +22,9 @@ public class ObjetoCaido : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        GameAsserts.IsValidReference(objeto, $"objeto ({name})");
-        if (autoStart&&objeto!=null)
+        if (autoStart && !inicializado)
         {
             Initialize(objeto);
         }
@@ -35,30 +35,39 @@ public class ObjetoCaido : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="nuevoObjeto">Objeto a inicializar</param>
-    public void Initialize(Objeto nuevoObjeto)
+    public bool Initialize(Objeto nuevoObjeto)
     {
-        GameAsserts.IsValidReference(
-            nuevoObjeto, $"nuevoObjeto ({name}.Initialize())");
+        if (inicializado)
+        {
+            return false;
+        }
+
+        if (!isActiveAndEnabled || colliderObjeto == null)
+        {
+            Debug.LogError(
+                "ObjetoCaido: necesita un componente activo y un Collider2D.",
+                this);
+            return false;
+        }
+
+        if (nuevoObjeto == null || nuevoObjeto.prefabSuelo == null)
+        {
+            Debug.LogError(
+                "ObjetoCaido: faltan Objeto o Prefab Suelo.",
+                this);
+            return false;
+        }
+
+        GameObject visual = Instantiate(nuevoObjeto.prefabSuelo, transform);
+        visual.transform.SetLocalPositionAndRotation(
+            Vector3.zero, Quaternion.identity);
 
         objeto = nuevoObjeto;
-
-        if (objeto != null && objeto.prefabSuelo)
-        {
-            var objetoCaido = Instantiate(objeto.prefabSuelo, transform);
-            objetoCaido.transform.SetLocalPositionAndRotation(
-                Vector2.zero, Quaternion.identity);
-        }
-
-        GameAsserts.IsGreaterThanZero(
-            Constantes.DELAYRECOGIDA,
-            $"Constantes.DELAYRECOGIDA ({name}.Initialize())");
-
         tiempoRecogidaRestante = Constantes.DELAYRECOGIDA;
+        colliderObjeto.enabled = false;
+        inicializado = true;
 
-        if (colliderObjeto != null)
-        {
-            colliderObjeto.enabled = false;
-        }
+        return true;
     }
 
     private void Update()
