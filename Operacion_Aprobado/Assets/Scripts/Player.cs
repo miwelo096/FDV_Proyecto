@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D playerRB;
     // Sprite del jugador
     private SpriteRenderer playerSprite;
+    private Color colorOriginalEscondite;
 
     // Sprite del escondite
     private SpriteRenderer esconditeSprite;
@@ -164,6 +165,8 @@ public class Player : MonoBehaviour
             playerRB.linearVelocity = Vector2.zero;
             playerRB.angularVelocity = 0f;
         }
+
+        setSpriteEscondite(null);
     }
 
     /// <summary>
@@ -246,22 +249,34 @@ public class Player : MonoBehaviour
     /// </summary>
     void escondido()
     {
-        // Se comprueba que el jugador esté debajo de algo con el layer "Mesa" (Tiene que estar hasta la mitad del collider)
-        Collider2D colliderEscondite = Physics2D.OverlapBox(transform.position, Vector2.zero,
-                                                0f, LayerMask.GetMask("Mesa"));
+        Collider2D colliderEscondite = Physics2D.OverlapPoint(
+            transform.position,
+            LayerMask.GetMask("Mesa"));
 
-        bool debajoMesa = colliderEscondite != null;
-
-        if (debajoMesa)
+        if (colliderEscondite != null)
         {
+            SpriteRenderer spriteMesa =
+                colliderEscondite.GetComponent<SpriteRenderer>();
+
+            if (spriteMesa != getSpriteEscondite())
+            {
+                setSpriteEscondite(spriteMesa);
+
+                if (spriteMesa != null)
+                {
+                    setTransparencia(0.3f, false);
+                }
+            }
+
             setEstado(Estados.Escondido);
-            setSpriteEscondite(colliderEscondite.GetComponent<SpriteRenderer>());
-            setTransparencia(0.3f, false);
+            return;
         }
-        else if (getEstado() == Estados.Escondido && !debajoMesa)
+
+        setSpriteEscondite(null);
+
+        if (getEstado() == Estados.Escondido)
         {
             setEstado(Estados.Agachado);
-            setTransparencia(1f, true);
         }
     }
 
@@ -360,17 +375,26 @@ public class Player : MonoBehaviour
     /// <param name="eliminiar">True pone a null a la variable "esconditeSprite"</param>
     public void setTransparencia(float valor, bool eliminiar)
     {
-        GameAsserts.IsValidReference(getSpriteEscondite(), "esconditeSprite (Player.setTransparencia)");
-        GameAsserts.ValueBetweenIncluded(valor, 1f, 0f, "valor (Player.setTransparencia)");
-
-        Color color = getSpriteEscondite().material.color;
-        color.a = valor;
-        getSpriteEscondite().material.color = color;
-
         if (eliminiar)
         {
             setSpriteEscondite(null);
+            return;
         }
+
+        if (esconditeSprite == null)
+            return;
+
+        if (float.IsNaN(valor) || valor < 0f || valor > 1f)
+        {
+            Debug.LogWarning(
+                "Player: la transparencia debe estar entre 0 y 1.",
+                this);
+            return;
+        }
+
+        Color color = esconditeSprite.color;
+        color.a = valor;
+        esconditeSprite.color = color;
     }
 
     /// <summary>
@@ -380,7 +404,21 @@ public class Player : MonoBehaviour
     /// <param name="sprite">SpriteRenderer a cambiar</param>
     public void setSpriteEscondite(SpriteRenderer sprite)
     {
-        this.esconditeSprite = sprite;
+        if (esconditeSprite == sprite)
+            return;
+
+        // Restauramos la mesa anterior antes de cambiar de referencia.
+        if (esconditeSprite != null)
+        {
+            esconditeSprite.color = colorOriginalEscondite;
+        }
+
+        esconditeSprite = sprite;
+
+        if (esconditeSprite != null)
+        {
+            colorOriginalEscondite = esconditeSprite.color;
+        }
     }
 
     /// <summary>
