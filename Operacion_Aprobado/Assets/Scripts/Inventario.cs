@@ -36,18 +36,35 @@ public class Inventario : MonoBehaviour
     /// 
     /// <param name="objeto">Objeto a añadir</param>
     /// <returns>True si se ha guardado en el inventario</returns>
-    bool AddObjeto(Objeto objeto)
+    private bool AddObjeto(Objeto objeto)
     {
-        GameAsserts.IsValidReference(objeto, $"objeto ({name}.AddObjeto())");
-        if (objeto != null && inventarioList.Count < Constantes.OBJETOSMAXIMOS)
+        if (objeto == null)
         {
-            inventarioList.Add(objeto);
-            interfaz.ActualizarInterfaz();
-            GameAsserts.ValueBetweenIncluded(inventarioList.Count, Constantes.OBJETOSMAXIMOS, 0, $"inventarioCount ({name})");
-            return true;
+            Debug.LogError(
+                "Inventario: el recogible no tiene un Objeto asignado.",
+                this);
+            return false;
         }
-        return false;
+
+        if (interfaz == null)
+        {
+            Debug.LogError(
+                "Inventario: falta asignar la interfaz.",
+                this);
+            return false;
+        }
+
+        if (inventarioList.Count >= Constantes.OBJETOSMAXIMOS)
+        {
+            return false;
+        }
+
+        inventarioList.Add(objeto);
+        interfaz.ActualizarInterfaz();
+
+        return true;
     }
+
 
     /// <summary>
     /// Suelta el objeto del inventario.
