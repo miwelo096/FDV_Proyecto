@@ -52,6 +52,10 @@ public class EduroamLogin : MonoBehaviour
 
             yield return new WaitForSeconds(1.5f);
 
+            yield return new WaitUntil(() =>
+                !PauseMenu.IsPaused &&
+                !InputManager.PausaPulsadaEsteFrame);
+
             PulsarCancelar();
         }
         else
@@ -67,6 +71,7 @@ public class EduroamLogin : MonoBehaviour
             campoContrasena.text = "";
         }
     }
+
 
     // Función que se ejecutará al pulsar el botón "Cancelar"
     public void PulsarCancelar()
