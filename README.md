@@ -18,8 +18,4 @@
 ---
 
 # Tutorial del demo:
-El jugador empieza en una escena en blanco y tiene que ir a otra escena donde aparecera los enemigos.
-El jugador tiene que coger la llave para salir de la escena y finalizar el juego. Para ello, tiene que aplicar las tecnicas de sigilo y esconderse de los enemigos para no perder vidas, en total tiene 3 vidas💗.
-Cuando consigue la llave tienes que utilizarla en la puerta para salir. 
-
-FIN.
+El jugador tiene que aplicar las tecnicas de sigilo y esconderse de los enemigos para no perder vidas, en total tiene 3 vidas💗.
