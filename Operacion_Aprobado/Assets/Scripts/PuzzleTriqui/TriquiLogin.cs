@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class TriquiLogin : MonoBehaviour
 {
@@ -34,23 +35,51 @@ public class TriquiLogin : MonoBehaviour
         inputTerminal.ActivateInputField();
     }
 
-    void Update()
+    void LateUpdate()
     {
-        // Detectar clic derecho en el escritorio
-        if (Input.GetMouseButtonDown(1) && !panelTerminal.activeSelf)
+        if (PauseMenu.IsPaused || InputManager.PausaPulsadaEsteFrame)
+        {
+            return;
+        }
+
+        Mouse raton = Mouse.current;
+
+        if (raton == null)
+        {
+            return;
+        }
+
+        // El menú de escritorio solo se abre con el terminal cerrado.
+        if (raton.rightButton.wasPressedThisFrame &&
+            !panelTerminal.activeSelf)
         {
             panelVentanilla.SetActive(true);
         }
 
-        if (Input.GetMouseButtonDown(0) && panelVentanilla.activeSelf)
+        if (!raton.leftButton.wasPressedThisFrame ||
+            !panelVentanilla.activeSelf)
         {
-            // Si se hace clic fuera del panel, cerrarlo
-            if (!RectTransformUtility.RectangleContainsScreenPoint(panelVentanilla.GetComponent<RectTransform>(), Input.mousePosition))
-            {
-                panelVentanilla.SetActive(false);
-            }
+            return;
         }
 
+        RectTransform rectVentanilla =
+            panelVentanilla.GetComponent<RectTransform>();
+
+        if (rectVentanilla == null)
+        {
+            Debug.LogError(
+                "TriquiLogin: Panel Ventanilla necesita un RectTransform.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        if (!RectTransformUtility.RectangleContainsScreenPoint(
+            rectVentanilla,
+            raton.position.ReadValue()))
+        {
+            panelVentanilla.SetActive(false);
+        }
     }
 
     // FUNCIONES DE LOS BOTONES
