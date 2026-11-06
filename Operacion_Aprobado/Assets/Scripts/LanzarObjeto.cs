@@ -137,11 +137,17 @@ public class LanzarObjeto : MonoBehaviour
     /// <summary>
     /// Ejecuta el lanzamiento del objeto asignado y lo elimina del inventario.
     /// </summary>
-    void EjecutarLanzamiento()
+    private void EjecutarLanzamiento()
     {
-        if (puntoDeLanzamiento == null || objeto == null || objeto.prefabObjetoLanzable == null || camara == null)
+        if (puntoDeLanzamiento == null ||
+            objeto == null ||
+            objeto.prefabObjetoLanzable == null ||
+            camara == null ||
+            inventarioScript == null)
         {
-            Debug.LogError("Faltan referencias para ejecutar el lanzamiento.");
+            Debug.LogError(
+                "Faltan referencias para ejecutar el lanzamiento.",
+                this);
             CancelarLanzamiento();
             return;
         }
@@ -151,29 +157,40 @@ public class LanzarObjeto : MonoBehaviour
             puntoDeLanzamiento.position,
             Quaternion.identity,
             transform.parent);
-                
-        var rbObjeto = objetoInstanciado.GetComponent<Rigidbody2D>();
 
-        // No se comprueba puntoDeLanzamiento != null ya que hubiese saltado en Start()
-        if (rbObjeto != null)
+        Rigidbody2D rbObjeto =
+            objetoInstanciado.GetComponent<Rigidbody2D>();
+
+        if (rbObjeto == null)
         {
-            // Obtener la posición del ratón
-            Vector2 posicionRaton = camara.ScreenToWorldPoint(Input.mousePosition);
-
-            Vector2 direccion = (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
-            GameAsserts.IsGreaterThanZero(Constantes.FUERZALANZAMIENTO, $"Constantes.FUERZALANZAMIENTO ({name})");
-            rbObjeto.linearVelocity = direccion * Constantes.FUERZALANZAMIENTO;
-            
-            inventarioScript.ConsumirObjeto(objeto);
-
-            Debug.Log("Lanzamiento completado");
-        }
-        else
-        {
-            Debug.LogError("No hay Rigidbody2D en el objeto instanciado (LanzarObjeto.lanzar())");
+            Debug.LogError(
+                "LanzarObjeto: el proyectil necesita un Rigidbody2D.",
+                this);
             Destroy(objetoInstanciado);
+            CancelarLanzamiento();
+            return;
         }
 
+        Vector2 posicionRaton =
+            camara.ScreenToWorldPoint(Input.mousePosition);
+
+        Vector2 direccion =
+            (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
+
+        GameAsserts.IsGreaterThanZero(
+            Constantes.FUERZALANZAMIENTO,
+            $"Constantes.FUERZALANZAMIENTO ({name})");
+
+        rbObjeto.linearVelocity = direccion * Constantes.FUERZALANZAMIENTO;
+
+        if (!inventarioScript.ConsumirObjeto(objeto))
+        {
+            Destroy(objetoInstanciado);
+            CancelarLanzamiento();
+            return;
+        }
+
+        Debug.Log("Lanzamiento completado");
         ResetearEstado();
     }
 

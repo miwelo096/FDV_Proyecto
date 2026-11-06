@@ -139,16 +139,37 @@ public class Inventario : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a consumir</param>
-    public void ConsumirObjeto(Objeto objeto)
+    public bool ConsumirObjeto(Objeto objeto)
     {
-        if (PauseMenu.IsPaused) return;
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
+        {
+            return false;
+        }
+
         if (objeto == null || !inventarioList.Contains(objeto))
         {
-            Debug.LogWarning($"Intento de consumir objeto null o que no se encuentra en el inventario ({name}.ConsumirObjeto())");
-            return;
+            Debug.LogWarning(
+                "Inventario: no se puede consumir un objeto nulo o ausente.",
+                this);
+            return false;
         }
-        
-        EliminarObjeto(objeto);
+
+        if (interfaz == null)
+        {
+            Debug.LogError(
+                "Inventario: falta asignar la interfaz.",
+                this);
+            return false;
+        }
+
+        if (!interfaz.ValidarReferencias(this))
+        {
+            return false;
+        }
+
+        return EliminarObjeto(objeto);
     }
 
     /// <summary>
@@ -156,10 +177,15 @@ public class Inventario : MonoBehaviour
     /// </summary>
     /// 
     /// <param name="objeto">Objeto a eliminar</param>
-    void EliminarObjeto(Objeto objeto)
+    private bool EliminarObjeto(Objeto objeto)
     {
-        inventarioList.Remove(objeto);
-        if (interfaz != null) interfaz.ActualizarInterfaz();
+        if (!inventarioList.Remove(objeto))
+        {
+            return false;
+        }
+
+        interfaz.ActualizarInterfaz();
+        return true;
     }
 
     /// <summary>
