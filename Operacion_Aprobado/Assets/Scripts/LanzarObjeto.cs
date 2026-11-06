@@ -79,39 +79,83 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     void PrepararLanzamiento()
     {
-        if (PauseMenu.IsPaused) return;
-        if (paraLanzar) CancelarLanzamiento();
-
-        // No se comprueba inventarioScript != null ya que hubiese saltado en Start()
-        if (inventarioScript != null && inventarioScript.IsNotEmpty)
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
         {
-            objeto = obtenerPrimerLanzable();
+            return;
+        }
 
-            if (objeto != null)
-            {
-                if (objeto.prefabObjetoLanzable != null)
-                {
-                    paraLanzar = true;
-                    if (inventarioScript.Interfaz != null)
-                    {
-                        inventarioScript.Interfaz.SeleccionarObjeto(objeto);
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Prefab de objeto lanzable no asignado (LanzarObjeto.PreparaLanzamiento)");
-                    ResetearEstado();
-                }
-            }
-            else
-            {
-                Debug.Log("No encontrado objeto lanzable en el inventario");
-            }
-        }
-        else
+        // Una nueva preparación sustituye la selección anterior.
+        ResetearEstado();
+
+        if (inventarioScript == null ||
+            !inventarioScript.isActiveAndEnabled)
         {
-            Debug.Log("Inventario vacio");
+            Debug.LogError(
+                "LanzarObjeto: se necesita un Inventario activo en el jugador.",
+                this);
+            return;
         }
+
+        if (puntoDeLanzamiento == null)
+        {
+            Debug.LogError(
+                "LanzarObjeto: falta asignar el punto de lanzamiento.",
+                this);
+            return;
+        }
+
+        if (camara == null || !camara.isActiveAndEnabled)
+        {
+            Debug.LogError(
+                "LanzarObjeto: se necesita una cámara activa para apuntar.",
+                this);
+            return;
+        }
+
+        InterfazInventario interfaz = inventarioScript.Interfaz;
+
+        if (interfaz == null)
+        {
+            Debug.LogError(
+                "LanzarObjeto: falta la interfaz del inventario.",
+                this);
+            return;
+        }
+
+        if (!interfaz.ValidarReferencias(inventarioScript))
+        {
+            return;
+        }
+
+        if (!inventarioScript.IsNotEmpty)
+        {
+            Debug.Log("Inventario vacío.", this);
+            return;
+        }
+
+        ObjetoLanzable candidato = obtenerPrimerLanzable();
+
+        if (candidato == null)
+        {
+            Debug.Log(
+                "No se ha encontrado un objeto lanzable en el inventario.",
+                this);
+            return;
+        }
+
+        if (candidato.prefabObjetoLanzable == null)
+        {
+            Debug.LogError(
+                "LanzarObjeto: el objeto no tiene un prefab de lanzamiento asignado.",
+                this);
+            return;
+        }
+
+        objeto = candidato;
+        paraLanzar = true;
+        interfaz.SeleccionarObjeto(objeto);
     }
 
     /// <summary>
@@ -143,10 +187,11 @@ public class LanzarObjeto : MonoBehaviour
             objeto == null ||
             objeto.prefabObjetoLanzable == null ||
             camara == null ||
+            !camara.isActiveAndEnabled ||
             inventarioScript == null)
         {
             Debug.LogError(
-                "Faltan referencias para ejecutar el lanzamiento.",
+                "LanzarObjeto: faltan referencias o la cámara no está activa para confirmar.",
                 this);
             CancelarLanzamiento();
             return;
