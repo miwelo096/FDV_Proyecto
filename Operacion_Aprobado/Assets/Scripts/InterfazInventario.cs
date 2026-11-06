@@ -11,7 +11,21 @@ public class InterfazInventario : MonoBehaviour
 
     public List<GameObject> interfazInventario = new();
 
-    
+    private void Start()
+    {
+        if (inventario == null ||
+            padre == null ||
+            prefabInterfazObjeto == null)
+        {
+            Debug.LogError(
+                "InterfazInventario: asigna Inventario, Padre y Prefab Interfaz Objeto.",
+                this);
+            return;
+        }
+
+        ActualizarInterfaz();
+    }
+
     /// <summary>
     /// Refresca toda la interfaz visual del inventario sincronizándola con la lista
     /// </summary>
