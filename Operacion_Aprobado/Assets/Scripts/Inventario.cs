@@ -54,6 +54,11 @@ public class Inventario : MonoBehaviour
             return false;
         }
 
+        if (!interfaz.ValidarReferencias(this))
+        {
+            return false;
+        }
+
         if (inventarioList.Count >= Constantes.OBJETOSMAXIMOS)
         {
             return false;
