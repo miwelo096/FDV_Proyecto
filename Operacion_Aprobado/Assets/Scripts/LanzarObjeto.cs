@@ -47,7 +47,7 @@ public class LanzarObjeto : MonoBehaviour
     void LateUpdate()
     {
         // ESC reserva todo este frame para pausar o reanudar.
-        if (Input.GetKeyDown(KeyCode.Escape) || PauseMenu.IsPaused)
+        if (InputManager.PausaPulsadaEsteFrame || PauseMenu.IsPaused)
         {
             return;
         }
@@ -89,13 +89,13 @@ public class LanzarObjeto : MonoBehaviour
         }
 
         // El clic derecho puede cancelar también sobre la interfaz.
-        if (Input.GetMouseButtonDown(1))
+        if (InputManager.CancelarLanzamientoPulsado)
         {
             CancelarLanzamiento();
             return;
         }
 
-        if (!Input.GetMouseButtonDown(0))
+        if (!InputManager.ConfirmarLanzamientoPulsado)
         {
             return;
         }
@@ -289,8 +289,9 @@ public class LanzarObjeto : MonoBehaviour
             return;
         }
 
+        
         Vector2 posicionRaton =
-            camara.ScreenToWorldPoint(Input.mousePosition);
+            camara.ScreenToWorldPoint(InputManager.PosicionRaton);
 
         Vector2 direccion =
             (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
