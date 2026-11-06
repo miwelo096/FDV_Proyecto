@@ -183,35 +183,63 @@ public class LanzarObjeto : MonoBehaviour
     /// </summary>
     private void EjecutarLanzamiento()
     {
-        if (puntoDeLanzamiento == null ||
-            objeto == null ||
-            objeto.prefabObjetoLanzable == null ||
-            camara == null ||
-            !camara.isActiveAndEnabled ||
-            inventarioScript == null)
+        if (!isActiveAndEnabled ||
+            PauseMenu.IsPaused ||
+            GameManager.InPuzzle)
         {
-            Debug.LogError(
-                "LanzarObjeto: faltan referencias o la cámara no está activa para confirmar.",
+            return;
+        }
+
+        if (!paraLanzar || !VerificarDisponibilidadObjeto())
+        {
+            Debug.Log(
+                "LanzarObjeto: el objeto preparado ya no está disponible.",
                 this);
             CancelarLanzamiento();
             return;
         }
 
-        GameObject objetoInstanciado = Instantiate(
-            objeto.prefabObjetoLanzable,
-            puntoDeLanzamiento.position,
-            Quaternion.identity,
-            transform.parent);
-
-        Rigidbody2D rbObjeto =
-            objetoInstanciado.GetComponent<Rigidbody2D>();
-
-        if (rbObjeto == null)
+        if (puntoDeLanzamiento == null ||
+            camara == null ||
+            !camara.isActiveAndEnabled ||
+            inventarioScript == null ||
+            !inventarioScript.isActiveAndEnabled)
         {
             Debug.LogError(
-                "LanzarObjeto: el proyectil necesita un Rigidbody2D.",
+                "LanzarObjeto: faltan referencias activas para confirmar.",
                 this);
-            Destroy(objetoInstanciado);
+            CancelarLanzamiento();
+            return;
+        }
+
+        GameObject prefab = objeto.prefabObjetoLanzable;
+
+        if (prefab == null || !prefab.activeSelf)
+        {
+            Debug.LogError(
+                "LanzarObjeto: el prefab del proyectil debe estar asignado y activo.",
+                this);
+            CancelarLanzamiento();
+            return;
+        }
+
+        Rigidbody2D cuerpoPrefab = prefab.GetComponent<Rigidbody2D>();
+        Collider2D colliderPrefab = prefab.GetComponent<Collider2D>();
+        ObjetoSonido sonidoPrefab = prefab.GetComponent<ObjetoSonido>();
+
+        if (cuerpoPrefab == null ||
+            !cuerpoPrefab.simulated ||
+            cuerpoPrefab.bodyType != RigidbodyType2D.Dynamic ||
+            colliderPrefab == null ||
+            !colliderPrefab.enabled ||
+            colliderPrefab.isTrigger ||
+            sonidoPrefab == null ||
+            !sonidoPrefab.enabled)
+        {
+            Debug.LogError(
+                "LanzarObjeto: el prefab necesita Rigidbody2D dinámico y simulado, " +
+                "Collider2D habilitado sin Is Trigger y ObjetoSonido habilitado.",
+                this);
             CancelarLanzamiento();
             return;
         }
@@ -222,14 +250,45 @@ public class LanzarObjeto : MonoBehaviour
         Vector2 direccion =
             (posicionRaton - (Vector2)puntoDeLanzamiento.position).normalized;
 
+        if (direccion == Vector2.zero)
+        {
+            Debug.Log(
+                "LanzarObjeto: dirección nula. Se cancela sin consumir el objeto.",
+                this);
+            CancelarLanzamiento();
+            return;
+        }
+
         GameAsserts.IsGreaterThanZero(
             Constantes.FUERZALANZAMIENTO,
             $"Constantes.FUERZALANZAMIENTO ({name})");
 
-        rbObjeto.linearVelocity = direccion * Constantes.FUERZALANZAMIENTO;
+        GameObject objetoInstanciado = Instantiate(
+            prefab,
+            puntoDeLanzamiento.position,
+            Quaternion.identity,
+            transform.parent);
+
+        Rigidbody2D rbObjeto =
+            objetoInstanciado.GetComponent<Rigidbody2D>();
+
+        if (rbObjeto == null)
+        {
+            Debug.LogError(
+                "LanzarObjeto: la instancia del proyectil no tiene Rigidbody2D.",
+                this);
+            objetoInstanciado.SetActive(false);
+            Destroy(objetoInstanciado);
+            CancelarLanzamiento();
+            return;
+        }
+
+        rbObjeto.linearVelocity =
+            direccion * Constantes.FUERZALANZAMIENTO;
 
         if (!inventarioScript.ConsumirObjeto(objeto))
         {
+            objetoInstanciado.SetActive(false);
             Destroy(objetoInstanciado);
             CancelarLanzamiento();
             return;
