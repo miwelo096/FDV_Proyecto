@@ -14,22 +14,44 @@ public class UIVidas : MonoBehaviour
     private int vidasMostradas = -1;
 
 
-    void Start()
+    private void Awake()
     {
         textoVidas = GetComponent<TextMeshProUGUI>();
 
-        GameAsserts.IsValidReference(player, "player (HUDVidas)");
-        GameAsserts.IsValidReference(textoVidas, "textoVidas (HUDVidas)");
+        if (player == null)
+        {
+            Debug.LogError("UIVidas: falta asignar el Player.", this);
+            enabled = false;
+            return;
+        }
+
+        if (textoVidas == null)
+        {
+            Debug.LogError(
+                "UIVidas: necesita un TextMeshProUGUI en el mismo objeto.",
+                this);
+            enabled = false;
+            return;
+        }
     }
 
-    void Update()
+    private void Update()
     {
+        if (player == null || textoVidas == null)
+        {
+            Debug.LogError(
+                "UIVidas: se ha perdido una referencia necesaria.",
+                this);
+            enabled = false;
+            return;
+        }
+
         int vidas = player.getVidas();
 
-        if (vidas != vidasMostradas)
-        {
-            vidasMostradas = vidas;
-            textoVidas.text = $"Vidas: {vidas}";
-        }
+        if (vidas == vidasMostradas)
+            return;
+
+        textoVidas.text = $"Vidas: {vidas}";
+        vidasMostradas = vidas;
     }
 }
