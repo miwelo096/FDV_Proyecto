@@ -4,7 +4,7 @@ using UnityEngine;
 public static class Constantes
 {
     // Tags
-    // public const string PLAYERTAG = "Player";
+    public const string PLAYERTAG = "Player";
     public const string ENEMYTAG = "Enemy";
     public const string ITEMTAG = "Item";
     public const string INTERACTIVOTAG = "Interactivo";

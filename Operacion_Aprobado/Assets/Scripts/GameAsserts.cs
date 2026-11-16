@@ -72,6 +72,7 @@ public static class GameAsserts
     /// <param name="valorName">Nombre del valor</param>
     public static void ValueBetweenIncluded(float valor, float max, float min, string valorName)
     {
-        Assert.IsTrue(max >= valor && valor >= min, $"Valor '{valorName}' fuera de rango. Debería ser {max} >= '{valorName}' >= {min}");
+        Assert.IsTrue(max >= valor && valor >= min,
+                        $"Valor '{valorName}' fuera de rango. Debería ser {max} >= '{valorName}' >= {min}");
     }
 }

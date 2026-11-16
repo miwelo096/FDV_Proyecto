@@ -5,7 +5,7 @@ public class UIVidas : MonoBehaviour
 {
     // Player del que se leen las vidas
     [SerializeField]
-    private Player player;
+    private PlayerVidas playerVidas;
 
     // Texto donde se muestran las vidas
     private TextMeshProUGUI textoVidas;
@@ -18,7 +18,7 @@ public class UIVidas : MonoBehaviour
     {
         textoVidas = GetComponent<TextMeshProUGUI>();
 
-        if (player == null)
+        if (playerVidas == null)
         {
             Debug.LogError("UIVidas: falta asignar el Player.", this);
             enabled = false;
@@ -37,7 +37,7 @@ public class UIVidas : MonoBehaviour
 
     private void Update()
     {
-        if (player == null || textoVidas == null)
+        if (playerVidas == null || textoVidas == null)
         {
             Debug.LogError(
                 "UIVidas: se ha perdido una referencia necesaria.",
@@ -46,10 +46,9 @@ public class UIVidas : MonoBehaviour
             return;
         }
 
-        int vidas = player.getVidas();
+        int vidas = playerVidas.vidas;
 
-        if (vidas == vidasMostradas)
-            return;
+        if (vidas == vidasMostradas) return;
 
         textoVidas.text = $"Vidas: {vidas}";
         vidasMostradas = vidas;

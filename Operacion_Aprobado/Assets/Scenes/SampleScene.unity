@@ -1621,6 +1621,8 @@ GameObject:
   - component: {fileID: 105033147}
   - component: {fileID: 105033145}
   - component: {fileID: 105033144}
+  - component: {fileID: 105033154}
+  - component: {fileID: 105033153}
   - component: {fileID: 105033142}
   - component: {fileID: 105033143}
   - component: {fileID: 105033150}
@@ -1847,6 +1849,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 831ac32f6b5882c4ebe60efb3c0ecaed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DetectorInteracciones
+--- !u!114 &105033153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105033141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 042123e11914de64d95fcc84833549d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEsconderse
+--- !u!114 &105033154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105033141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a6352ac3d735641bf1f571f1fa6fcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVidas
 --- !u!1 &117303990
 GameObject:
   m_ObjectHideFlags: 0
@@ -3403,7 +3429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93c8b4e5616342119db0192cf36775c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIVidas
-  player: {fileID: 105033144}
+  playerVidas: {fileID: 105033154}
 --- !u!1 &823666527
 GameObject:
   m_ObjectHideFlags: 0
