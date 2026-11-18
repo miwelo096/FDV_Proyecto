@@ -88,7 +88,7 @@ private void Awake()
             Vector2 direccion =
                 ((Vector2)objetivoWaypoint.position - rb.position).normalized;
 
-            rb.linearVelocity = direccion * speed;
+            rb.linearVelocity = FisicaColisiones.SinEmpujar(rb, direccion*speed, Constantes.PLAYERTAG);
             RotarHacia(objetivoWaypoint.position);
         }
         else

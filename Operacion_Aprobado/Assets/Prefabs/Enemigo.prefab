@@ -144,10 +144,10 @@ BoxCollider2D:
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4031
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -187,7 +187,6 @@ MonoBehaviour:
   obstaculos:
     serializedVersion: 2
     m_Bits: 128
-  tagObjetivo: Player
   Viendo: 0
   Objetivo: {fileID: 0}
 --- !u!114 &3901423688849123439
@@ -204,7 +203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IASeguir
   speed: 3
   player: {fileID: 0}
-  disMin: 1
+  disMin: 0
 --- !u!114 &-506782703263992604
 MonoBehaviour:
   m_ObjectHideFlags: 0

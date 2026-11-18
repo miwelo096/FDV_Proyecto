@@ -42,7 +42,7 @@ public class IASeguir : MonoBehaviour
         if(Vector2.Distance(rb.position, player.position) > disMin)
         {
             Vector2 direccion = (player.position - transform.position).normalized;
-            rb.linearVelocity = direccion * speed;
+            rb.linearVelocity = FisicaColisiones.SinEmpujar(rb, direccion*speed, Constantes.PLAYERTAG);
         }
         else
         {

@@ -33,6 +33,13 @@ public class PlayerVidas : MonoBehaviour
             PerderVida();
         }
     }
+        private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag(Constantes.ENEMYTAG))
+        {
+            PerderVida();
+        }
+    }
 
     /// <summary>
     /// Resta una vida (mínimo 0) si no está en periodo de invulnerabilidad
