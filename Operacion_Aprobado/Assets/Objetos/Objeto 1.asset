@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Objeto 1
   m_EditorClassIdentifier: Assembly-CSharp::Objeto
   id: Objeto
-  descripcion: Objeto
+  descripcion: 'Objeto de prueba el cual va a tener una descripcion muy larga para comprobar si se sale de los margenes
+
+    y asi buscar alguna forma para que se pueda ver bien todo completamente. Estoy hasta los huevo de ingenieria de software II y de ingles porque encima me dan la teoria y los pdf y todo hecho con la ia y de verdad no se puede ser mas cutre. AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
   prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
   spriteInventario: {fileID: 7482667652216324306, guid: 472ba0f6d2b00ca43929138229620371, type: 3}
+  opcionesDisponibles:
+  - Soltar
