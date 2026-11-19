@@ -125,8 +125,7 @@ public class LanzarObjeto : MonoBehaviour
     void PrepararLanzamiento()
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
@@ -229,8 +228,7 @@ public class LanzarObjeto : MonoBehaviour
     private void EjecutarLanzamiento()
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }

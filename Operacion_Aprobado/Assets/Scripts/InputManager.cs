@@ -152,7 +152,7 @@ public class InputManager : MonoBehaviour
         }
 
 
-        if (PauseMenu.IsPaused || GameManager.InPuzzle || InventarioMenu.isInventoryOpen) return;
+        if (GameManager.JuegoBloqueado) return;
 
         Movimiento =
             accionMovimiento.ReadValue<Vector2>().normalized;

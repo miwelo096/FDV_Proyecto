@@ -30,6 +30,10 @@ public class ObjetoSonido : MonoBehaviour
         velocidadGuardada = cuerpo.linearVelocity;
         velocidadAngularGuardada = cuerpo.angularVelocity;
         movimientoGuardado = true;
+
+        cuerpo.linearVelocity = Vector2.zero;
+        cuerpo.angularVelocity = 0f;
+        cuerpo.simulated = false;
     }
 
     public void RestaurarMovimiento()
@@ -37,6 +41,7 @@ public class ObjetoSonido : MonoBehaviour
         if (cuerpo == null || yaEmitido || !movimientoGuardado)
             return;
 
+        cuerpo.simulated = true;
         cuerpo.linearVelocity = velocidadGuardada;
         cuerpo.angularVelocity = velocidadAngularGuardada;
         movimientoGuardado = false;
@@ -54,8 +59,7 @@ public class ObjetoSonido : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
@@ -65,8 +69,7 @@ public class ObjetoSonido : MonoBehaviour
 
     private void Update()
     {
-        if (yaEmitido || PauseMenu.IsPaused || GameManager.InPuzzle)
-            return;
+        if (GameManager.JuegoBloqueado || yaEmitido) return;
 
         tiempoVidaRestante = Mathf.Max(
             0f, tiempoVidaRestante - Time.deltaTime);

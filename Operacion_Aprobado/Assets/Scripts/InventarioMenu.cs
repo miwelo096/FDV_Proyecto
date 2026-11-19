@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class InventarioMenu : MonoBehaviour
 {
@@ -62,7 +61,7 @@ public class InventarioMenu : MonoBehaviour
             inventoryPanel.SetActive(true);
         }
 
-        Time.timeScale = 0f;
+        GameManager.AplicarEstadoGlobal();
     }
 
     /// <summary>
@@ -77,6 +76,6 @@ public class InventarioMenu : MonoBehaviour
             inventoryPanel.SetActive(false);
         }
 
-        Time.timeScale = 1f;
+        GameManager.AplicarEstadoGlobal();
     }
 }

@@ -25,8 +25,7 @@ public class OndaVisual : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenu.IsPaused || GameManager.InPuzzle)
-            return;
+        if (GameManager.JuegoBloqueado) return;
 
         tiempoTranscurrido += Time.deltaTime;
 

@@ -43,8 +43,7 @@ private void Awake()
         if (rb == null)
             return;
 
-        if (PauseMenu.IsPaused ||
-            GameManager.InPuzzle ||
+        if (GameManager.JuegoBloqueado ||
             campodeVision == null)
         {
             rb.linearVelocity = Vector2.zero;

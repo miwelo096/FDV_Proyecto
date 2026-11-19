@@ -8,6 +8,16 @@ public class GameManager : MonoBehaviour
     private static bool cerrandoPuzzle;
     public GameObject mainScene;
 
+    public static bool JuegoBloqueado
+    {
+        get
+        {
+            return PauseMenu.IsPaused ||
+                    InPuzzle ||
+                    InventarioMenu.isInventoryOpen;
+        }
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarEstado()
     {
@@ -34,39 +44,44 @@ public class GameManager : MonoBehaviour
 
         mainScene.SetActive(true);
     }
-    private void CambiarActividadMundo(bool activo)
+
+    /// <summary>
+    /// Detiene los proyectiles lanzados en caso de que le juego esté
+    /// pausado, en el inventario o en un puzzle.
+    /// </summary>
+    public static void AplicarEstadoGlobal()
     {
-        if (!activo)
-        {
-            foreach (ObjetoSonido proyectil in
-                    mainScene.GetComponentsInChildren<ObjetoSonido>())
-            {
-                proyectil.GuardarMovimiento();
-            }
-        }
+        GameManager gm = FindAnyObjectByType<GameManager>();
+        if (gm == null || gm.mainScene == null) return;
 
-        mainScene.SetActive(activo);
 
-        if (activo)
+
+        ObjetoSonido[] proyectiles =
+            gm.mainScene.GetComponentsInChildren<ObjetoSonido>();
+        foreach (ObjetoSonido proyectil in proyectiles)
         {
-            foreach (ObjetoSonido proyectil in
-                    mainScene.GetComponentsInChildren<ObjetoSonido>())
+            if (proyectil != null)
             {
-                proyectil.RestaurarMovimiento();
+                if (JuegoBloqueado)
+                    proyectil.GuardarMovimiento();
+                else
+                    proyectil.RestaurarMovimiento();
             }
         }
     }
+
+
     private void OnEnable()
-{
-    SceneManager.sceneLoaded += PrepararInterfazPuzzle;
-}
+    {
+        SceneManager.sceneLoaded += PrepararInterfazPuzzle;
+    }
 
-private void OnDisable()
-{
-    SceneManager.sceneLoaded -= PrepararInterfazPuzzle;
-}
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= PrepararInterfazPuzzle;
+    }
 
-private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
+    private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
     {
         if (!InPuzzle ||
             modo != LoadSceneMode.Additive ||
@@ -139,7 +154,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
 
         try
         {
-            gm.CambiarActividadMundo(false);
+            AplicarEstadoGlobal();
 
             AsyncOperation carga = SceneManager.LoadSceneAsync(
                 nombreEscena, LoadSceneMode.Additive);
@@ -160,7 +175,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
 
         // Si no se pudo iniciar la carga, recuperamos el mundo.
         InPuzzle = false;
-        gm.CambiarActividadMundo(true);
+        AplicarEstadoGlobal();
     }
 
     public static void SalirPuzzle(Scene escenaPuzzle)
@@ -214,7 +229,7 @@ private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
                     cerrandoPuzzle = false;
 
                     if (gm != null && gm.mainScene != null)
-                        gm.CambiarActividadMundo(true);
+                        AplicarEstadoGlobal();
                 };
 
                 return;

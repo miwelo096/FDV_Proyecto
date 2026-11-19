@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+        if (GameManager.JuegoBloqueado)
         {
             entradaMovimiento = Vector2.zero;
 
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
         if (playerRB == null)
             return;
 
-        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+        if (GameManager.JuegoBloqueado)
         {
             playerRB.linearVelocity = Vector2.zero;
             return;

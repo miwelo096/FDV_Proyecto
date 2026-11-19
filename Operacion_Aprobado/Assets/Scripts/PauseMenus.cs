@@ -73,7 +73,9 @@ public class PauseMenu : MonoBehaviour
             return;
 
         IsPaused = true;
-        Time.timeScale = 0f;
+
+        GameManager.AplicarEstadoGlobal();
+
         restauracionPendiente = false;
 
         BloquearUI();
@@ -89,7 +91,8 @@ public class PauseMenu : MonoBehaviour
             return;
 
         IsPaused = false;
-        Time.timeScale = 1f;
+
+        GameManager.AplicarEstadoGlobal();
 
         if (pausePanel != null)
             pausePanel.SetActive(false);

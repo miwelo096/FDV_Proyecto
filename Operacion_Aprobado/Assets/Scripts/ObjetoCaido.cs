@@ -72,8 +72,7 @@ public class ObjetoCaido : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenu.IsPaused ||
-            GameManager.InPuzzle ||
+        if (GameManager.JuegoBloqueado ||
             tiempoRecogidaRestante <= 0f)
         {
             return;

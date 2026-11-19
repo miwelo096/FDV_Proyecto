@@ -17,8 +17,7 @@ public class Inventario : MonoBehaviour
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
