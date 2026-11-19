@@ -2210,6 +2210,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 3a084adc67ad6cd4faed40ffc269f1d1, type: 2}
     - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+      propertyPath: recogido
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: autoStart
       value: 1
       objectReference: {fileID: 0}
@@ -5880,7 +5884,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventarioMenu
   inventoryPanel: {fileID: 1657744025}
-  mainGameRoot: {fileID: 1623427823}
 --- !u!4 &2124141453
 Transform:
   m_ObjectHideFlags: 0
@@ -5916,6 +5919,10 @@ PrefabInstance:
       propertyPath: objeto
       value: 
       objectReference: {fileID: 11400000, guid: 2a495ef4d7ae5554a93e624936a6a3b3, type: 2}
+    - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+      propertyPath: recogido
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: autoStart
       value: 1

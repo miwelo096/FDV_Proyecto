@@ -11,8 +11,23 @@ public class Inventario : MonoBehaviour
     [SerializeField]
     private GameObject prefabObjetoCaido;
 
+    [SerializeField]
+    private List<Objeto> objetosIniciales = new();
 
     private List<Objeto> inventarioList = new();
+
+
+    void Awake()
+    {
+        foreach (Objeto objeto in objetosIniciales)
+        {
+            if (objeto != null &&
+                inventarioList.Count < Constantes.OBJETOSMAXIMOS)
+            {
+                inventarioList.Add(objeto);
+            }
+        }
+    }
 
     public void OnTriggerEnter2D(Collider2D collision)
     {

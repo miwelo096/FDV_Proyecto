@@ -19,10 +19,14 @@ public class ObjetoCuaderno : Objeto
             opcionesDisponibles.Insert(0, "Leer");
         }
 
-        if (!opcionesDisponibles.Contains("Soltar"))
+        if (opcionesDisponibles.Contains("Soltar"))
         {
-            opcionesDisponibles.Add("Soltar");
+            opcionesDisponibles.Remove("Soltar");
         }
+        // if (!opcionesDisponibles.Contains("Soltar"))
+        // {
+        //     opcionesDisponibles.Add("Soltar");
+        // }
     }
 
     /// <summary>
@@ -44,7 +48,7 @@ public class ObjetoCuaderno : Objeto
                 }
                 break;
             default:
-                base.EjecutarAccionObjeto(opcion, inventario);
+                // base.EjecutarAccionObjeto(opcion, inventario);
                 break;
         }
     }

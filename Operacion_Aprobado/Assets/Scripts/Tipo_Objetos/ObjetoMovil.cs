@@ -16,10 +16,14 @@ public class ObjetoMovil : Objeto
             opcionesDisponibles.Insert(0, "Usar");
         }
 
-        if (!opcionesDisponibles.Contains("Soltar"))
+        if (opcionesDisponibles.Contains("Soltar"))
         {
-            opcionesDisponibles.Add("Soltar");
+            opcionesDisponibles.Remove("Soltar");
         }
+        // if (!opcionesDisponibles.Contains("Soltar"))
+        // {
+        //     opcionesDisponibles.Add("Soltar");
+        // }
     }
 
     /// <summary>
@@ -36,7 +40,7 @@ public class ObjetoMovil : Objeto
                 GameManager.EntrarPuzzle(Constantes.ESCENAEDUROAM);
                 break;
             default:
-                base.EjecutarAccionObjeto(opcion, inventario);
+                // base.EjecutarAccionObjeto(opcion, inventario);
                 break;
         }
     }
