@@ -9,6 +9,8 @@ public class InputManager : MonoBehaviour
     public static event Action OnSpacePressed;
     public static event Action OnQPressed;
     public static event Action OnEPressed;
+    public static event Action OnTabPressed;
+    public static event Action OnClosePressed;
 
     public static Vector2 Movimiento { get; private set; }
     public static Vector2 PosicionRaton { get; private set; }
@@ -26,6 +28,8 @@ public class InputManager : MonoBehaviour
     private InputAction accionConfirmarLanzamiento;
     private InputAction accionCancelarLanzamiento;
     private InputAction accionInteractuar;
+    private InputAction accionInventario;
+    private InputAction accionCerrar;
 
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -71,6 +75,9 @@ public class InputManager : MonoBehaviour
         accionCancelarLanzamiento =
             mapaJugador.FindAction("CancelThrow", false);
         accionInteractuar = mapaJugador.FindAction("Interact", false);
+        accionInventario =
+            mapaJugador.FindAction("Inventory", false);
+        accionCerrar = mapaJugador.FindAction("Close", false);
 
         if (accionMovimiento == null ||
             accionPosicionRaton == null ||
@@ -80,12 +87,15 @@ public class InputManager : MonoBehaviour
             accionPrepararLanzamiento == null ||
             accionConfirmarLanzamiento == null ||
             accionCancelarLanzamiento == null ||
-            accionInteractuar == null)
+            accionInteractuar == null ||
+            accionInventario == null ||
+            accionCerrar == null)
         {
             Debug.LogError(
                 "InputManager: el mapa Player necesita las acciones " +
                 "Move, Point, Pause, Crouch, Sprint, PrepareThrow, " +
-                "ConfirmThrow, CancelThrow e Interact.",
+                "ConfirmThrow, CancelThrow, Interact, Inventory" +
+                "y Close.",
                 this);
             enabled = false;
             return;
@@ -103,7 +113,8 @@ public class InputManager : MonoBehaviour
         PausaPulsadaEsteFrame = accionPausa.WasPressedThisFrame();
 
         // ESC reserva este frame para pausar o reanudar.
-        if (PausaPulsadaEsteFrame)
+        if (PausaPulsadaEsteFrame &&
+            !InventarioMenu.isInventoryOpen)
         {
             PauseMenu pauseMenuScript =
                 FindAnyObjectByType<PauseMenu>();
@@ -125,8 +136,23 @@ public class InputManager : MonoBehaviour
             return;
         }
 
-        if (PauseMenu.IsPaused || GameManager.InPuzzle)
-            return;
+        // Cierra cosas (De momento solo el inventario)
+        if (accionCerrar.WasPressedThisFrame() &&
+            !PauseMenu.IsPaused)
+        {
+            OnClosePressed?.Invoke();
+        }
+
+        // Abre o cierra el inventario
+        if (accionInventario.WasPressedThisFrame() &&
+            !PauseMenu.IsPaused &&
+            !GameManager.InPuzzle)
+        {
+            OnTabPressed?.Invoke();
+        }
+
+
+        if (PauseMenu.IsPaused || GameManager.InPuzzle || InventarioMenu.isInventoryOpen) return;
 
         Movimiento =
             accionMovimiento.ReadValue<Vector2>().normalized;

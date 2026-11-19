@@ -26,6 +26,8 @@ public class InterfazObjeto : MonoBehaviour
 
         imagenObjeto.sprite = objeto.spriteInventario;
         transform.localScale = Vector2.one;
+
+        boton.onClick.RemoveAllListeners();
         boton.onClick.AddListener(()=>action.Invoke(objeto));
 
         if (bordeSeleccion != null)
