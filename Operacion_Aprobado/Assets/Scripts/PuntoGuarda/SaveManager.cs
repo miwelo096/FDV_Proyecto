@@ -195,4 +195,10 @@ public class SaveManager : MonoBehaviour
         
         Debug.Log("Todos los guardados han sido eliminados.");
     }
+
+    public void CancelarCargaPendiente()
+    {
+        pendingLoad = null;
+        Debug.Log("Carga pendiente cancelada. Iniciando partida limpia.");
+    }
 }
