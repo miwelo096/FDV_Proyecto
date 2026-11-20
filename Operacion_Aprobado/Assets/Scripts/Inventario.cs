@@ -231,4 +231,17 @@ public class Inventario : MonoBehaviour
     {
         get { return interfaz; }
     }
+
+    public void LimpiarInventario()
+    {
+        inventarioList.Clear();
+        if (interfaz != null) interfaz.ActualizarInterfaz();
+    }
+
+    public void AddObjetoDesdeSave(Objeto objeto)
+    {
+        if (objeto == null) return;
+        if (inventarioList.Count >= Constantes.OBJETOSMAXIMOS) return;
+        inventarioList.Add(objeto);
+    }
 }

@@ -57,4 +57,10 @@ public class PlayerVidas : MonoBehaviour
             SceneManager.LoadScene(gameObject.scene.name);
         }
     }
+
+    public void SetVidas(int valor)
+    {
+        vidas = Mathf.Clamp(valor, 0, Constantes.VIDASINICIALES);
+        tiempoInvulnerable = Constantes.TIEMPOINVULNERABLE;
+    }
 }
