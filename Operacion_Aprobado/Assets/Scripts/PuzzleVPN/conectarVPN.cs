@@ -111,7 +111,8 @@ public class conectarVPN : MonoBehaviour
         vpnActivada = !vpnActivada; // Cambia de true a false o viceversa
 
         if (vpnActivada)
-        {
+        {   
+            GameManager.PuzzleCompletado(gameObject.scene, 1f);
             imagenOn.SetActive(true);
             imagenOff.SetActive(false);
             botonConnect.SetActive(false);

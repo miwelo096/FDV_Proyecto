@@ -150,10 +150,12 @@ public class TriquiLogin : MonoBehaviour
 
             // Usamos comando.Trim() porque el jugador podría meter espacios sin querer
             if (comando.Trim() == contrasenaCorrecta)
-            {
+            {   
                 textoTerminal.text += "\nConexión establecida.\n";
                 textoTerminal.text += "Bienvenido a Triqui (triqui.fi.upm.es)\n> ";
                 estadoLogin = 3; // Pasamos al terminal normal
+                GameManager.PuzzleCompletado(gameObject.scene, 1f);
+
             }
             else
             {

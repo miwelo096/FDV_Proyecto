@@ -33,7 +33,8 @@ public class EduroamLogin : MonoBehaviour
     }
 
     public void PulsarConectar()
-    {
+    {   
+
         StartCoroutine(ComprobarConexion());
     }
 
@@ -45,7 +46,9 @@ public class EduroamLogin : MonoBehaviour
 
         if (usuarioInput == Constantes.USUARIOCORRECTO &&
             contrasenaInput == Constantes.CONTRASEÑACORRECTA)
-        {
+        {   
+
+            GameManager.PuzzleCompletado(gameObject.scene);
             Debug.Log("Login correcto. Volviendo al juego...");
             textoError.text = "Datos correctos.";
             textoError.color = Color.green;
@@ -56,6 +59,7 @@ public class EduroamLogin : MonoBehaviour
                 !PauseMenu.IsPaused &&
                 !InputManager.PausaPulsadaEsteFrame);
 
+            
             PulsarCancelar();
         }
         else
@@ -75,7 +79,8 @@ public class EduroamLogin : MonoBehaviour
 
     // Función que se ejecutará al pulsar el botón "Cancelar"
     public void PulsarCancelar()
-    {
+    {   
+
         GameManager.SalirPuzzle(gameObject.scene);
     }
 }

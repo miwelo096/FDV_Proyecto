@@ -19,7 +19,7 @@ public class PuzzleBoardManager : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
+    {   
         totalPosiciones = Constantes.FILASCOLUMNAS*Constantes.FILASCOLUMNAS;
         estaMoviendo = false;
         estaTerminado = false;
@@ -227,7 +227,8 @@ public class PuzzleBoardManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             yield return new WaitUntil(() => !PauseMenu.IsPaused);
 
-            GameManager.SalirPuzzle(gameObject.scene);
+            // Mostrar texto y autocerrar
+            GameManager.PuzzleCompletado(gameObject.scene, 1f);
         }
     }
 
