@@ -5322,7 +5322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00003886773, y: 0}
+  m_AnchoredPosition: {x: 0.0000924239, y: 0}
   m_SizeDelta: {x: -10, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1263110875
@@ -5463,7 +5463,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 433913890}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999957
+  m_Size: 0.999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7207,6 +7207,10 @@ PrefabInstance:
       propertyPath: saveListContainer
       value: 
       objectReference: {fileID: 227502335}
+    - target: {fileID: 124837014991096816, guid: 8b38e41ddb1ad4940805f7346943ea3d, type: 3}
+      propertyPath: _canvasInteraccion
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 124837014991096816, guid: 8b38e41ddb1ad4940805f7346943ea3d, type: 3}
       propertyPath: saveSlotButtonPrefab
       value: 
