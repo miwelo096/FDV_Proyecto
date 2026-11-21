@@ -40,6 +40,7 @@ public class Inventario : MonoBehaviour
         if (AddObjeto(objetoCaido.Objeto))
         {
             objetoCaido.Recogido = true;
+            if (!string.IsNullOrEmpty(objetoCaido.idObjetoCaido)) SaveManager.objetosRecogidos.Add(objetoCaido.idObjetoCaido);
             Destroy(collision.gameObject);
         }
     }

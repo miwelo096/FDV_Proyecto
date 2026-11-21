@@ -6295,6 +6295,10 @@ PrefabInstance:
       propertyPath: autoStart
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+      propertyPath: idObjetoCaido
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4653806962004492707, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -407.8348
@@ -6959,6 +6963,10 @@ PrefabInstance:
       propertyPath: autoStart
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+      propertyPath: idObjetoCaido
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4653806962004492707, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -407.52
@@ -7463,6 +7471,10 @@ PrefabInstance:
     - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: autoStart
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318688552715355932, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
+      propertyPath: idObjetoCaido
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4653806962004492707, guid: 3ebe2fd79b5d34d9ebf70ed30b5a8ff0, type: 3}
       propertyPath: m_LocalPosition.x

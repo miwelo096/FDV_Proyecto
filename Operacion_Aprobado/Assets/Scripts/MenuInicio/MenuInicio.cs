@@ -47,11 +47,10 @@ public class MenuInicio : MonoBehaviour
         Debug.Log("Iniciando nueva partida...");
         
         // Nos aseguramos de que no haya un guardado pendiente de cargar
-        if (SaveManager.Instance != null) 
-            SaveManager.Instance.CancelarCargaPendiente(); 
-
-        // Cargamos la escena del juego
-        SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);
+        if (SaveManager.Instance != null) SaveManager.Instance.CancelarCargaPendiente(); 
+        
+        SaveManager.objetosRecogidos.Clear();
+        SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL); // Cargamos la escena del juego
     }
 
     public void OnClickLoadGame()
