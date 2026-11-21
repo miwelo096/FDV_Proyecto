@@ -6,27 +6,27 @@ using System.Collections.Generic;
 
 public class MenuInicio : MonoBehaviour
 {
-    [Header("Configuración de Escenas")]
-    public string EscenaJuego = "testScene"; 
-
     [Header("Paneles de UI")]
-    public GameObject panelPrincipal; // El panel con Start, Load, Exit
-    public GameObject panelLoad;      // El panel que muestra la lista de guardados
+    [SerializeField] private GameObject panelPrincipal; // El panel con Start, Load, Exit
+    [SerializeField] private GameObject panelLoad;      // El panel que muestra la lista de guardados
 
     [Header("Botones Principales")]
-    public Button botonLoadGame; // Para desactivarlo si no hay partidas guardadas
+    [SerializeField] private Button botonLoadGame; // Para desactivarlo si no hay partidas guardadas
 
     [Header("Lista de Carga (Load)")]
-    public Transform contenedorListaLoad;
-    public GameObject prefabBotonGuardado;
+    [SerializeField] private Transform contenedorListaLoad;
+    [SerializeField] private GameObject prefabBotonGuardado;
 
     private void Start()
     {
-        if (panelLoad != null) 
-            panelLoad.SetActive(false);
-            
-        if (panelPrincipal != null) 
-            panelPrincipal.SetActive(true);
+        GameAsserts.IsValidReference(panelPrincipal, $"panelPrincipal ({name})");
+        GameAsserts.IsValidReference(panelLoad, $"panelLoad ({name})");
+        GameAsserts.IsValidReference(botonLoadGame, $"botonLoadGame ({name})");
+        GameAsserts.IsValidReference(contenedorListaLoad, $"contenedorListaLoad ({name})");
+        GameAsserts.IsValidReference(prefabBotonGuardado, $"prefabBotonGuardado ({name})");
+
+        panelPrincipal.SetActive(true);
+        panelLoad.SetActive(false);
 
         // Si no hay guardados, desactivamos el botón de Load Game
         ActualizarEstadoBotonLoad();
@@ -51,7 +51,7 @@ public class MenuInicio : MonoBehaviour
             SaveManager.Instance.CancelarCargaPendiente(); 
 
         // Cargamos la escena del juego
-        SceneManager.LoadScene(EscenaJuego);
+        SceneManager.LoadScene(Constantes.ESCENAPRINCIPAL);
     }
 
     public void OnClickLoadGame()

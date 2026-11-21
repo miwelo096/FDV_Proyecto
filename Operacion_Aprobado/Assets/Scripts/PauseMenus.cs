@@ -111,7 +111,7 @@ public class PauseMenu : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
-        SceneManager.LoadScene("InicioScene");
+        SceneManager.LoadScene(Constantes.ESCENAINICIO);
     }
 
     private void BloquearUI()

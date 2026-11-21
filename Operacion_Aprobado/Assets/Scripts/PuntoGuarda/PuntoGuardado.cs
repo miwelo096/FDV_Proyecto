@@ -10,19 +10,21 @@ public class PuntoGuardado : MonoBehaviour, IInteractuable
     private GameObject _canvasInteraccion;
 
     [Header("UI de Guardado")]
-    public GameObject PanelGuardado;    // Panel principal del menú de guardado
-    public Transform ListaDeGuardados;    // Contenedor donde se instancian los botones de guardados existentes
-    public GameObject ButtonPrefab; // Prefab de botón para cada guardado
-    public Button newSaveButton;    // Botón "Nuevo guardado"
+    [SerializeField] private GameObject PanelGuardado;    // Panel principal del menú de guardado
+    [SerializeField] private Transform ListaDeGuardados;    // Contenedor donde se instancian los botones de guardados existentes
+    [SerializeField] private GameObject ButtonPrefab; // Prefab de botón para cada guardado
+    [SerializeField] private Button newSaveButton;    // Botón "Nuevo guardado"
 
     private bool isMenuOpen = false;
 
-     private void Start()
+    private void Start()
     {
-        if (PanelGuardado != null)
-        {
-            PanelGuardado.SetActive(false);
-        }
+        GameAsserts.IsValidReference(PanelGuardado, $"PanelGuardado ({name})");
+        GameAsserts.IsValidReference(ListaDeGuardados, $"ListaDeGuardados ({name})");
+        GameAsserts.IsValidReference(ButtonPrefab, $"ButtonPrefab ({name})");
+        GameAsserts.IsValidReference(newSaveButton, $"newSaveButton ({name})");
+
+        PanelGuardado.SetActive(false);
     }
 
     public GameObject canvasInteraccion
