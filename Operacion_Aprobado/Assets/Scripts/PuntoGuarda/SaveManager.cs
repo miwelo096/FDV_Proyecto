@@ -86,19 +86,34 @@ public class SaveManager : MonoBehaviour
         ClaseSave data = pendingLoad;
         pendingLoad = null;
 
-        // --- Jugador ---
+        Debug.Log($"CARGANDO: Posición={data.playerPosicion}, Vidas={data.playerVidas}, Estado={data.playerEstado}");
+
+        // Jugador
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
+            // Posición
             player.transform.position = data.playerPosicion;
 
             Player p = player.GetComponent<Player>();
-            if (p != null) p.CambiarEstado((Player.Estados)data.playerEstado);
+            if (p != null) 
+            {
+                if ((int)p.EstadoPlayer == data.playerEstado)
+                {
+                    Player.Estados estadoTemporal = (p.EstadoPlayer == Player.Estados.Andando) 
+                        ? Player.Estados.Agachado 
+                        : Player.Estados.Andando;
+                    p.CambiarEstado(estadoTemporal);
+                }
+                
+                p.CambiarEstado((Player.Estados)data.playerEstado);
+            }
 
+            // Vidas
             PlayerVidas vidas = player.GetComponent<PlayerVidas>();
             if (vidas != null) vidas.SetVidas(data.playerVidas);
 
-            // --- Inventario ---
+            // Inventario
             Inventario inv = player.GetComponent<Inventario>();
             if (inv != null && inv.Interfaz != null)
             {
@@ -152,6 +167,7 @@ public class SaveManager : MonoBehaviour
     // DISCO
     private void WriteSaveToDisk(ClaseSave data)
     {
+        Debug.Log($"GUARDANDO: Posición={data.playerPosicion}, Vidas={data.playerVidas}, Estado={data.playerEstado}, Escena={data.sceneName}");
         string path = Path.Combine(saveFolder, data.saveId + ".json");
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
     }
@@ -194,6 +210,14 @@ public class SaveManager : MonoBehaviour
         allSaves.Clear();
         
         Debug.Log("Todos los guardados han sido eliminados.");
+    }
+
+    public string EscenaPendienteDeCarga
+    {
+        get 
+        { 
+            return pendingLoad != null ? pendingLoad.sceneName : ""; 
+        }
     }
 
     public void CancelarCargaPendiente()
