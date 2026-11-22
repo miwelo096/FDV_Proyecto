@@ -113,8 +113,7 @@ public class InputManager : MonoBehaviour
         PausaPulsadaEsteFrame = accionPausa.WasPressedThisFrame();
 
         // ESC reserva este frame para pausar o reanudar.
-        if (PausaPulsadaEsteFrame &&
-            !InventarioMenu.isInventoryOpen)
+        if (PausaPulsadaEsteFrame) // && !IsPuntoGuardado
         {
             PauseMenu pauseMenuScript =
                 FindAnyObjectByType<PauseMenu>();
@@ -136,19 +135,10 @@ public class InputManager : MonoBehaviour
             return;
         }
 
-        // Cierra cosas (De momento solo el inventario)
-        if (accionCerrar.WasPressedThisFrame() &&
-            !PauseMenu.IsPaused)
+        // Cierra cosas (De momento punto guardado)
+        if (accionCerrar.WasPressedThisFrame())
         {
             OnClosePressed?.Invoke();
-        }
-
-        // Abre o cierra el inventario
-        if (accionInventario.WasPressedThisFrame() &&
-            !PauseMenu.IsPaused &&
-            !GameManager.InPuzzle)
-        {
-            OnTabPressed?.Invoke();
         }
 
 

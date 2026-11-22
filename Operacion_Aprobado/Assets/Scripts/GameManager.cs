@@ -13,8 +13,7 @@ public class GameManager : MonoBehaviour
         get
         {
             return PauseMenu.IsPaused ||
-                    InPuzzle ||
-                    InventarioMenu.isInventoryOpen;
+                    InPuzzle;
         }
     }
 
@@ -46,7 +45,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Detiene los proyectiles lanzados en caso de que le juego esté
+    /// Detiene los objetos lanzados en caso de que le juego esté
     /// pausado, en el inventario o en un puzzle.
     /// </summary>
     public static void AplicarEstadoGlobal()
@@ -56,16 +55,16 @@ public class GameManager : MonoBehaviour
 
 
 
-        ObjetoSonido[] proyectiles =
+        ObjetoSonido[] objetosLanzados =
             gm.mainScene.GetComponentsInChildren<ObjetoSonido>();
-        foreach (ObjetoSonido proyectil in proyectiles)
+        foreach (ObjetoSonido objeto in objetosLanzados)
         {
-            if (proyectil != null)
+            if (objeto != null)
             {
                 if (JuegoBloqueado)
-                    proyectil.GuardarMovimiento();
+                    objeto.GuardarMovimiento();
                 else
-                    proyectil.RestaurarMovimiento();
+                    objeto.RestaurarMovimiento();
             }
         }
     }
@@ -110,8 +109,11 @@ public class GameManager : MonoBehaviour
 
     public static void EntrarPuzzle(string nombreEscena)
     {
-        if (InPuzzle || PauseMenu.IsPaused)
+        if (InPuzzle)
+        {
+            Debug.Log("Ya se está en un puzzle");
             return;
+        }
 
         GameManager gm = FindAnyObjectByType<GameManager>();
 
@@ -160,7 +162,11 @@ public class GameManager : MonoBehaviour
                 nombreEscena, LoadSceneMode.Additive);
 
             if (carga != null)
+            {
+                PauseMenu pausaMenu = FindAnyObjectByType<PauseMenu>();
+                if (pausaMenu != null) pausaMenu.Resume();
                 return;
+            }
 
             Debug.LogError(
                 $"GameManager: no se pudo iniciar la carga de '{nombreEscena}'.",
@@ -180,8 +186,7 @@ public class GameManager : MonoBehaviour
 
     public static void SalirPuzzle(Scene escenaPuzzle)
     {
-        if (cerrandoPuzzle || PauseMenu.IsPaused)
-            return;
+        if (cerrandoPuzzle || PauseMenu.IsPaused) return;
 
         if (!escenaPuzzle.IsValid() || !escenaPuzzle.isLoaded)
         {

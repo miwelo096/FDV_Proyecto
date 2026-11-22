@@ -37,7 +37,7 @@ public class InventarioMenu : MonoBehaviour
     /// Si el inventario está abierto, lo cierra
     /// y si está cerrado, lo abre.
     /// </summary>
-    void AlternarInventario()
+    public void AlternarInventario()
     {
         if (!isInventoryOpen)
         {

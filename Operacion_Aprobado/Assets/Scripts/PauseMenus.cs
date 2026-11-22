@@ -22,6 +22,10 @@ public class PauseMenu : MonoBehaviour
 
     private bool restauracionPendiente;
 
+    public InventarioMenu inventarioMenu;
+
+
+
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarEstado()
@@ -76,6 +80,11 @@ public class PauseMenu : MonoBehaviour
 
         GameManager.AplicarEstadoGlobal();
 
+        if (!InventarioMenu.isInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
         restauracionPendiente = false;
 
         BloquearUI();
@@ -87,8 +96,12 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        if (!IsPaused)
-            return;
+        if (!IsPaused) return;
+
+        if (InventarioMenu.isInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
 
         IsPaused = false;
 
@@ -101,6 +114,14 @@ public class PauseMenu : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
         restauracionPendiente = true;
+    }
+
+
+    public void OnClickInventario()
+    {
+        if (!IsPaused) return;
+
+        inventarioMenu.AlternarInventario();
     }
 
     private void BloquearUI()

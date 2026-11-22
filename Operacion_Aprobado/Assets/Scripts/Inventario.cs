@@ -107,7 +107,6 @@ public class Inventario : MonoBehaviour
     public bool SoltarObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
@@ -176,7 +175,6 @@ public class Inventario : MonoBehaviour
     public bool ConsumirObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
