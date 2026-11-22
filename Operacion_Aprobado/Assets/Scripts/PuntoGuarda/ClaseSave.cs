@@ -25,7 +25,7 @@ public class ClaseSave
 
     // Estado del enemigo y objetos recogidos
     public List<string> defeatedEnemigos = new List<string>();
-    public List<string> ObjectsRecogidos = new List<string>();
+    public List<string> objetosRecogidos = new List<string>();
 
     // Posición del punto de guardado
     public Vector3 savePointPosition;

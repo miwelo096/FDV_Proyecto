@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-100)]
 public class PauseMenu : MonoBehaviour
@@ -85,8 +86,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        if (!IsPaused)
-            return;
+        if (!IsPaused) return;
 
         IsPaused = false;
         Time.timeScale = 1f;
@@ -98,6 +98,20 @@ public class PauseMenu : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
         restauracionPendiente = true;
+    }
+
+
+    public void Quit()
+    {
+        if (!IsPaused) return;
+
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        SceneManager.LoadScene(Constantes.ESCENAINICIO);
     }
 
     private void BloquearUI()

@@ -13,7 +13,9 @@ public class SaveManager : MonoBehaviour
 
     // Lista de todas las partidas guardadas en memoria
     public List<ClaseSave> allSaves = new List<ClaseSave>();
-     private ClaseSave pendingLoad = null;
+    private ClaseSave pendingLoad = null;
+
+    public static List<string> objetosRecogidos = new List<string>();
 
     private void Awake()
     {
@@ -69,7 +71,8 @@ public class SaveManager : MonoBehaviour
     public void LoadSave(ClaseSave data)
     {
         if (data == null) return;
-
+        objetosRecogidos.Clear();
+        objetosRecogidos.AddRange(data.objetosRecogidos);
         pendingLoad = data;
 
         // Si estamos en otra escena, cargamos la del guardado
@@ -86,19 +89,36 @@ public class SaveManager : MonoBehaviour
         ClaseSave data = pendingLoad;
         pendingLoad = null;
 
-        // --- Jugador ---
+        Debug.Log($"CARGANDO: Posición={data.playerPosicion}, Vidas={data.playerVidas}, Estado={data.playerEstado}");
+        Debug.Log($"Objetos recogidos en el save: {data.objetosRecogidos.Count}");
+        Debug.Log("Llamando a EliminarObjetosRecogidos...");
+        EliminarObjetosRecogidos(data.objetosRecogidos);
+        Debug.Log("EliminarObjetosRecogidos terminado.");
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
+            // Posición
             player.transform.position = data.playerPosicion;
 
             Player p = player.GetComponent<Player>();
-            if (p != null) p.CambiarEstado((Player.Estados)data.playerEstado);
+            if (p != null) 
+            {
+                if ((int)p.EstadoPlayer == data.playerEstado)
+                {
+                    Player.Estados estadoTemporal = (p.EstadoPlayer == Player.Estados.Andando) 
+                        ? Player.Estados.Agachado 
+                        : Player.Estados.Andando;
+                    p.CambiarEstado(estadoTemporal);
+                }
+                
+                p.CambiarEstado((Player.Estados)data.playerEstado);
+            }
 
+            // Vidas
             PlayerVidas vidas = player.GetComponent<PlayerVidas>();
             if (vidas != null) vidas.SetVidas(data.playerVidas);
 
-            // --- Inventario ---
+            // Inventario
             Inventario inv = player.GetComponent<Inventario>();
             if (inv != null && inv.Interfaz != null)
             {
@@ -146,12 +166,16 @@ public class SaveManager : MonoBehaviour
             }
         }
 
+        data.objetosRecogidos.Clear();
+        data.objetosRecogidos.AddRange(objetosRecogidos);
+
         return data;
     }
 
     // DISCO
     private void WriteSaveToDisk(ClaseSave data)
     {
+        Debug.Log($"GUARDANDO: Posición={data.playerPosicion}, Vidas={data.playerVidas}, Estado={data.playerEstado}, Escena={data.sceneName}");
         string path = Path.Combine(saveFolder, data.saveId + ".json");
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
     }
@@ -194,6 +218,33 @@ public class SaveManager : MonoBehaviour
         allSaves.Clear();
         
         Debug.Log("Todos los guardados han sido eliminados.");
+    }
+
+    private void EliminarObjetosRecogidos(List<string> idsRecogidos)
+    {
+        if (idsRecogidos == null || idsRecogidos.Count == 0) return;
+
+        // Buscamos todos los objetos caídos de la escena
+        ObjetoCaido[] objetosEnEscena = GameObject.FindObjectsByType<ObjetoCaido>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        Debug.Log($"Buscando objetos recogidos. Hay {objetosEnEscena.Length} ObjetosCaidos en la escena.");
+
+        foreach (ObjetoCaido obj in objetosEnEscena)
+        {
+            // Si el objeto está en la lista de recogidos, lo destruimos
+            if (idsRecogidos.Contains(obj.idObjetoCaido))
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+    }
+
+    public string EscenaPendienteDeCarga
+    {
+        get 
+        { 
+            return pendingLoad != null ? pendingLoad.sceneName : ""; 
+        }
     }
 
     public void CancelarCargaPendiente()

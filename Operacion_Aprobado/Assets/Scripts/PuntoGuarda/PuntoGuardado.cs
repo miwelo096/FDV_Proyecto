@@ -2,54 +2,39 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.InputSystem;
 
-public class PuntoGuardado : MonoBehaviour
+public class PuntoGuardado : MonoBehaviour, IInteractuable
 {
-    [Header("Detección")]
-    public string playerTag = "Player";
-    public KeyCode interactKey = KeyCode.E;
+    [Header("Interacción Visual")]
+    [SerializeField] 
+    private GameObject _canvasInteraccion;
 
     [Header("UI de Guardado")]
-    public GameObject PanelGuardado;    // Panel principal del menú de guardado
-    public Transform ListaDeGuardados;    // Contenedor donde se instancian los botones de guardados existentes
-    public GameObject ButtonPrefab; // Prefab de botón para cada guardado
-    public Button newSaveButton;           // Botón "Nuevo guardado"
+    [SerializeField] private GameObject PanelGuardado;    // Panel principal del menú de guardado
+    [SerializeField] private Transform ListaDeGuardados;    // Contenedor donde se instancian los botones de guardados existentes
+    [SerializeField] private GameObject ButtonPrefab; // Prefab de botón para cada guardado
+    [SerializeField] private Button newSaveButton;    // Botón "Nuevo guardado"
 
-    private bool playerInRange = false;
     private bool isMenuOpen = false;
 
-     private void Start()
+    private void Start()
     {
-        if (PanelGuardado != null)
-        {
-            PanelGuardado.SetActive(false);
-        }
+        GameAsserts.IsValidReference(PanelGuardado, $"PanelGuardado ({name})");
+        GameAsserts.IsValidReference(ListaDeGuardados, $"ListaDeGuardados ({name})");
+        GameAsserts.IsValidReference(ButtonPrefab, $"ButtonPrefab ({name})");
+        GameAsserts.IsValidReference(newSaveButton, $"newSaveButton ({name})");
+
+        PanelGuardado.SetActive(false);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public GameObject canvasInteraccion
     {
-        if (other.CompareTag(playerTag))
-        {
-            playerInRange = true;
-            Debug.Log("Pulsa E para abrir el menú de guardado.");
-        }
+        get { return _canvasInteraccion; }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void Interactuar()
     {
-        if (other.CompareTag(playerTag))
-        {
-            playerInRange = false;
-            CloseSaveMenu();
-        }
-    }
-
-    private void Update()
-    {
-        bool teclaEPulsada = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
-
-        if (playerInRange && teclaEPulsada && !isMenuOpen)
+        if (!isMenuOpen)
         {
             OpenSaveMenu();
         }
@@ -66,7 +51,7 @@ public class PuntoGuardado : MonoBehaviour
         PanelGuardado.SetActive(true);
         Time.timeScale = 0f; // Pausa el juego
         isMenuOpen = true;
-        PanelGuardado.SetActive(true);
+        if (_canvasInteraccion != null) _canvasInteraccion.SetActive(false);
         RefreshSaveList();
     }
 
@@ -75,6 +60,7 @@ public class PuntoGuardado : MonoBehaviour
         isMenuOpen = false;
         Time.timeScale = 1f; // Reanuda el juego
         if (PanelGuardado != null) PanelGuardado.SetActive(false);
+        if (_canvasInteraccion != null) _canvasInteraccion.SetActive(true);
     }
 
     // Rellena la lista de guardados existentes para poder sobrescribir
@@ -139,11 +125,8 @@ public class PuntoGuardado : MonoBehaviour
     public void OnClickDeleteAllSaves()
     {
         if (SaveManager.Instance == null) return;
-
         SaveManager.Instance.DeleteAllSaves();
-        
         RefreshSaveList();
-        
         Debug.Log("Se han borrado todos los guardados.");
     }
 }

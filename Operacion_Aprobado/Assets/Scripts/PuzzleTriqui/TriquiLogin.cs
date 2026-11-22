@@ -15,9 +15,9 @@ public class TriquiLogin : MonoBehaviour
     public ScrollRect scrollRect; 
 
     [Header("Configuración")]
-    public string SiguienteEscena = "SampleScene";
-    public string usuarioCorrecto = "ZZZ.Z@triqui.fi.upm.es";
-    public string contrasenaCorrecta = "C1AB3";
+    // public string SiguienteEscena = Constantes.ESCENAPRINCIPAL;
+    private string usuarioCorrecto;
+    private string contrasenaCorrecta;
 
     // Variables de estado del juego
     // 0: Pidiendo usuario, 1: Pidiendo "yes", 2: Pidiendo contraseña, 3: Terminal normal
@@ -26,6 +26,12 @@ public class TriquiLogin : MonoBehaviour
 
     void Start()
     {
+        usuarioCorrecto = Constantes.USUARIOTRIQUI;
+        contrasenaCorrecta = Constantes.CONTRASEÑATRIQUI;
+
+        GameAsserts.IsValidReference(panelVentanilla, $"panelVentanilla ({name})");
+        GameAsserts.IsValidReference(panelTerminal, $"panelTerminal ({name})");
+
         // Todo empieza cerrado
         panelVentanilla.SetActive(false);
         panelTerminal.SetActive(false);

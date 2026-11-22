@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ObjetoCaido : MonoBehaviour
 {   
+    public string idObjetoCaido;
     [SerializeField]
     private bool autoStart;
     [SerializeField]

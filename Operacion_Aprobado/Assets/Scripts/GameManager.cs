@@ -80,11 +80,13 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += PrepararInterfazPuzzle;
+        SceneManager.sceneLoaded += CargarGuardados;
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= PrepararInterfazPuzzle;
+        SceneManager.sceneLoaded -= CargarGuardados;
     }
 
     private void PrepararInterfazPuzzle(Scene escena, LoadSceneMode modo)
@@ -255,5 +257,19 @@ public class GameManager : MonoBehaviour
 
         InPuzzle = estadoAnterior;
         cerrandoPuzzle = false;
+    }
+
+    private void CargarGuardados(Scene escena, LoadSceneMode modo)
+    {
+        if (SaveManager.Instance != null && modo == LoadSceneMode.Single)
+        {
+            if (escena.name == SaveManager.Instance.EscenaPendienteDeCarga) StartCoroutine(EsperarYAplicar());
+        }
+    }
+
+    private System.Collections.IEnumerator EsperarYAplicar()
+    {
+        yield return null;
+        if (SaveManager.Instance != null) SaveManager.Instance.ApplyPendingLoad();
     }
 }
