@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7080a1c2e64198642933dcb140aac195, type: 3}
   m_Name: Movil
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoMovil
-  id: 
-  descripcion: 
-  prefabSuelo: {fileID: 0}
-  spriteInventario: {fileID: 0}
+  id: "M\xF3vil del jugador"
+  descripcion: "Este es el m\xF3vil del jugador y sin \xE9l no puede vivir"
+  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  spriteInventario: {fileID: 7482667652216324306, guid: df547b387abac9946b1c58708f468b69, type: 3}
   opcionesDisponibles:
   - Usar
