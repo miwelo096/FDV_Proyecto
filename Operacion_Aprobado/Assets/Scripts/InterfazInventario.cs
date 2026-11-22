@@ -1,15 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
+using UnityEngine.UI;
 
 public class InterfazInventario : MonoBehaviour
 {
-
     public GameObject prefabInterfazObjeto;
     public Inventario inventario;
     public Transform padre;
 
+    [Header("Panel de Detalles e Interacción")]
+    [SerializeField] private TextMeshProUGUI textoTitulo;
+    [SerializeField] private TextMeshProUGUI textoDescripcion;
+    [SerializeField] private Transform contenedorBotonesOpciones;
+    [SerializeField] private GameObject prefabBotonOpcion;
+
     public List<GameObject> interfazInventario = new();
+    private List<GameObject> botonesOpcionesActuales = new();
 
     public bool ValidarReferencias(Inventario inventarioEsperado)
     {
@@ -49,7 +56,7 @@ public class InterfazInventario : MonoBehaviour
         }
 
         if (casilla.imagenObjeto == null &&
-            casilla.GetComponent<UnityEngine.UI.Image>() == null)
+            casilla.GetComponent<Image>() == null)
         {
             Debug.LogError(
                 "InterfazInventario: la casilla necesita una Image.",
@@ -63,6 +70,7 @@ public class InterfazInventario : MonoBehaviour
     private void Start()
     {
         ActualizarInterfaz();
+        LimpiarPanelDetalles();
     }
 
     /// <summary>
@@ -70,10 +78,7 @@ public class InterfazInventario : MonoBehaviour
     /// </summary>
     public void ActualizarInterfaz()
     {
-        if (!ValidarReferencias(inventario))
-        {
-            return;
-        }
+        if (!ValidarReferencias(inventario)) return;
 
         foreach (GameObject casillaAnterior in interfazInventario)
         {
@@ -95,20 +100,98 @@ public class InterfazInventario : MonoBehaviour
 
             interfazObjeto.Initialize(objeto, item =>
             {
-                inventario.SoltarObjeto(item);
+                SeleccionarObjeto(item);
+                MostrarDetallesObjeto(item);
             });
 
             interfazInventario.Add(interfazObjeto.gameObject);
         }
+    }
 
-        LanzarObjeto lanzarScript = inventario.GetComponent<LanzarObjeto>();
-
-        if (lanzarScript != null && lanzarScript.ObjetoPreparado != null)
+    /// <summary>
+    /// Muestra la descripción del objeto y los botones que puede utlilizar.
+    /// </summary>
+    /// 
+    /// <param name="objeto">Objeto</param>
+    void MostrarDetallesObjeto(Objeto objeto)
+    {
+        if (textoTitulo != null)
         {
-            SeleccionarObjeto(lanzarScript.ObjetoPreparado);
+            textoTitulo.text =
+                objeto != null ? objeto.id : string.Empty;
+        }
+        if (textoDescripcion != null)
+        {
+            textoDescripcion.text =
+                objeto != null ? objeto.descripcion : string.Empty;
+        }
+
+        foreach (GameObject botonObjeto in botonesOpcionesActuales)
+        {
+            Destroy(botonObjeto);
+        }
+        botonesOpcionesActuales.Clear();
+
+        if (objeto != null &&
+            contenedorBotonesOpciones != null &&
+            prefabBotonOpcion != null)
+        {
+            foreach (string opcion in objeto.opcionesDisponibles)
+            {
+                CrearBotonOpcion(opcion, () =>
+                {
+                    EjecutarAccionObjeto(objeto, opcion);
+                });
+            }
         }
     }
 
+    /// <summary>
+    /// Creación de los botones del objeto.
+    /// </summary>
+    /// 
+    /// <param name="textoBoton">Texto que aparecera en el botón</param>
+    /// <param name="action">Acción a realizar al pulsarse el botón</param>
+    void CrearBotonOpcion(string textoBoton, UnityEngine.Events.UnityAction action)
+    {
+        GameObject nuevoBoton = Instantiate(prefabBotonOpcion, contenedorBotonesOpciones);
+        var textoTMP = nuevoBoton.GetComponentInChildren<TextMeshProUGUI>();
+
+        if (textoTMP != null)
+        {
+            textoTMP.text = textoBoton;
+        }
+
+        var botonComponente = nuevoBoton.GetComponent<Button>();
+        
+        if (botonComponente != null)
+        {
+            botonComponente.onClick.AddListener(action);
+        }
+
+        botonesOpcionesActuales.Add(nuevoBoton);
+    }
+
+    /// <summary>
+    /// Limpia la descripción y los botones de la interfaz de inventario
+    /// </summary>
+    public void LimpiarPanelDetalles()
+    {
+        if (textoTitulo != null) textoTitulo.text = "";
+        if (textoDescripcion != null) textoDescripcion.text = "";
+
+        foreach (GameObject botonObjeto in botonesOpcionesActuales)
+        {
+            Destroy(botonObjeto);
+        }
+        botonesOpcionesActuales.Clear();
+    }
+
+    /// <summary>
+    /// Añade un borde de color al objeto seleccionado.
+    /// </summary>
+    /// 
+    /// <param name="objetoSeleccionado">Objeto a seleccionar</param>
     public void SeleccionarObjeto(Objeto objetoSeleccionado)
     {
         for(int i = 0; i<inventario.listaInventario.Count; i++)
@@ -122,6 +205,9 @@ public class InterfazInventario : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Elimina la selección del objeto haciendo que desaparezca el borde de color.
+    /// </summary>
     public void LimpiarSeleccion()
     {
         foreach (var objeto in interfazInventario)
@@ -135,5 +221,21 @@ public class InterfazInventario : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Ejecuta la acción en el objeto obtenida por opción.
+    /// </summary>
+    /// 
+    /// <param name="objeto">Objeto al que se ejecuta la acción</param>
+    /// <param name="opcion">Nombre de la acción a ejecutar</param>
+    void EjecutarAccionObjeto(Objeto objeto, string opcion)
+    {
+        if (objeto == null) return;
+
+        objeto.EjecutarAccionObjeto(opcion, inventario);
+
+        ActualizarInterfaz();
+        LimpiarPanelDetalles();
     }
 }

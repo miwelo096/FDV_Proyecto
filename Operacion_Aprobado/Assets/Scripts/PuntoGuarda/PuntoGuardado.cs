@@ -15,10 +15,12 @@ public class PuntoGuardado : MonoBehaviour, IInteractuable
     [SerializeField] private GameObject ButtonPrefab; // Prefab de botón para cada guardado
     [SerializeField] private Button newSaveButton;    // Botón "Nuevo guardado"
 
-    private bool isMenuOpen = false;
+    public static bool IsPuntoGuardadoOpen = false;
 
     private void Start()
     {
+        IsPuntoGuardadoOpen = false;
+
         GameAsserts.IsValidReference(PanelGuardado, $"PanelGuardado ({name})");
         GameAsserts.IsValidReference(ListaDeGuardados, $"ListaDeGuardados ({name})");
         GameAsserts.IsValidReference(ButtonPrefab, $"ButtonPrefab ({name})");
@@ -34,10 +36,21 @@ public class PuntoGuardado : MonoBehaviour, IInteractuable
 
     public void Interactuar()
     {
-        if (!isMenuOpen)
+        if (!IsPuntoGuardadoOpen)
         {
             OpenSaveMenu();
         }
+    }
+
+
+    void OnEnable()
+    {
+        InputManager.OnClosePressed += CloseSaveMenu;
+    }
+
+    void OnDisable()
+    {
+        InputManager.OnClosePressed -= CloseSaveMenu;
     }
 
     private void OpenSaveMenu()
@@ -48,19 +61,20 @@ public class PuntoGuardado : MonoBehaviour, IInteractuable
             return;
         }
 
+        IsPuntoGuardadoOpen = true;
         PanelGuardado.SetActive(true);
-        Time.timeScale = 0f; // Pausa el juego
-        isMenuOpen = true;
+
         if (_canvasInteraccion != null) _canvasInteraccion.SetActive(false);
+        GameManager.AplicarEstadoGlobal();
         RefreshSaveList();
     }
 
     private void CloseSaveMenu()
     {
-        isMenuOpen = false;
-        Time.timeScale = 1f; // Reanuda el juego
         if (PanelGuardado != null) PanelGuardado.SetActive(false);
+        IsPuntoGuardadoOpen = false;
         if (_canvasInteraccion != null) _canvasInteraccion.SetActive(true);
+        GameManager.AplicarEstadoGlobal();
     }
 
     // Rellena la lista de guardados existentes para poder sobrescribir

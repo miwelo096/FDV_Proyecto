@@ -23,6 +23,10 @@ public class PauseMenu : MonoBehaviour
 
     private bool restauracionPendiente;
 
+    public InventarioMenu inventarioMenu;
+
+
+
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarEstado()
@@ -33,6 +37,8 @@ public class PauseMenu : MonoBehaviour
 
     private void Awake()
     {
+        GameAsserts.IsValidReference(inventarioMenu, $"inventarioMenu ({name})");
+        
         if (pausePanel == null)
         {
             Debug.LogError(
@@ -74,7 +80,15 @@ public class PauseMenu : MonoBehaviour
             return;
 
         IsPaused = true;
-        Time.timeScale = 0f;
+
+        GameManager.AplicarEstadoGlobal();
+
+        if (!InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
+        // Time.timeScale = 0f;
         restauracionPendiente = false;
 
         BloquearUI();
@@ -88,8 +102,15 @@ public class PauseMenu : MonoBehaviour
     {
         if (!IsPaused) return;
 
+        if (InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
         IsPaused = false;
-        Time.timeScale = 1f;
+        
+        GameManager.AplicarEstadoGlobal();
+        // Time.timeScale = 1f;
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
@@ -98,6 +119,14 @@ public class PauseMenu : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
         restauracionPendiente = true;
+    }
+
+
+    public void OnClickInventario()
+    {
+        if (!IsPaused || InventarioMenu.IsInventoryOpen) return;
+
+        inventarioMenu.AlternarInventario();
     }
 
 

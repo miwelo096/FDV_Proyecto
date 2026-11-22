@@ -5,28 +5,37 @@ using Unity.VisualScripting;
 [RequireComponent(typeof(Collider2D))]
 public class Inventario : MonoBehaviour
 {
-    [SerializeField]
-    private InterfazInventario interfaz;
+    [SerializeField] private InterfazInventario interfaz;
 
-    [SerializeField]
-    private GameObject prefabObjetoCaido;
+    [SerializeField] private GameObject prefabObjetoCaido;
 
+    [SerializeField] private List<Objeto> objetosIniciales = new();
 
     private List<Objeto> inventarioList = new();
+
+
+    void Awake()
+    {
+        foreach (Objeto objeto in objetosIniciales)
+        {
+            if (objeto != null &&
+                inventarioList.Count < Constantes.OBJETOSMAXIMOS)
+            {
+                inventarioList.Add(objeto);
+            }
+        }
+    }
+
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
 
-        if (!collision.CompareTag(Constantes.ITEMTAG))
-        {
-            return;
-        }
+        if (!collision.CompareTag(Constantes.ITEMTAG)) return;
 
         ObjetoCaido objetoCaido = collision.GetComponent<ObjetoCaido>();
 
@@ -94,7 +103,6 @@ public class Inventario : MonoBehaviour
     public bool SoltarObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
@@ -163,7 +171,6 @@ public class Inventario : MonoBehaviour
     public bool ConsumirObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
