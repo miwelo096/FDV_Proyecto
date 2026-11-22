@@ -1,7 +1,46 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Consumible", menuName = "Scriptable Objects/Consumible")]
 public class ObjetoConsumible : Objeto
 {
     public GameObject prefabObjetoConsumible;
+
+
+    void OnEnable()
+    {
+        if (opcionesDisponibles == null)
+        {
+            opcionesDisponibles = new List<string>();
+        }
+
+        if (!opcionesDisponibles.Contains("Usar"))
+        {
+            opcionesDisponibles.Insert(0, "Usar");
+        }
+
+        if (!opcionesDisponibles.Contains("Soltar"))
+        {
+            opcionesDisponibles.Add("Soltar");
+        }
+    }
+
+    /// <summary>
+    /// Ejecuta la acción en el objeto obtenida por opción.
+    /// </summary>
+    /// 
+    /// <param name="opcion">Nombre de la acción a ejecutar</param>
+    /// <param name="inventario">Inventario del jugador</param>
+    public override void EjecutarAccionObjeto(string opcion, Inventario inventario)
+    {
+        switch (opcion)
+        {
+            case "Usar":
+                inventario.ConsumirObjeto(this);
+                break;
+            default:
+                base.EjecutarAccionObjeto(opcion, inventario);
+                break;
+        }
+    }
 }
