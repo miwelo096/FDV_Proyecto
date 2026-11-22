@@ -26,6 +26,13 @@ public class IASeguir : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (GameManager.JuegoBloqueado)
+        {
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if(campodeVision.Viendo){
             Seguir();
             RotarHacia(playerObj.transform.position);

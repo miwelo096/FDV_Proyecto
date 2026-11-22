@@ -9,6 +9,16 @@ public class GameManager : MonoBehaviour
     private static bool cerrandoPuzzle;
     public GameObject mainScene;
 
+    public static bool JuegoBloqueado
+    {
+        get
+        {
+            return PauseMenu.IsPaused ||
+                    InPuzzle ||
+                    PuntoGuardado.IsPuntoGuardadoOpen;
+        }
+    }
+
     private bool mostrandoPanelCompletado = false;
     private float temporizadorCierre = 0f;
     private Scene escenaPuzzleActual;
@@ -55,24 +65,27 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
-    private void CambiarActividadMundo(bool activo)
+
+
+    /// <summary>
+    /// Detiene los objetos lanzados en caso de que le juego esté
+    /// pausado, en el inventario o en un puzzle.
+    /// </summary>
+    public static void AplicarEstadoGlobal()
     {
-        if (!activo)
-        {
-            foreach (ObjetoSonido proyectil in mainScene.GetComponentsInChildren<ObjetoSonido>())
-            {
-                proyectil.GuardarMovimiento();
-            }
-        }
+        GameManager gm = FindAnyObjectByType<GameManager>();
+        if (gm == null || gm.mainScene == null) return;
 
-        mainScene.SetActive(activo);
-
-        if (activo)
+        ObjetoSonido[] objetosLanzados =
+            gm.mainScene.GetComponentsInChildren<ObjetoSonido>();
+        foreach (ObjetoSonido objeto in objetosLanzados)
         {
-            foreach (ObjetoSonido proyectil in mainScene.GetComponentsInChildren<ObjetoSonido>())
+            if (objeto != null)
             {
-                proyectil.RestaurarMovimiento();
+                if (JuegoBloqueado)
+                    objeto.GuardarMovimiento();
+                else
+                    objeto.RestaurarMovimiento();
             }
         }
     }
@@ -111,7 +124,11 @@ public class GameManager : MonoBehaviour
 
     public static void EntrarPuzzle(string nombreEscena)
     {
-        if (InPuzzle || PauseMenu.IsPaused) return;
+        if (InPuzzle)
+        {
+            Debug.Log("Ya se está en un puzzle");
+            return;
+        }
 
         GameManager gm = FindAnyObjectByType<GameManager>();
 
@@ -146,10 +163,15 @@ public class GameManager : MonoBehaviour
 
         try
         {
-            gm.CambiarActividadMundo(false);
+            AplicarEstadoGlobal();
             AsyncOperation carga = SceneManager.LoadSceneAsync(nombreEscena, LoadSceneMode.Additive);
 
-            if (carga != null) return;
+            if (carga != null)
+            {
+                PauseMenu pausaMenu = FindAnyObjectByType<PauseMenu>();
+                if (pausaMenu != null) pausaMenu.Resume();
+                return;
+            }
 
             Debug.LogError($"GameManager: no se pudo iniciar la carga de '{nombreEscena}'.", gm);
         }
@@ -159,7 +181,7 @@ public class GameManager : MonoBehaviour
         }
 
         InPuzzle = false;
-        gm.CambiarActividadMundo(true);
+        AplicarEstadoGlobal();
     }
 
     public static void PuzzleCompletado(Scene escenaPuzzle, float autoCerrarSegundos = 0f)
@@ -245,7 +267,7 @@ public class GameManager : MonoBehaviour
                     }
 
                     if (gm != null && gm.mainScene != null)
-                        gm.CambiarActividadMundo(true);
+                        AplicarEstadoGlobal();
                 };
                 return;
             }
@@ -259,7 +281,7 @@ public class GameManager : MonoBehaviour
         cerrandoPuzzle = false;
     }
 
-    private void CargarGuardados(Scene escena, LoadSceneMode modo)
+    void CargarGuardados(Scene escena, LoadSceneMode modo)
     {
         if (SaveManager.Instance != null && modo == LoadSceneMode.Single)
         {
@@ -267,7 +289,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator EsperarYAplicar()
+    IEnumerator EsperarYAplicar()
     {
         yield return null;
         if (SaveManager.Instance != null) SaveManager.Instance.ApplyPendingLoad();

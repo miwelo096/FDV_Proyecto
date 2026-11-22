@@ -16,7 +16,7 @@ public class OndaVisual : MonoBehaviour
         if (spriteOnda == null)
         {
             Debug.LogError(
-                $"OndaVisual: falta SpriteRenderer en '{name}'.", this);
+                $"OndaVisual ({name})");
 
             enabled = false;
             Destroy(gameObject);
@@ -25,7 +25,7 @@ public class OndaVisual : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenu.IsPaused || GameManager.InPuzzle)
+        if (GameManager.JuegoBloqueado)
             return;
 
         tiempoTranscurrido += Time.deltaTime;

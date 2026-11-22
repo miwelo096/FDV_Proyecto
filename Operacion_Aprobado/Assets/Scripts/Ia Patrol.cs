@@ -21,6 +21,10 @@ public class IaPatrol : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         agent = GetComponent<NavMeshAgent>();
 
+        GameAsserts.IsValidReference(campodeVision, $"campodeVision ({name})");
+        GameAsserts.IsValidReference(rb, $"rb ({name})");
+        GameAsserts.IsValidReference(agent, $"agent ({name})");
+
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
@@ -52,7 +56,7 @@ public class IaPatrol : MonoBehaviour
         if (rb == null || agent == null || !agent.isOnNavMesh)
             return;
 
-        if (PauseMenu.IsPaused || GameManager.InPuzzle || campodeVision == null)
+        if (GameManager.JuegoBloqueado || campodeVision == null)
         {
             agent.isStopped = true;
             return;
