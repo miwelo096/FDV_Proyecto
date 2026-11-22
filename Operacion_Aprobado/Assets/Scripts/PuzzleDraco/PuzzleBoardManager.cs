@@ -229,6 +229,10 @@ public class PuzzleBoardManager : MonoBehaviour
 
             // Mostrar texto y autocerrar
             GameManager.PuzzleCompletado(gameObject.scene, 1f);
+            
+            yield return new WaitForSeconds(1f);
+            GameManager.SalirPuzzle(gameObject.scene);
+
         }
     }
 
