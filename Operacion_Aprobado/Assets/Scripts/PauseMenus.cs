@@ -24,6 +24,7 @@ public class PauseMenu : MonoBehaviour
     private bool restauracionPendiente;
 
     public InventarioMenu inventarioMenu;
+    public LoadMenu loadMenu;
 
 
 
@@ -38,6 +39,7 @@ public class PauseMenu : MonoBehaviour
     private void Awake()
     {
         GameAsserts.IsValidReference(inventarioMenu, $"inventarioMenu ({name})");
+        GameAsserts.IsValidReference(loadMenu, $"loadMenu ({name})");
         
         if (pausePanel == null)
         {
@@ -88,6 +90,11 @@ public class PauseMenu : MonoBehaviour
             inventarioMenu.AlternarInventario();
         }
 
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.CerrarLoadMenu();
+        }
+
         // Time.timeScale = 0f;
         restauracionPendiente = false;
 
@@ -105,6 +112,11 @@ public class PauseMenu : MonoBehaviour
         if (InventarioMenu.IsInventoryOpen)
         {
             inventarioMenu.AlternarInventario();
+        }
+
+        if (LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.CerrarLoadMenu();
         }
 
         IsPaused = false;
@@ -127,6 +139,31 @@ public class PauseMenu : MonoBehaviour
         if (!IsPaused || InventarioMenu.IsInventoryOpen) return;
 
         inventarioMenu.AlternarInventario();
+    }
+
+    public void OnClickLoadMenu()
+    {
+        if (!IsPaused) return;
+
+        if (LoadMenu.IsLoadMenuOpen)
+        {
+            OnClickCancelarLoadMenu();
+            return;
+        }
+
+        if (InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
+        if (loadMenu != null) loadMenu.AbrirLoadMenu();
+    }
+
+    public void OnClickCancelarLoadMenu()
+    {
+        if (loadMenu != null) loadMenu.CerrarLoadMenu();
+        if(!InventarioMenu.IsInventoryOpen) inventarioMenu.AlternarInventario();
+
     }
 
 

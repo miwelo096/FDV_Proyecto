@@ -123,10 +123,19 @@ public class SaveManager : MonoBehaviour
             if (inv != null && inv.Interfaz != null)
             {
                 inv.LimpiarInventario();
+                Debug.Log($"📂 Al cargar, la partida tiene {data.inventarioItems.Count} IDs de objetos.");
                 foreach (string id in data.inventarioItems)
                 {
-                    Objeto obj = ObjetoDataBase.GetById(id);
-                    if (obj != null) inv.AddObjetoDesdeSave(obj);
+                    Objeto obj = ObjetoDataBase.Instance.GetById(id);
+                    if (obj != null) 
+                    {
+                        inv.AddObjetoDesdeSave(obj);
+                        Debug.Log($"   ✅ Cargando objeto: {obj.id}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"   ❌ Objeto no encontrado para ID: {id}");
+                    }
                 }
                 inv.Interfaz.ActualizarInterfaz();
             }
@@ -159,10 +168,19 @@ public class SaveManager : MonoBehaviour
             if (inv != null)
             {
                 data.inventarioItems.Clear();
+                Debug.Log($"🔍 Al guardar, el inventario del jugador tiene {inv.listaInventario.Count} objetos.");
                 foreach (Objeto obj in inv.listaInventario)
                 {
-                    if (obj != null) data.inventarioItems.Add(obj.id);
+                    if (obj != null)  {
+                        data.inventarioItems.Add(obj.id);
+                        Debug.Log($"   ✅ Guardando ID de objeto: {obj.id}");
+                    } else {
+                        Debug.LogWarning("   ❌ Hay un objeto nulo en el inventario.");
+                    }
                 }
+            } else
+            {
+                Debug.LogWarning("El jugador no tiene componente Inventario.");
             }
         }
 
