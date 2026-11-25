@@ -20,7 +20,7 @@ public class DetectorInteracciones : MonoBehaviour
 
     void Update()
     {
-        if (playerScript != null && playerScript.getEstado() == Player.Estados.Escondido)
+        if (playerScript != null && playerScript.EstadoPlayer == Player.Estados.Escondido)
         {
             DesactivarTodosLosCanvas();
             objetoActualEnRango = null;
@@ -156,7 +156,7 @@ public class DetectorInteracciones : MonoBehaviour
     /// </summary>
     void ComprobacionHoja()
     {
-        if (playerScript != null && playerScript.getEstado() == Player.Estados.Escondido) return;
+        if (playerScript != null && playerScript.EstadoPlayer == Player.Estados.Escondido) return;
 
         if (objetoActualEnRango != null)
         {

@@ -1,36 +1,49 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class IaPatrol : MonoBehaviour
 {
-
     public Transform[] waypoints;
     private int waypointactual;
     public float speed;
     public float waitTime;
+    public float distanciaLlegada = 0.2f;
+
     private bool isWaiting;
     private float tiempoEsperaRestante;
     private CampodeVision campodeVision;
     private Rigidbody2D rb;
-    [SerializeField] private float velocidadPersecucion = 3f;
-    [SerializeField] private float distanciaMinimaPersecucion = 1f;
+    private NavMeshAgent agent;
 
     private void Awake()
     {
         campodeVision = GetComponent<CampodeVision>();
         rb = GetComponent<Rigidbody2D>();
+        agent = GetComponent<NavMeshAgent>();
 
-        if (rb == null || campodeVision == null)
+        GameAsserts.IsValidReference(campodeVision, $"campodeVision ({name})");
+        GameAsserts.IsValidReference(rb, $"rb ({name})");
+        GameAsserts.IsValidReference(agent, $"agent ({name})");
+
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+    }
+
+    private void OnEnable()
+    {
+        if (agent != null)
         {
-            Debug.LogError(
-                "IaPatrol: se necesitan Rigidbody2D y CampodeVision.",
-                this);
-
-            enabled = false;
+            agent.speed = speed;
+            agent.isStopped = false;
         }
     }
 
     private void OnDisable()
     {
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+        }
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
@@ -38,20 +51,20 @@ public class IaPatrol : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    private void FixedUpdate()
+    private void Update()
     {
-        if (rb == null)
+        if (rb == null || agent == null || !agent.isOnNavMesh)
             return;
 
-        rb.angularVelocity = 0f;
-
-        if (PauseMenu.IsPaused ||
-            GameManager.InPuzzle ||
-            campodeVision == null ||
-            !campodeVision.isActiveAndEnabled)
+        if (GameManager.JuegoBloqueado || campodeVision == null)
         {
-            rb.linearVelocity = Vector2.zero;
+            agent.isStopped = true;
+            return;
+        }
+
+        if (campodeVision.Viendo)
+        {
+            isWaiting = false;
             return;
         }
 
@@ -61,99 +74,83 @@ public class IaPatrol : MonoBehaviour
             waypointactual >= waypoints.Length ||
             waypoints[waypointactual] == null)
         {
-            rb.linearVelocity = Vector2.zero;
+            agent.isStopped = true;
             return;
         }
 
-        if (campodeVision.Viendo)
-        {
-            Transform objetivo = campodeVision.Objetivo;
-
-            if (objetivo == null || !objetivo.gameObject.activeInHierarchy)
-            {
-                rb.linearVelocity = Vector2.zero;
-                return;
-            }
-
-            // La persecución interrumpe la espera del waypoint.
-            isWaiting = false;
-            tiempoEsperaRestante = 0f;
-
-            Vector2 direccion = (Vector2)objetivo.position - rb.position;
-
-            rb.linearVelocity = direccion.magnitude > distanciaMinimaPersecucion
-                ? direccion.normalized * velocidadPersecucion
-                : Vector2.zero;
-
-            if (direccion.sqrMagnitude > 0f)
-            {
-                RotarHacia(objetivo.position);
-            }
-
-            return;
-        }
+        agent.speed = speed;
 
         if (isWaiting)
         {
-            rb.linearVelocity = Vector2.zero;
-
-            tiempoEsperaRestante = Mathf.Max(
-                0f, tiempoEsperaRestante - Time.fixedDeltaTime);
+            agent.isStopped = true;
+            tiempoEsperaRestante = Mathf.Max(0f, tiempoEsperaRestante - Time.deltaTime);
 
             if (tiempoEsperaRestante <= 0f)
             {
                 waypointactual = (waypointactual + 1) % waypoints.Length;
                 isWaiting = false;
-
-                if (waypoints[waypointactual] != null)
-                {
-                    Flip();
-                }
+                agent.isStopped = false;
+                agent.SetDestination(waypoints[waypointactual].position);
             }
-
             return;
         }
 
         Transform objetivoWaypoint = waypoints[waypointactual];
+        agent.isStopped = false;
+        agent.SetDestination(objetivoWaypoint.position);
 
-        if (Vector2.Distance(rb.position, objetivoWaypoint.position) > 0.1f)
+        if (!agent.pathPending && agent.remainingDistance <= distanciaLlegada)
         {
-            Vector2 direccion =
-                ((Vector2)objetivoWaypoint.position - rb.position).normalized;
-
-            rb.linearVelocity = direccion * speed;
-            RotarHacia(objetivoWaypoint.position);
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
+            agent.isStopped = true;
             isWaiting = true;
             tiempoEsperaRestante = Mathf.Max(0f, waitTime);
         }
+        else if (agent.velocity.sqrMagnitude > 0.01f)
+        {
+            RotarHacia((Vector2)rb.position + (Vector2)agent.velocity);
+        }
     }
 
-
-    private void RotarHacia(Vector2 destino) {
-            // Calculamos la dirección vectorial desde nuestra posición hasta el destino
-            Vector2 direccion = (destino - rb.position).normalized;
-
-            // Calculamos el ángulo en grados usando Atan2
-            float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
-
-            // Aplicamos la rotación en el eje Z (funciona para arriba, abajo, izq y der)
-            rb.MoveRotation(angulo);
-    }
-
-    private void Flip()
+    public void RetomarEnWaypointMasCercano()
     {
-        // Si la posición actual es mayor que la del waypoint, va hacia la izquierda
-        if (rb.position.x > waypoints[waypointactual].position.x)
+        if (waypoints == null || waypoints.Length == 0 || agent == null || !agent.isOnNavMesh)
+            return;
+
+        int indiceMasCercano = -1;
+        float menorDistanciaSqr = Mathf.Infinity;
+        Vector2 posicionActual = rb != null ? rb.position : (Vector2)transform.position;
+
+        for (int i = 0; i < waypoints.Length; i++)
         {
-            rb.MoveRotation(180f); // Mira a la izquierda
+            if (waypoints[i] == null)
+                continue;
+
+            float distSqr = ((Vector2)waypoints[i].position - posicionActual).sqrMagnitude;
+            if (distSqr < menorDistanciaSqr)
+            {
+                menorDistanciaSqr = distSqr;
+                indiceMasCercano = i;
+            }
         }
-        else
-        {
-            rb.MoveRotation(0f);   // Mira a la derecha
-        }
+
+        if (indiceMasCercano == -1)
+            return;
+
+        waypointactual = indiceMasCercano;
+        isWaiting = false;
+        tiempoEsperaRestante = 0f;
+        agent.speed = speed;
+        agent.isStopped = false;
+        agent.SetDestination(waypoints[waypointactual].position);
+    }
+
+    private void RotarHacia(Vector2 destino)
+    {
+        Vector2 direccion = (destino - rb.position).normalized;
+        if (direccion.sqrMagnitude < 0.0001f)
+            return;
+
+        float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
+        rb.MoveRotation(angulo);
     }
 }

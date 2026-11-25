@@ -5,7 +5,6 @@ public class CampodeVision : MonoBehaviour
     public float distancia = 8f;
     public float angulo = 90f;
     public LayerMask obstaculos;
-    public string tagObjetivo = "Player";
 
      // Resultados calculados aquí; otros componentes solo pueden leerlos.
     public bool Viendo { get; private set; }
@@ -22,7 +21,7 @@ public class CampodeVision : MonoBehaviour
     
     void Start()
     {
-        GameObject p = GameObject.FindGameObjectWithTag(tagObjetivo);
+        GameObject p = GameObject.FindGameObjectWithTag(Constantes.PLAYERTAG);
         if (p != null)
         {
             objetivo = p.transform;
@@ -84,7 +83,7 @@ public class CampodeVision : MonoBehaviour
             if (!avisoReferenciaAusente)
             {
                 string motivo = objetivo == null
-                    ? $"No hay objetivo con el tag '{tagObjetivo}' o ha desaparecido."
+                    ? $"No hay objetivo con el tag '{Constantes.PLAYERTAG}' o ha desaparecido."
                     : "El objetivo no tiene un componente Player válido.";
                 
                 Debug.LogWarning($"{name}: {motivo}", this);
@@ -105,7 +104,7 @@ public class CampodeVision : MonoBehaviour
                     dir.magnitude,
                     obstaculos
                 ).collider == null
-                && player.getEstado() != Player.Estados.Escondido;
+                && player.EstadoPlayer != Player.Estados.Escondido;
             
             Objetivo = Viendo ? objetivo : null;
         }

@@ -3,9 +3,8 @@ using UnityEngine.EventSystems;
 
 public class LanzarObjeto : MonoBehaviour
 {
-    [SerializeField]
     // Posición desde la que se lanza un objeto
-    private Transform puntoDeLanzamiento;
+    [SerializeField] private Transform puntoDeLanzamiento;
     // Inventario del jugador
     private Inventario inventarioScript;
     private Camera camara;
@@ -52,10 +51,7 @@ public class LanzarObjeto : MonoBehaviour
             return;
         }
 
-        if (!paraLanzar)
-        {
-            return;
-        }
+        if (!paraLanzar) return;
 
         if (GameManager.InPuzzle)
         {
@@ -95,10 +91,7 @@ public class LanzarObjeto : MonoBehaviour
             return;
         }
 
-        if (!InputManager.ConfirmarLanzamientoPulsado)
-        {
-            return;
-        }
+        if (!InputManager.ConfirmarLanzamientoPulsado) return;
 
         EventSystem sistemaEventos = EventSystem.current;
 
@@ -111,10 +104,7 @@ public class LanzarObjeto : MonoBehaviour
             return;
         }
 
-        if (sistemaEventos.IsPointerOverGameObject())
-        {
-            return;
-        }
+        if (sistemaEventos.IsPointerOverGameObject()) return;
 
         EjecutarLanzamiento();
     }
@@ -125,8 +115,7 @@ public class LanzarObjeto : MonoBehaviour
     void PrepararLanzamiento()
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
@@ -229,8 +218,7 @@ public class LanzarObjeto : MonoBehaviour
     private void EjecutarLanzamiento()
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }

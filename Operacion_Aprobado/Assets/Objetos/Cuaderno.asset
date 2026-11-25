@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae6b284d71ffa374284403cdb1647e77, type: 3}
+  m_Name: Cuaderno
+  m_EditorClassIdentifier: Assembly-CSharp::ObjetoCuaderno
+  id: Cuaderno
+  descripcion: Cuaderno donde el jugador apunta sus cosas
+  prefabSuelo: {fileID: 5299083941008226731, guid: 768c56e94553342a3b5a36a42fe0adc8, type: 3}
+  spriteInventario: {fileID: 7482667652216324306, guid: df547b387abac9946b1c58708f468b69, type: 3}
+  textos:
+  - "Hola, esta es la primera p\xE1gina del cuaderno del jugador."
+  - "Esta ser\xEDa la segunda p\xE1gina del cuaderno del jugador."
+  - "El usuario para eduroam es: XXX.X@alumnos.upm.es y la contrase\xF1a es: YYYYYYYY"
+  - "Esta ser\xEDa la \xFAltima hoja del cuaderno del jugador. Adios."

@@ -28,8 +28,8 @@ public class PlayerNoiseMaker : MonoBehaviour
     {
         if (playerScript != null && burbujaSonido != null)
         {
-            bool corriendo = playerScript.getEstado() == Player.Estados.Corriendo &&
-                        playerScript.getPlayerRB().linearVelocity.sqrMagnitude > 0.01f;
+            bool corriendo = playerScript.EstadoPlayer == Player.Estados.Corriendo &&
+                        playerScript.playerRB.linearVelocity.sqrMagnitude > 0.01f;
 
             burbujaSonido.SetActive(corriendo);
         }

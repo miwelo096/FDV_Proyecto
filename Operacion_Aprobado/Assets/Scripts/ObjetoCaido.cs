@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class ObjetoCaido : MonoBehaviour
 {   
-    [SerializeField]
-    private bool autoStart;
-    [SerializeField]
-    private Objeto objeto;
-    [SerializeField]
-    private bool recogido;
+    public string idObjetoCaido;
+    
+    [SerializeField] private bool autoStart;
+    [SerializeField] private Objeto objeto;
+    [SerializeField] private bool recogido;
 
     private Collider2D colliderObjeto;
     private float tiempoRecogidaRestante;
@@ -72,8 +71,7 @@ public class ObjetoCaido : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenu.IsPaused ||
-            GameManager.InPuzzle ||
+        if (GameManager.JuegoBloqueado ||
             tiempoRecogidaRestante <= 0f)
         {
             return;

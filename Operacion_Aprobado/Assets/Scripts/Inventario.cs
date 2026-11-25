@@ -5,28 +5,37 @@ using Unity.VisualScripting;
 [RequireComponent(typeof(Collider2D))]
 public class Inventario : MonoBehaviour
 {
-    [SerializeField]
-    private InterfazInventario interfaz;
+    [SerializeField] private InterfazInventario interfaz;
 
-    [SerializeField]
-    private GameObject prefabObjetoCaido;
+    [SerializeField] private GameObject prefabObjetoCaido;
 
+    [SerializeField] private List<Objeto> objetosIniciales = new();
 
     private List<Objeto> inventarioList = new();
+
+
+    void Awake()
+    {
+        foreach (Objeto objeto in objetosIniciales)
+        {
+            if (objeto != null &&
+                inventarioList.Count < Constantes.OBJETOSMAXIMOS)
+            {
+                inventarioList.Add(objeto);
+            }
+        }
+    }
+
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
-            GameManager.InPuzzle)
+            GameManager.JuegoBloqueado)
         {
             return;
         }
 
-        if (!collision.CompareTag(Constantes.ITEMTAG))
-        {
-            return;
-        }
+        if (!collision.CompareTag(Constantes.ITEMTAG)) return;
 
         ObjetoCaido objetoCaido = collision.GetComponent<ObjetoCaido>();
 
@@ -40,6 +49,7 @@ public class Inventario : MonoBehaviour
         if (AddObjeto(objetoCaido.Objeto))
         {
             objetoCaido.Recogido = true;
+            if (!string.IsNullOrEmpty(objetoCaido.idObjetoCaido)) SaveManager.objetosRecogidos.Add(objetoCaido.idObjetoCaido);
             Destroy(collision.gameObject);
         }
     }
@@ -93,7 +103,6 @@ public class Inventario : MonoBehaviour
     public bool SoltarObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
@@ -162,7 +171,6 @@ public class Inventario : MonoBehaviour
     public bool ConsumirObjeto(Objeto objeto)
     {
         if (!isActiveAndEnabled ||
-            PauseMenu.IsPaused ||
             GameManager.InPuzzle)
         {
             return false;
@@ -230,5 +238,18 @@ public class Inventario : MonoBehaviour
     public InterfazInventario Interfaz
     {
         get { return interfaz; }
+    }
+
+    public void LimpiarInventario()
+    {
+        inventarioList.Clear();
+        if (interfaz != null) interfaz.ActualizarInterfaz();
+    }
+
+    public void AddObjetoDesdeSave(Objeto objeto)
+    {
+        if (objeto == null) return;
+        if (inventarioList.Count >= Constantes.OBJETOSMAXIMOS) return;
+        inventarioList.Add(objeto);
     }
 }

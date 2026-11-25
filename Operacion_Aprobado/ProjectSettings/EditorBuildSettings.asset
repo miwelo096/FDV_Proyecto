@@ -17,5 +17,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EduroamScene.unity
     guid: 3b60ca8dcee9b004eb7b0fd20facf05a
+  - enabled: 1
+    path: Assets/Scenes/InicioScene.unity
+    guid: ec42f18282f242a4ea89d3797ec4ce18
+  - enabled: 1
+    path: Assets/Scenes/testScene.unity
+    guid: ca858ff8777dcb849ac4f98fb472d227
+  - enabled: 1
+    path: Assets/Scenes/LevelScene.unity
+    guid: 753d46ff0fdbb495fb4fbca6672c0b37
+  - enabled: 1
+    path: Assets/Scenes/EscenaDePruebas.unity
+    guid: eeb5870d9d1f87349a0f9617835b1135
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

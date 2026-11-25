@@ -4,7 +4,7 @@ using UnityEngine;
 public static class Constantes
 {
     // Tags
-    // public const string PLAYERTAG = "Player";
+    public const string PLAYERTAG = "Player";
     public const string ENEMYTAG = "Enemy";
     public const string ITEMTAG = "Item";
     public const string INTERACTIVOTAG = "Interactivo";
@@ -23,6 +23,7 @@ public static class Constantes
 
 
     // Escenas
+    public const string ESCENAINICIO = "InicioScene";
     public const string ESCENAPRINCIPAL = "SampleScene";
     public const string ESCENATEST = "testScene";
     public const string ESCENADRACO = "PuzzleDracoScene";
@@ -34,6 +35,12 @@ public static class Constantes
     // Constantes de EduroamLogin
     public const string USUARIOCORRECTO = "XXX.X@alumnos.upm.es";
     public const string CONTRASEÑACORRECTA = "YYYYYYYY";
+
+
+
+    // Constantes de TriquiLogin
+    public const string USUARIOTRIQUI = "ZZZ.Z@triqui.fi.upm.es";
+    public const string CONTRASEÑATRIQUI = "C1AB3";
 
 
 

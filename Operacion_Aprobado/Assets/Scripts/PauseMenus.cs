@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-100)]
 public class PauseMenu : MonoBehaviour
@@ -22,16 +23,24 @@ public class PauseMenu : MonoBehaviour
 
     private bool restauracionPendiente;
 
+    public InventarioMenu inventarioMenu;
+    public LoadMenu loadMenu;
+
+
+
     [RuntimeInitializeOnLoadMethod(
         RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ReiniciarEstado()
     {
         IsPaused = false;
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
     }
 
     private void Awake()
     {
+        GameAsserts.IsValidReference(inventarioMenu, $"inventarioMenu ({name})");
+        GameAsserts.IsValidReference(loadMenu, $"loadMenu ({name})");
+        
         if (pausePanel == null)
         {
             Debug.LogError(
@@ -73,7 +82,21 @@ public class PauseMenu : MonoBehaviour
             return;
 
         IsPaused = true;
-        Time.timeScale = 0f;
+
+        GameManager.AplicarEstadoGlobal();
+
+        // Para que aparezca lo primero el inventario
+        if (inventarioMenu != null && !InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.AlternarLoad();
+        }
+
+        // Time.timeScale = 0f;
         restauracionPendiente = false;
 
         BloquearUI();
@@ -85,11 +108,22 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        if (!IsPaused)
-            return;
+        if (!IsPaused) return;
+
+        if (inventarioMenu != null && InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.AlternarLoad();
+        }
 
         IsPaused = false;
-        Time.timeScale = 1f;
+        
+        GameManager.AplicarEstadoGlobal();
+        // Time.timeScale = 1f;
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
@@ -98,6 +132,45 @@ public class PauseMenu : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
         restauracionPendiente = true;
+    }
+
+
+    public void OnClickInventario()
+    {
+        if (!IsPaused || InventarioMenu.IsInventoryOpen) return;
+
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.AlternarLoad();
+        }
+
+        if (inventarioMenu != null) inventarioMenu.AlternarInventario();
+    }
+
+    public void OnClickLoadMenu()
+    {
+        if (!IsPaused || LoadMenu.IsLoadMenuOpen) return;
+
+        if (inventarioMenu != null && InventarioMenu.IsInventoryOpen)
+        {
+            inventarioMenu.AlternarInventario();
+        }
+
+        if (loadMenu != null) loadMenu.AlternarLoad();
+    }
+
+
+    public void Quit()
+    {
+        if (!IsPaused) return;
+
+        IsPaused = false;
+        // Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        SceneManager.LoadScene(Constantes.ESCENAINICIO);
     }
 
     private void BloquearUI()
