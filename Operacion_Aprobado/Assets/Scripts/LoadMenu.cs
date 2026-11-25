@@ -25,27 +25,38 @@ public class LoadMenu : MonoBehaviour
 
         if (loadPanel != null) loadPanel.SetActive(false);
     }
+
+
+    public void AlternarLoad()
+    {
+        if (!IsLoadMenuOpen)
+        {
+            AbrirLoadMenu();
+        }
+        else
+        {
+            CerrarLoadMenu();
+        }
+    }
     
     // Abre el panel de carga y rellena la lista con los guardados disponibles
-    public void AbrirLoadMenu()
+    void AbrirLoadMenu()
     {
         if (loadPanel == null) return;
 
         IsLoadMenuOpen = true;
         loadPanel.SetActive(true);
-        
+
         RellenarLista();
     }
 
     // Cierra el panel de carga
-    public void CerrarLoadMenu()
+    void CerrarLoadMenu()
     {
+        if (loadPanel == null) return;
+
         IsLoadMenuOpen = false;
-        
-        if (loadPanel != null)
-        {
-            loadPanel.SetActive(false);
-        }
+        loadPanel.SetActive(false);
     }
 
     // Rellena la lista con los botones de las partidas guardadas

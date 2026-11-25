@@ -33,7 +33,7 @@ public class PauseMenu : MonoBehaviour
     private static void ReiniciarEstado()
     {
         IsPaused = false;
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
     }
 
     private void Awake()
@@ -85,14 +85,15 @@ public class PauseMenu : MonoBehaviour
 
         GameManager.AplicarEstadoGlobal();
 
-        if (!InventarioMenu.IsInventoryOpen)
+        // Para que aparezca lo primero el inventario
+        if (inventarioMenu != null && !InventarioMenu.IsInventoryOpen)
         {
             inventarioMenu.AlternarInventario();
         }
 
         if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
         {
-            loadMenu.CerrarLoadMenu();
+            loadMenu.AlternarLoad();
         }
 
         // Time.timeScale = 0f;
@@ -109,14 +110,14 @@ public class PauseMenu : MonoBehaviour
     {
         if (!IsPaused) return;
 
-        if (InventarioMenu.IsInventoryOpen)
+        if (inventarioMenu != null && InventarioMenu.IsInventoryOpen)
         {
             inventarioMenu.AlternarInventario();
         }
 
-        if (LoadMenu.IsLoadMenuOpen)
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
         {
-            loadMenu.CerrarLoadMenu();
+            loadMenu.AlternarLoad();
         }
 
         IsPaused = false;
@@ -138,32 +139,24 @@ public class PauseMenu : MonoBehaviour
     {
         if (!IsPaused || InventarioMenu.IsInventoryOpen) return;
 
-        inventarioMenu.AlternarInventario();
+        if (loadMenu != null && LoadMenu.IsLoadMenuOpen)
+        {
+            loadMenu.AlternarLoad();
+        }
+
+        if (inventarioMenu != null) inventarioMenu.AlternarInventario();
     }
 
     public void OnClickLoadMenu()
     {
-        if (!IsPaused) return;
+        if (!IsPaused || LoadMenu.IsLoadMenuOpen) return;
 
-        if (LoadMenu.IsLoadMenuOpen)
-        {
-            OnClickCancelarLoadMenu();
-            return;
-        }
-
-        if (InventarioMenu.IsInventoryOpen)
+        if (inventarioMenu != null && InventarioMenu.IsInventoryOpen)
         {
             inventarioMenu.AlternarInventario();
         }
 
-        if (loadMenu != null) loadMenu.AbrirLoadMenu();
-    }
-
-    public void OnClickCancelarLoadMenu()
-    {
-        if (loadMenu != null) loadMenu.CerrarLoadMenu();
-        if(!InventarioMenu.IsInventoryOpen) inventarioMenu.AlternarInventario();
-
+        if (loadMenu != null) loadMenu.AlternarLoad();
     }
 
 
@@ -172,7 +165,7 @@ public class PauseMenu : MonoBehaviour
         if (!IsPaused) return;
 
         IsPaused = false;
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
 
         if (pausePanel != null)
             pausePanel.SetActive(false);

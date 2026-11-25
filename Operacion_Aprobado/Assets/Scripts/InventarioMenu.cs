@@ -18,15 +18,6 @@ public class InventarioMenu : MonoBehaviour
         inventoryPanel.SetActive(false);
     }
 
-    void OnEnable()
-    {
-        InputManager.OnClosePressed += CerrarIventario;
-    }
-
-    void OnDisable()
-    {
-        InputManager.OnClosePressed -= CerrarIventario;
-    }
 
 
 
@@ -51,28 +42,20 @@ public class InventarioMenu : MonoBehaviour
     /// </summary>
     void AbrirInventario()
     {
+        if (inventoryPanel == null) return;
+
         IsInventoryOpen = true;
-
-        if (inventoryPanel != null)
-        {
-            inventoryPanel.SetActive(true);
-        }
-
-        GameManager.AplicarEstadoGlobal();
+        inventoryPanel.SetActive(true);
     }
 
     /// <summary>
     /// Cierra el inventario desactivando sus paneles y reactivando el tiempo.
     /// </summary>
     void CerrarIventario()
-    {  
-        IsInventoryOpen = false;
-        
-        if (inventoryPanel != null)
-        {
-            inventoryPanel.SetActive(false);
-        }
+    {
+        if (inventoryPanel == null) return;
 
-        GameManager.AplicarEstadoGlobal();
+        IsInventoryOpen = false;
+        inventoryPanel.SetActive(false);
     }
 }
